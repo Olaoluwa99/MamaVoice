@@ -1,6 +1,8 @@
 package com.tech.mamavoice.di
 
 import com.tech.mamavoice.BuildConfig
+import com.tech.mamavoice.data.remote.api.AuthApiService
+import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,4 +54,14 @@ object NetworkModule {
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService =
+        retrofit.create(AuthApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMamaVoiceApiService(retrofit: Retrofit): MamaVoiceApiService =
+        retrofit.create(MamaVoiceApiService::class.java)
 }
