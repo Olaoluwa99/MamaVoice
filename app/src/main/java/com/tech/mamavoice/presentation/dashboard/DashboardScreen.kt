@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,16 +41,18 @@ import com.tech.mamavoice.domain.util.Resource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel(),
     onNavigateToFoodDirectory: () -> Unit,
     onNavigateToImmunization: () -> Unit,
-    onNavigateToHealthTracker: () -> Unit
+    onNavigateToHealthTracker: () -> Unit,
+    viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val dashboardData by viewModel.dashboardData.collectAsState()
     val isRecording by viewModel.isRecording.collectAsState()
     val aiResponse by viewModel.aiResponse.collectAsState()
     val isDangerSign by viewModel.isDangerSign.collectAsState()
+    val showVoiceOverlay by viewModel.showVoiceOverlay.collectAsState()
+    val transcript by viewModel.transcript.collectAsState()
 
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
     
@@ -58,6 +60,7 @@ fun DashboardScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            viewModel.toggleVoiceOverlay(true)
             startListening(speechRecognizer, viewModel)
         }
     }
@@ -77,11 +80,18 @@ fun DashboardScreen(
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
-                    viewModel.queryAi(matches[0])
+                    val finalTranscript = matches[0]
+                    viewModel.updateTranscript(finalTranscript)
+                    viewModel.queryAi(finalTranscript)
                 }
                 viewModel.setRecordingState(false)
             }
-            override fun onPartialResults(partialResults: Bundle?) {}
+            override fun onPartialResults(partialResults: Bundle?) {
+                val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                if (!matches.isNullOrEmpty()) {
+                    viewModel.updateTranscript(matches[0])
+                }
+            }
             override fun onEvent(eventType: Int, params: Bundle?) {}
         }
         speechRecognizer.setRecognitionListener(listener)
@@ -178,59 +188,24 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Middle Section: Sonar Microphone
-            val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-            val scale by infiniteTransition.animateFloat(
-                initialValue = 1f,
-                targetValue = if (isRecording) 1.5f else 1.1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1200, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Restart
-                ),
-                label = "pulseAnimation"
-            )
-
+            // Middle Section: Trigger Microphone
             Box(contentAlignment = Alignment.Center) {
-                if (isRecording) {
-                    Box(
-                        modifier = Modifier
-                            .size(160.dp)
-                            .scale(scale)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.2f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(130.dp)
-                            .scale(scale * 0.8f)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
-                    )
-                }
-
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (isRecording) MaterialTheme.colorScheme.error 
-                            else MaterialTheme.colorScheme.primary
-                        )
+                        .background(MaterialTheme.colorScheme.primary)
                         .clickable {
-                            if (!isRecording) {
-                                if (ContextCompat.checkSelfPermission(
-                                        context,
-                                        Manifest.permission.RECORD_AUDIO
-                                    ) == PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    startListening(speechRecognizer, viewModel)
-                                } else {
-                                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                                }
+                            if (ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.RECORD_AUDIO
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                viewModel.toggleVoiceOverlay(true)
+                                startListening(speechRecognizer, viewModel)
                             } else {
-                                speechRecognizer.stopListening()
-                                viewModel.setRecordingState(false)
+                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                             }
                         }
                 ) {
@@ -243,44 +218,12 @@ fun DashboardScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (aiResponse.isNotEmpty()) {
-                if (isDangerSign) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        ),
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = aiResponse, style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-                } else {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = aiResponse,
-                            modifier = Modifier.padding(20.dp),
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Tap to speak to MamaVoice",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -312,13 +255,170 @@ fun DashboardScreen(
             }
         }
     }
+
+    if (showVoiceOverlay) {
+        ModalBottomSheet(
+            onDismissRequest = { 
+                speechRecognizer.stopListening()
+                viewModel.toggleVoiceOverlay(false) 
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
+            VoiceAssistantBottomSheetContent(
+                isRecording = isRecording,
+                transcript = transcript,
+                aiResponse = aiResponse,
+                isDangerSign = isDangerSign,
+                onStopClicked = {
+                    speechRecognizer.stopListening()
+                    viewModel.toggleVoiceOverlay(false)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun VoiceAssistantBottomSheetContent(
+    isRecording: Boolean,
+    transcript: String,
+    aiResponse: String,
+    isDangerSign: Boolean,
+    onStopClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+            .padding(bottom = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = if (isRecording) "Listening..." else if (aiResponse.isBlank()) "Processing..." else "MamaVoice",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Sonar Animation
+        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = if (isRecording) 1.5f else 1.1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Restart
+            ),
+            label = "pulseAnimation"
+        )
+
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.height(160.dp)) {
+            if (isRecording) {
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .scale(scale)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                )
+                Box(
+                    modifier = Modifier
+                        .size(90.dp)
+                        .scale(scale * 0.8f)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                )
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isRecording) MaterialTheme.colorScheme.error 
+                        else MaterialTheme.colorScheme.primary
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Microphone",
+                    modifier = Modifier.size(36.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        if (transcript.isNotBlank()) {
+            Text(
+                text = "\"$transcript\"",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        if (aiResponse.isNotBlank()) {
+            if (isDangerSign) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    ),
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = aiResponse, style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            } else {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = aiResponse,
+                        modifier = Modifier.padding(20.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = onStopClicked,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Text("Close", style = MaterialTheme.typography.titleMedium)
+        }
+    }
 }
 
 private fun startListening(speechRecognizer: SpeechRecognizer, viewModel: DashboardViewModel) {
     viewModel.setRecordingState(true)
     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
     }
     speechRecognizer.startListening(intent)
 }

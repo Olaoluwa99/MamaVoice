@@ -36,6 +36,12 @@ class DashboardViewModel @Inject constructor(
     private val _isDangerSign = MutableStateFlow(false)
     val isDangerSign: StateFlow<Boolean> = _isDangerSign.asStateFlow()
 
+    private val _showVoiceOverlay = MutableStateFlow(false)
+    val showVoiceOverlay: StateFlow<Boolean> = _showVoiceOverlay.asStateFlow()
+
+    private val _transcript = MutableStateFlow("")
+    val transcript: StateFlow<String> = _transcript.asStateFlow()
+
     init {
         textToSpeech = TextToSpeech(context, this)
         fetchDashboardData()
@@ -56,6 +62,21 @@ class DashboardViewModel @Inject constructor(
     
     fun setRecordingState(isRecording: Boolean) {
         _isRecording.value = isRecording
+    }
+
+    fun updateTranscript(text: String) {
+        _transcript.value = text
+    }
+
+    fun toggleVoiceOverlay(show: Boolean) {
+        _showVoiceOverlay.value = show
+        if (!show) {
+            _transcript.value = ""
+            _aiResponse.value = ""
+            _isDangerSign.value = false
+            _isRecording.value = false
+            textToSpeech?.stop()
+        }
     }
 
     fun queryAi(text: String) {
