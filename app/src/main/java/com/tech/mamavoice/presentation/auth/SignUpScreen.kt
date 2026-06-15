@@ -16,9 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.hilt.navigation.compose.hiltViewModel
 
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
+
 @Composable
 fun SignUpScreen(
-    onAuthSuccess: () -> Unit,
+    onAuthSuccess: (String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val email by viewModel.email.collectAsState()
@@ -26,10 +31,11 @@ fun SignUpScreen(
     val isPasswordValid by viewModel.isPasswordValid.collectAsState()
     val unfulfilledRules by viewModel.unfulfilledRules.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Success) {
-            onAuthSuccess()
+            onAuthSuccess(email)
         }
     }
 
@@ -63,30 +69,36 @@ fun SignUpScreen(
             value = password,
             onValueChange = viewModel::onPasswordChange,
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            trailingIcon = {
+                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            PasswordRule.entries.forEach { rule ->
-                val isMet = !unfulfilledRules.contains(rule)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = if (isMet) Icons.Default.Check else Icons.Default.Close,
-                        contentDescription = null,
-                        tint = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = rule.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+        val rules = PasswordRule.entries.toList()
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            for (i in rules.indices step 2) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    PasswordRuleChip(rule = rules[i], unfulfilledRules = unfulfilledRules, modifier = Modifier.weight(1f))
+                    if (i + 1 < rules.size) {
+                        PasswordRuleChip(rule = rules[i + 1], unfulfilledRules = unfulfilledRules, modifier = Modifier.weight(1f))
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
@@ -114,6 +126,36 @@ fun SignUpScreen(
             } else {
                 Text("Create Account", style = MaterialTheme.typography.titleMedium)
             }
+        }
+    }
+}
+
+@Composable
+fun PasswordRuleChip(rule: PasswordRule, unfulfilledRules: List<PasswordRule>, modifier: Modifier = Modifier) {
+    val isMet = !unfulfilledRules.contains(rule)
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = if (isMet) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Icon(
+                imageVector = if (isMet) Icons.Default.Check else Icons.Default.Close,
+                contentDescription = null,
+                tint = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(14.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = rule.description,
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isMet) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

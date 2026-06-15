@@ -15,11 +15,10 @@ data class AuthResponse(
 )
 
 @Serializable
-data class ProfileRequest(
-    val firstName: String,
-    val type: String,
-    val targetDate: String
-)
+data class ProfileRequest(val firstName: String, val type: String, val targetDate: String)
+
+@Serializable
+data class OtpRequest(val email: String, val otp: String)
 
 @Serializable
 data class StatusResponse(

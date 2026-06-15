@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,13 +34,14 @@ fun ImmunizationTimelineScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Immunization Timeline", fontWeight = FontWeight.Bold) },
+                title = { Text("Immunization Timeline", style = MaterialTheme.typography.headlineMedium) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -48,7 +50,10 @@ fun ImmunizationTimelineScreen(
         ) {
             when {
                 state.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
                 state.error != null -> {
                     Text(
@@ -59,15 +64,17 @@ fun ImmunizationTimelineScreen(
                             .padding(16.dp)
                     )
                 }
-                state.vaccines.isEmpty() -> {
+                state.vaccines.isEmpty() && !state.isLoading -> {
                     Text(
                         text = "No upcoming vaccines.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
                 else -> {
                     LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         itemsIndexed(state.vaccines) { index, vaccine ->
@@ -99,17 +106,17 @@ fun TimelineItem(
         // Timeline connector
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(40.dp)
+            modifier = Modifier.width(48.dp)
         ) {
             val indicatorColor = if (vaccine.isCompleted) {
                 MaterialTheme.colorScheme.primary
             } else {
-                MaterialTheme.colorScheme.outlineVariant
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
             }
 
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(indicatorColor),
                 contentAlignment = Alignment.Center
@@ -119,12 +126,20 @@ fun TimelineItem(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Completed",
                         tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
                     )
                 }
             }
             if (!isLast) {
-                val lineColor = MaterialTheme.colorScheme.outlineVariant
+                val lineColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                 Canvas(
                     modifier = Modifier
                         .width(2.dp)
@@ -135,20 +150,21 @@ fun TimelineItem(
                         color = lineColor,
                         start = Offset(size.width / 2, 0f),
                         end = Offset(size.width / 2, size.height),
-                        strokeWidth = size.width
+                        strokeWidth = 4f,
+                        pathEffect = pathEffect
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
         // Content Card
         Card(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (vaccine.isCompleted) 
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                 else MaterialTheme.colorScheme.surface,
             ),
             elevation = CardDefaults.cardElevation(
@@ -156,38 +172,50 @@ fun TimelineItem(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp)
+                .padding(bottom = 32.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
                 Text(
                     text = vaccine.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Due: ${vaccine.dueDateString}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary
-                )
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (vaccine.isCompleted) MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f) else MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.wrapContentSize()
+                ) {
+                    Text(
+                        text = "Due: ${vaccine.dueDateString}",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
 
                 if (!vaccine.isCompleted) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         onClick = onMarkCompleted,
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Mark Completed")
+                        Text("Mark Completed", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                     }
                 }
             }

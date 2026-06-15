@@ -39,6 +39,17 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun verifyOtp(email: String, otp: String): Resource<Unit> {
+        return try {
+            api.verifyOtp(com.tech.mamavoice.data.remote.dto.OtpRequest(email, otp))
+            Resource.Success(Unit)
+        } catch (e: HttpException) {
+            Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+        } catch (e: IOException) {
+            Resource.Error("Couldn't reach server. Check your internet connection.")
+        }
+    }
+
     override suspend fun updateProfile(firstName: String, type: String, targetDate: String): Resource<Unit> {
         return try {
             val token = tokenManager.authToken.first() ?: return Resource.Error("Not authenticated")

@@ -48,8 +48,8 @@ fun MamaVoiceNavGraph(
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onAuthSuccess = {
-                    navController.navigate(Screen.Dashboard.route) {
+                onAuthSuccess = { email ->
+                    navController.navigate(Screen.Otp.createRoute(email)) {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
@@ -59,10 +59,22 @@ fun MamaVoiceNavGraph(
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
-                onAuthSuccess = {
-                    navController.navigate(Screen.ProfileSetup.route) {
+                onAuthSuccess = { email ->
+                    navController.navigate(Screen.Otp.createRoute(email)) {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.SignUp.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.Otp.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            com.tech.mamavoice.presentation.auth.OtpScreen(
+                email = email,
+                onSuccess = {
+                    navController.navigate(Screen.ProfileSetup.route) {
+                        popUpTo(Screen.Otp.route) { inclusive = true }
                     }
                 }
             )

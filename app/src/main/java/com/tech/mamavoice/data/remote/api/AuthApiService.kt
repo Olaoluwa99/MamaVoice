@@ -2,6 +2,7 @@ package com.tech.mamavoice.data.remote.api
 
 import com.tech.mamavoice.data.remote.dto.AuthRequest
 import com.tech.mamavoice.data.remote.dto.AuthResponse
+import com.tech.mamavoice.data.remote.dto.OtpRequest
 import com.tech.mamavoice.data.remote.dto.ProfileRequest
 import com.tech.mamavoice.data.remote.dto.StatusResponse
 import retrofit2.http.Body
@@ -21,4 +22,6 @@ interface AuthApiService {
         @Header("Authorization") token: String,
         @Body request: ProfileRequest
     ): StatusResponse
+    @POST("api/auth/verify-otp")
+    suspend fun verifyOtp(@Body request: OtpRequest): StatusResponse
 }
