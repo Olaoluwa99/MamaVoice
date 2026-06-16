@@ -54,6 +54,12 @@ fun MamaVoiceNavGraph(
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
+                },
+                onNeedsVerification = { email, otpId ->
+                    navController.navigate(Screen.Otp.createRoute(email, otpId)) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 }
             )
         }

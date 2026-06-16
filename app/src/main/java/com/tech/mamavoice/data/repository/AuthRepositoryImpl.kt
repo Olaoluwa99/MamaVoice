@@ -20,7 +20,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun register(email: String, password: String): Resource<String> {
         return try {
             val response = api.register(AuthRequest(email = email, password = password))
-            Resource.Success(response.otp.id)
+            Resource.Success(response.data.otpId)
         } catch (e: HttpException) {
             if (e.code() == 409) {
                 Resource.Error("Email already registered. Please log in.")
@@ -36,14 +36,19 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val response = api.login(AuthRequest(email = email, password = password))
             tokenManager.saveAuthData(
-                accessToken = response.accessToken,
-                refreshTokenStr = response.refreshToken,
-                isExistingUser = response.user.profileCompleted
+                accessToken = response.data.token,
+                refreshTokenStr = response.data.refreshToken,
+                isExistingUser = response.data.user.profileCompleted
             )
-            Resource.Success(response.user.profileCompleted)
+            Resource.Success(response.data.user.profileCompleted)
         } catch (e: HttpException) {
             if (e.code() == 401) {
-                Resource.Error("Invalid email or password.")
+                val errorBody = e.response()?.errorBody()?.string() ?: ""
+                if (errorBody.contains("verify your email", ignoreCase = true)) {
+                    Resource.Error("NOT_VERIFIED")
+                } else {
+                    Resource.Error("Invalid email or password.")
+                }
             } else {
                 Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
             }
@@ -56,11 +61,11 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val response = api.verifyOtp(VerifyOtpRequest(otpId = otpId, otp = otp))
             tokenManager.saveAuthData(
-                accessToken = response.accessToken,
-                refreshTokenStr = response.refreshToken,
-                isExistingUser = response.user.profileCompleted
+                accessToken = response.data.token,
+                refreshTokenStr = response.data.refreshToken,
+                isExistingUser = response.data.user.profileCompleted
             )
-            Resource.Success(response.user.profileCompleted)
+            Resource.Success(response.data.user.profileCompleted)
         } catch (e: HttpException) {
             if (e.code() == 400) {
                 Resource.Error("Invalid or expired OTP.")
@@ -75,10 +80,10 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun resendOtp(email: String): Resource<String> {
         return try {
             val response = api.resendOtp(ResendOtpRequest(email = email))
-            Resource.Success(response.otp.id)
+            Resource.Success(response.data.otpId)
         } catch (e: HttpException) {
             if (e.code() == 400) {
-                Resource.Error("Email already verified or not found.")
+                Resource.Error("Email already verified or account not found.")
             } else {
                 Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
             }

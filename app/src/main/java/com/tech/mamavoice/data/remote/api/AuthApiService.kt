@@ -17,7 +17,7 @@ interface AuthApiService {
     suspend fun verifyOtp(@Body request: VerifyOtpRequest): AuthSuccessResponse
 
     @POST("api/auth/resend-otp")
-    suspend fun resendOtp(@Body request: ResendOtpRequest): ResendOtpResponse
+    suspend fun resendOtp(@Body request: ResendOtpRequest): RegisterResponse
 
     @POST("api/auth/refresh")
     suspend fun refreshToken(@Body request: RefreshTokenRequest): AuthSuccessResponse

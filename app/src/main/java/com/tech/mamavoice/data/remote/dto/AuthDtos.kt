@@ -21,10 +21,17 @@ data class OtpDetails(
 )
 
 @Serializable
-data class RegisterResponse(
-    val message: String,
+data class RegisterResponseData(
     val email: String,
-    val otp: OtpDetails
+    val otpId: String
+)
+
+@Serializable
+data class RegisterResponse(
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: RegisterResponseData
 )
 
 @Serializable
@@ -40,14 +47,27 @@ data class UserDto(
     val motherStage: String? = null,
     val accountStatus: String,
     val emailVerified: Boolean,
-    val profileCompleted: Boolean
+    val profileCompleted: Boolean,
+    val targetDate: String? = null,
+    val lastLoginAt: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+)
+
+@Serializable
+data class AuthSuccessData(
+    val token: String,
+    val refreshToken: String,
+    val user: UserDto,
+    val isExistingUser: Boolean? = null
 )
 
 @Serializable
 data class AuthSuccessResponse(
-    val accessToken: String,
-    val refreshToken: String,
-    val user: UserDto
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: AuthSuccessData
 )
 
 @Serializable
@@ -61,12 +81,7 @@ data class ResendOtpRequest(
     val email: String
 )
 
-@Serializable
-data class ResendOtpResponse(
-    val message: String,
-    val email: String,
-    val otp: OtpDetails
-)
+
 
 @Serializable
 data class RefreshTokenRequest(

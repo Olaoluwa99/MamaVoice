@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.profile
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,11 +14,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSetupScreen(
     onSetupComplete: () -> Unit,
@@ -121,20 +124,59 @@ fun ProfileSetupScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             AnimatedVisibility(visible = profileType.isNotEmpty()) {
-                OutlinedTextField(
-                    value = targetDate,
-                    onValueChange = viewModel::onTargetDateChange,
-                    label = { 
-                        Text(if (profileType == "Pregnant") "Expected Due Date" else "Baby's Date of Birth") 
-                    },
-                    placeholder = { Text("YYYY-MM-DD") },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.DateRange, contentDescription = "Date")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    singleLine = true
-                )
+                var showDatePicker by remember { mutableStateOf(false) }
+                val datePickerState = rememberDatePickerState()
+
+                if (showDatePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showDatePicker = false
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val date = java.time.Instant.ofEpochMilli(millis)
+                                        .atZone(java.time.ZoneId.of("UTC"))
+                                        .toLocalDate()
+                                    viewModel.onTargetDateChange(date.toString())
+                                }
+                            }) {
+                                Text("OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = targetDate,
+                        onValueChange = { },
+                        readOnly = true,
+                        label = { 
+                            Text(if (profileType == "Pregnant") "Expected Due Date" else "Baby's Date of Birth") 
+                        },
+                        placeholder = { Text("YYYY-MM-DD") },
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Date")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        singleLine = true
+                    )
+                    
+                    Spacer(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Transparent)
+                            .clickable { showDatePicker = true }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))

@@ -40,7 +40,18 @@ class LoginViewModel @Inject constructor(
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.login(_email.value, _password.value)) {
                 is Resource.Success -> _uiState.value = AuthUiState.LoginSuccess(result.data ?: false)
-                is Resource.Error -> _uiState.value = AuthUiState.Error(result.message ?: "Login failed")
+                is Resource.Error -> {
+                    if (result.message == "NOT_VERIFIED") {
+                        val resendResult = authRepository.resendOtp(_email.value)
+                        if (resendResult is Resource.Success) {
+                            _uiState.value = AuthUiState.NeedsVerification(email = _email.value, otpId = resendResult.data ?: "")
+                        } else {
+                            _uiState.value = AuthUiState.Error("Please verify your email. Failed to resend code.")
+                        }
+                    } else {
+                        _uiState.value = AuthUiState.Error(result.message ?: "Login failed")
+                    }
+                }
                 is Resource.Loading -> _uiState.value = AuthUiState.Loading
             }
         }

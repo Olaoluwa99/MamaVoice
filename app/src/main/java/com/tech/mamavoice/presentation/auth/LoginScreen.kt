@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 @Composable
 fun LoginScreen(
     onAuthSuccess: (Boolean) -> Unit,
+    onNeedsVerification: (email: String, otpId: String) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val email by viewModel.email.collectAsState()
@@ -27,8 +28,15 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.LoginSuccess) {
-            onAuthSuccess((uiState as AuthUiState.LoginSuccess).isProfileCompleted)
+        when (uiState) {
+            is AuthUiState.LoginSuccess -> {
+                onAuthSuccess((uiState as AuthUiState.LoginSuccess).isProfileCompleted)
+            }
+            is AuthUiState.NeedsVerification -> {
+                val state = uiState as AuthUiState.NeedsVerification
+                onNeedsVerification(state.email, state.otpId)
+            }
+            else -> Unit
         }
     }
 
