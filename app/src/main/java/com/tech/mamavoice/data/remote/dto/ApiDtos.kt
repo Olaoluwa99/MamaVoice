@@ -31,12 +31,50 @@ data class AiQueryResponse(
 )
 
 @Serializable
-data class FoodItem(
+data class NutritionalValuesDto(
+    val calories: Double? = null,
+    val protein: Double? = null,
+    val carbs: Double? = null,
+    val fat: Double? = null,
+    val fiber: Double? = null,
+    val sodium: Double? = null,
+    val iron: Double? = null,
+    val calcium: Double? = null,
+    val vitaminC: Double? = null,
+    val folate: Double? = null,
+    val vitaminA: Double? = null,
+    val zinc: Double? = null
+)
+
+@Serializable
+data class FoodDto(
     val id: String,
     val name: String,
     val category: String,
     val benefits: String,
-    val imageUrl: String
+    val mamaVoiceTip: String? = null,
+    val dangerWarning: String? = null,
+    val preparationTips: String? = null,
+    val affordabilityRating: Int? = null,
+    val availabilityRating: Int? = null,
+    val imageUrls: List<String> = emptyList(),
+    val nutritionalValues: NutritionalValuesDto? = null,
+    val suitableFor: List<String> = emptyList(),
+    val trimesterRecommendation: List<String> = emptyList(),
+    val keyNutrients: List<String> = emptyList(),
+    val servingSuggestion: String? = null,
+    val pairsWellWith: List<String> = emptyList(),
+    val avoidWith: List<String> = emptyList(),
+    val isHighIron: Boolean? = null,
+    val isHighFolate: Boolean? = null,
+    val isHighCalcium: Boolean? = null,
+    val isHighProtein: Boolean? = null,
+    val isHighVitaminC: Boolean? = null
+)
+
+@Serializable
+data class FoodsResponseData(
+    val foods: List<FoodDto> = emptyList()
 )
 
 @Serializable

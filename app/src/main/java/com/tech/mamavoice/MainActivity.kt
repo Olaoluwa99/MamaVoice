@@ -14,14 +14,32 @@ import com.tech.mamavoice.presentation.navigation.Screen
 import com.tech.mamavoice.ui.theme.MamaVoiceTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.tech.mamavoice.data.local.AppTheme
+import com.tech.mamavoice.data.local.SettingsManager
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MamaVoiceTheme {
+            val appTheme by settingsManager.appTheme.collectAsState(initial = AppTheme.SYSTEM)
+            
+            val darkTheme = when (appTheme) {
+                AppTheme.LIGHT -> false
+                AppTheme.DARK -> true
+                AppTheme.SYSTEM -> isSystemInDarkTheme()
+            }
+
+            MamaVoiceTheme(darkTheme = darkTheme) {
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

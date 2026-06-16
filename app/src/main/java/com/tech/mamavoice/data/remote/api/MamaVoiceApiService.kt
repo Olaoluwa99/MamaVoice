@@ -4,7 +4,6 @@ import com.tech.mamavoice.data.remote.dto.AiQueryRequest
 import com.tech.mamavoice.data.remote.dto.AiQueryResponse
 import com.tech.mamavoice.data.remote.dto.ApiResponse
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
-import com.tech.mamavoice.data.remote.dto.FoodItem
 import com.tech.mamavoice.data.remote.dto.HealthLog
 import com.tech.mamavoice.data.remote.dto.HealthLogRequest
 import com.tech.mamavoice.data.remote.dto.StatusResponse
@@ -14,8 +13,10 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 import com.tech.mamavoice.data.remote.dto.AppEnumsWrapperResponse
+import com.tech.mamavoice.data.remote.dto.FoodsResponseData
 
 interface MamaVoiceApiService {
 
@@ -31,7 +32,9 @@ interface MamaVoiceApiService {
     ): AiQueryResponse
 
     @GET("api/foods")
-    suspend fun getFoods(): List<FoodItem>
+    suspend fun getFoods(
+        @Query("stage") stage: String? = null
+    ): ApiResponse<FoodsResponseData>
 
     @GET("api/vaccines")
     suspend fun getVaccines(): List<VaccineItem>

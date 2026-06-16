@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.food
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -34,21 +35,31 @@ fun FoodDirectoryScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Food Directory", style = MaterialTheme.typography.headlineMedium) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+            if (state.selectedFood == null) {
+                TopAppBar(
+                    title = { Text("Food Directory", style = MaterialTheme.typography.headlineMedium) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+        if (state.selectedFood != null) {
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                FoodDetailScreen(
+                    food = state.selectedFood!!,
+                    onBackClick = { viewModel.selectFood(null) }
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
             when {
                 state.isLoading -> {
                     CircularProgressIndicator(
@@ -82,24 +93,27 @@ fun FoodDirectoryScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.items) { food ->
-                            FoodItemCard(food)
+                            FoodItemCard(food = food, onClick = { viewModel.selectFood(food) })
                         }
                     }
                 }
             }
         }
+        }
     }
 }
 
 @Composable
-fun FoodItemCard(food: FoodItem) {
+fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
     ) {
         Column {
             Box(
@@ -115,9 +129,9 @@ fun FoodItemCard(food: FoodItem) {
                         )
                     )
             ) {
-                if (food.imageUrl.isNotBlank()) {
+                if (food.imageUrls.isNotEmpty()) {
                     AsyncImage(
-                        model = food.imageUrl,
+                        model = food.imageUrls.first(),
                         contentDescription = food.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -167,9 +181,19 @@ fun FoodItemCard(food: FoodItem) {
                     text = food.benefits,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                
+                if (food.keyNutrients.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Rich in: ${food.keyNutrients.take(2).joinToString(", ")}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

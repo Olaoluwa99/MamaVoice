@@ -16,7 +16,8 @@ import javax.inject.Inject
 data class FoodUiState(
     val isLoading: Boolean = false,
     val items: List<FoodItem> = emptyList(),
-    val error: String? = null
+    val error: String? = null,
+    val selectedFood: FoodItem? = null
 )
 
 @HiltViewModel
@@ -35,19 +36,26 @@ class FoodViewModel @Inject constructor(
         repository.getFoodItems().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = FoodUiState(
-                        items = result.data ?: emptyList()
+                    _state.value = _state.value.copy(
+                        items = result.data ?: emptyList(),
+                        isLoading = false,
+                        error = null
                     )
                 }
                 is Resource.Error -> {
-                    _state.value = FoodUiState(
-                        error = result.message ?: "An unexpected error occurred"
+                    _state.value = _state.value.copy(
+                        error = result.message ?: "An unexpected error occurred",
+                        isLoading = false
                     )
                 }
                 is Resource.Loading -> {
-                    _state.value = FoodUiState(isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun selectFood(food: FoodItem?) {
+        _state.value = _state.value.copy(selectedFood = food)
     }
 }

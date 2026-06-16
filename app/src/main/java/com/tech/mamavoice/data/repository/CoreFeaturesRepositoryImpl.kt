@@ -32,14 +32,49 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getFoodItems(): Flow<Resource<List<FoodItem>>> = flow {
         emit(Resource.Loading())
         try {
-            val dtos = apiService.getFoods()
+            val response = apiService.getFoods()
+            val dtos = response.data.foods
             val domainModels = dtos.map { dto ->
+                val nutrition = dto.nutritionalValues?.let {
+                    com.tech.mamavoice.domain.model.NutritionalValues(
+                        calories = it.calories,
+                        protein = it.protein,
+                        carbs = it.carbs,
+                        fat = it.fat,
+                        fiber = it.fiber,
+                        sodium = it.sodium,
+                        iron = it.iron,
+                        calcium = it.calcium,
+                        vitaminC = it.vitaminC,
+                        folate = it.folate,
+                        vitaminA = it.vitaminA,
+                        zinc = it.zinc
+                    )
+                }
+                
                 FoodItem(
                     id = dto.id,
                     name = dto.name,
                     category = dto.category,
                     benefits = dto.benefits,
-                    imageUrl = dto.imageUrl
+                    mamaVoiceTip = dto.mamaVoiceTip,
+                    dangerWarning = dto.dangerWarning,
+                    preparationTips = dto.preparationTips,
+                    affordabilityRating = dto.affordabilityRating,
+                    availabilityRating = dto.availabilityRating,
+                    imageUrls = dto.imageUrls,
+                    nutritionalValues = nutrition,
+                    suitableFor = dto.suitableFor,
+                    trimesterRecommendation = dto.trimesterRecommendation,
+                    keyNutrients = dto.keyNutrients,
+                    servingSuggestion = dto.servingSuggestion,
+                    pairsWellWith = dto.pairsWellWith,
+                    avoidWith = dto.avoidWith,
+                    isHighIron = dto.isHighIron ?: false,
+                    isHighFolate = dto.isHighFolate ?: false,
+                    isHighCalcium = dto.isHighCalcium ?: false,
+                    isHighProtein = dto.isHighProtein ?: false,
+                    isHighVitaminC = dto.isHighVitaminC ?: false
                 )
             }
             emit(Resource.Success(domainModels))

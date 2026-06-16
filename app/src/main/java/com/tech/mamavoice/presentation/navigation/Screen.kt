@@ -18,7 +18,8 @@ sealed class Screen(val route: String) {
 
     // Main app flow
     data object Dashboard : Screen("dashboard")
-    data object FoodDirectory : Screen("food_directory")
+    data object Profile : Screen("profile_screen")
+    data object FoodDirectory : Screen("food_directory_screen")
     data object ImmunizationTimeline : Screen("immunization_timeline")
     data object HealthTracker : Screen("health_tracker")
 }

@@ -105,7 +105,19 @@ fun MamaVoiceNavGraph(
             com.tech.mamavoice.presentation.dashboard.DashboardScreen(
                 onNavigateToFoodDirectory = { navController.navigate(Screen.FoodDirectory.route) },
                 onNavigateToImmunization = { navController.navigate(Screen.ImmunizationTimeline.route) },
-                onNavigateToHealthTracker = { navController.navigate(Screen.HealthTracker.route) }
+                onNavigateToHealthTracker = { navController.navigate(Screen.HealthTracker.route) },
+                onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+            )
+        }
+
+        composable(Screen.Profile.route) {
+            com.tech.mamavoice.presentation.profile.ProfileScreen(
+                onBackClick = { navController.navigateUp() },
+                onLogout = {
+                    navController.navigate(Screen.Welcome.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
 

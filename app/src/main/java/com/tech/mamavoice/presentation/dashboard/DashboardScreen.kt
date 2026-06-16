@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
@@ -41,10 +42,11 @@ import com.tech.mamavoice.domain.util.Resource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+    viewModel: DashboardViewModel = hiltViewModel(),
     onNavigateToFoodDirectory: () -> Unit,
     onNavigateToImmunization: () -> Unit,
     onNavigateToHealthTracker: () -> Unit,
-    viewModel: DashboardViewModel = hiltViewModel()
+    onNavigateToProfile: () -> Unit
 ) {
     val context = LocalContext.current
     val dashboardData by viewModel.dashboardData.collectAsState()
@@ -108,7 +110,16 @@ fun DashboardScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             )
         },
         containerColor = MaterialTheme.colorScheme.background
