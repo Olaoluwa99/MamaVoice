@@ -13,13 +13,28 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+import android.content.Context
+import android.provider.Settings
+import dagger.hilt.android.qualifiers.ApplicationContext
+
 class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApiService,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    @ApplicationContext private val context: Context
 ) : AuthRepository {
     override suspend fun register(email: String, password: String): Resource<String> {
         return try {
-            val response = api.register(AuthRequest(email = email, password = password))
+            val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            val deviceModel = android.os.Build.MODEL
+            val response = api.register(
+                AuthRequest(
+                    email = email, 
+                    password = password, 
+                    deviceId = deviceId, 
+                    platform = "android", 
+                    deviceModel = deviceModel
+                )
+            )
             Resource.Success(response.data.otpId)
         } catch (e: HttpException) {
             if (e.code() == 409) {
@@ -34,7 +49,17 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Resource<Boolean> {
         return try {
-            val response = api.login(AuthRequest(email = email, password = password))
+            val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            val deviceModel = android.os.Build.MODEL
+            val response = api.login(
+                AuthRequest(
+                    email = email, 
+                    password = password,
+                    deviceId = deviceId,
+                    platform = "android",
+                    deviceModel = deviceModel
+                )
+            )
             tokenManager.saveAuthData(
                 accessToken = response.data.token,
                 refreshTokenStr = response.data.refreshToken,
