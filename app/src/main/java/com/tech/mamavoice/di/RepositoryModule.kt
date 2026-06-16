@@ -32,4 +32,10 @@ abstract class RepositoryModule {
     abstract fun bindCoreFeaturesRepository(
         coreFeaturesRepositoryImpl: CoreFeaturesRepositoryImpl
     ): CoreFeaturesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMamaVoiceRepository(
+        mamaVoiceRepositoryImpl: com.tech.mamavoice.data.repository.MamaVoiceRepositoryImpl
+    ): com.tech.mamavoice.domain.repository.MamaVoiceRepository
 }

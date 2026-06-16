@@ -16,6 +16,10 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+import javax.inject.Named
+import com.tech.mamavoice.data.remote.interceptor.AuthInterceptor
+import com.tech.mamavoice.data.remote.interceptor.TokenAuthenticator
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -29,8 +33,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
+    @Named("AuthClient")
+    fun provideAuthOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor { message ->
+            android.util.Log.d("MamaVoice-API", message)
+        }.apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
@@ -47,7 +54,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
+    @Named("MainClient")
+    fun provideMainOkHttpClient(
+        @Named("AuthClient") authClient: OkHttpClient,
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
+    ): OkHttpClient {
+        return authClient.newBuilder()
+            .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("AuthRetrofit")
+    fun provideAuthRetrofit(@Named("AuthClient") okHttpClient: OkHttpClient, json: Json): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
@@ -57,11 +79,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthApiService(retrofit: Retrofit): AuthApiService =
+    @Named("MainRetrofit")
+    fun provideMainRetrofit(@Named("MainClient") okHttpClient: OkHttpClient, json: Json): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApiService(@Named("AuthRetrofit") retrofit: Retrofit): AuthApiService =
         retrofit.create(AuthApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideMamaVoiceApiService(retrofit: Retrofit): MamaVoiceApiService =
+    fun provideMamaVoiceApiService(@Named("MainRetrofit") retrofit: Retrofit): MamaVoiceApiService =
         retrofit.create(MamaVoiceApiService::class.java)
 }

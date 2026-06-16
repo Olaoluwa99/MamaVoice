@@ -3,6 +3,14 @@ package com.tech.mamavoice.data.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ApiResponse<T>(
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: T
+)
+
+@Serializable
 data class DashboardResponse(
     val firstName: String,
     val statusText: String,
@@ -64,4 +72,25 @@ data class HealthLogRequest(
     val bloodPressure: String? = null,
     val nutritionNotes: String? = null,
     val symptoms: String? = null
+)
+
+@Serializable
+data class AppEnumsWrapperResponse(
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: AppEnumsResponse
+)
+
+@Serializable
+data class AppEnumsResponse(
+    val profileTypes: List<String> = emptyList(),
+    val languages: List<String> = emptyList(),
+    val motherStages: List<String> = emptyList(),
+    val foodCategories: List<String> = emptyList(),
+    val foodStages: List<String> = emptyList(),
+    val trimesters: List<String> = emptyList(),
+    val devicePlatforms: List<String> = emptyList(),
+    val states: List<String> = emptyList(),
+    val stateLgas: Map<String, List<String>> = emptyMap()
 )

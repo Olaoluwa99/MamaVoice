@@ -3,6 +3,7 @@ package com.tech.mamavoice.data.remote.api
 import com.tech.mamavoice.data.remote.dto.*
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface AuthApiService {
@@ -20,11 +21,11 @@ interface AuthApiService {
     suspend fun resendOtp(@Body request: ResendOtpRequest): RegisterResponse
 
     @POST("api/auth/refresh")
-    suspend fun refreshToken(@Body request: RefreshTokenRequest): AuthSuccessResponse
+    suspend fun refreshToken(@Body request: RefreshTokenRequest): RefreshTokenResponse
 
-    @POST("api/user/profile")
+    @PATCH("api/users/profile")
     suspend fun updateProfile(
         @Header("Authorization") token: String,
         @Body request: ProfileRequest
-    ): StatusResponse
+    ): UserResponse
 }

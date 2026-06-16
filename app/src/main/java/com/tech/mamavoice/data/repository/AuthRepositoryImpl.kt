@@ -92,14 +92,35 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateProfile(firstName: String, type: String, targetDate: String): Resource<Unit> {
+    override suspend fun updateProfile(
+        firstName: String,
+        lastName: String,
+        language: String,
+        state: String,
+        lga: String,
+        motherStage: String,
+        targetDate: String
+    ): Resource<Unit> {
         return try {
             val token = tokenManager.authToken.first() ?: return Resource.Error("Not authenticated")
-            api.updateProfile("Bearer $token", ProfileRequest(firstName, type, targetDate))
-            // After successful profile update, mark as existing user
-            val refreshToken = tokenManager.refreshToken.first() ?: ""
-            tokenManager.saveAuthData(token, refreshToken, true)
-            Resource.Success(Unit)
+            val request = ProfileRequest(
+                firstName = firstName,
+                lastName = lastName,
+                language = language,
+                state = state,
+                lga = lga,
+                motherStage = motherStage,
+                targetDate = targetDate
+            )
+            val response = api.updateProfile("Bearer $token", request)
+            if (response.success) {
+                // After successful profile update, mark as existing user
+                val refreshToken = tokenManager.refreshToken.first() ?: ""
+                tokenManager.saveAuthData(token, refreshToken, true)
+                Resource.Success(Unit)
+            } else {
+                Resource.Error(response.message)
+            }
         } catch (e: HttpException) {
             Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
         } catch (e: IOException) {

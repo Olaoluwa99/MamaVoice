@@ -24,9 +24,12 @@ class DashboardRepositoryImpl @Inject constructor(
 
     override suspend fun getDashboard(): Resource<DashboardResponse> {
         return try {
-            val token = getBearerToken() ?: return Resource.Error("Unauthorized: No token found")
-            val response = apiService.getDashboard(token)
-            Resource.Success(response)
+            val response = apiService.getDashboard()
+            if (response.success) {
+                Resource.Success(response.data)
+            } else {
+                Resource.Error(response.message)
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }
@@ -34,9 +37,7 @@ class DashboardRepositoryImpl @Inject constructor(
 
     override suspend fun queryAi(textQuery: String): Resource<AiQueryResponse> {
         return try {
-            val token = getBearerToken() ?: return Resource.Error("Unauthorized: No token found")
             val response = apiService.queryAi(
-                token = token,
                 request = AiQueryRequest(textQuery = textQuery)
             )
             Resource.Success(response)

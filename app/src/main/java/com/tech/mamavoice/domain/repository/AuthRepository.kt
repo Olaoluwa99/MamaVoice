@@ -7,5 +7,13 @@ interface AuthRepository {
     suspend fun login(email: String, password: String): Resource<Boolean> // Returns isProfileCompleted
     suspend fun verifyOtp(otpId: String, otp: String): Resource<Boolean> // Returns isProfileCompleted
     suspend fun resendOtp(email: String): Resource<String> // Returns new otpId
-    suspend fun updateProfile(firstName: String, type: String, targetDate: String): Resource<Unit>
+    suspend fun updateProfile(
+        firstName: String,
+        lastName: String,
+        language: String,
+        state: String,
+        lga: String,
+        motherStage: String,
+        targetDate: String
+    ): Resource<Unit>
 }

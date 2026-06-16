@@ -32,8 +32,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getFoodItems(): Flow<Resource<List<FoodItem>>> = flow {
         emit(Resource.Loading())
         try {
-            val token = getBearerToken() ?: throw Exception("Unauthorized")
-            val dtos = apiService.getFoods(token)
+            val dtos = apiService.getFoods()
             val domainModels = dtos.map { dto ->
                 FoodItem(
                     id = dto.id,
@@ -52,8 +51,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getImmunizationTimeline(): Flow<Resource<List<VaccineItem>>> = flow {
         emit(Resource.Loading())
         try {
-            val token = getBearerToken() ?: throw Exception("Unauthorized")
-            val dtos = apiService.getVaccines(token)
+            val dtos = apiService.getVaccines()
             val domainModels = dtos.map { dto ->
                 VaccineItem(
                     id = dto.vaccineId,
@@ -70,9 +68,8 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
 
     override suspend fun markVaccineCompleted(vaccineId: String): Resource<Unit> {
         return try {
-            val token = getBearerToken() ?: return Resource.Error("Unauthorized")
             val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            apiService.logVaccine(token, VaccineLogRequest(vaccineId, date))
+            apiService.logVaccine(VaccineLogRequest(vaccineId, date))
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to log vaccine")
@@ -82,8 +79,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getHealthLogs(): Flow<Resource<List<HealthLog>>> = flow {
         emit(Resource.Loading())
         try {
-            val token = getBearerToken() ?: throw Exception("Unauthorized")
-            val dtos = apiService.getTrackerHistory(token)
+            val dtos = apiService.getTrackerHistory()
             val domainModels = dtos.map { dto ->
                 HealthLog(
                     id = dto.logId,
@@ -107,7 +103,6 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
         symptoms: String?
     ): Resource<Unit> {
         return try {
-            val token = getBearerToken() ?: return Resource.Error("Unauthorized")
             val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             val request = HealthLogRequest(
                 logDate = date,
@@ -116,7 +111,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
                 nutritionNotes = nutrition,
                 symptoms = symptoms
             )
-            apiService.logHealth(token, request)
+            apiService.logHealth(request)
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to log health data")

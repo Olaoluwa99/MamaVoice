@@ -55,6 +55,14 @@ data class UserDto(
 )
 
 @Serializable
+data class UserResponse(
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: UserDto
+)
+
+@Serializable
 data class AuthSuccessData(
     val token: String,
     val refreshToken: String,
@@ -89,7 +97,21 @@ data class RefreshTokenRequest(
 )
 
 @Serializable
-data class ProfileRequest(val firstName: String, val type: String, val targetDate: String)
+data class RefreshTokenResponse(
+    val token: String,
+    val refreshToken: String
+)
+
+@Serializable
+data class ProfileRequest(
+    val firstName: String,
+    val lastName: String,
+    val language: String,
+    val state: String,
+    val lga: String,
+    val motherStage: String,
+    val targetDate: String
+)
 
 @Serializable
 data class StatusResponse(
