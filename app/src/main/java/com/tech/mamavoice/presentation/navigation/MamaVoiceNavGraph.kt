@@ -60,6 +60,14 @@ fun MamaVoiceNavGraph(
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(Screen.SignUp.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(Screen.ForgotPassword.route)
                 }
             )
         }
@@ -71,7 +79,18 @@ fun MamaVoiceNavGraph(
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.SignUp.route) { inclusive = true }
                     }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.SignUp.route) { inclusive = true }
+                    }
                 }
+            )
+        }
+        
+        composable(Screen.ForgotPassword.route) {
+            com.tech.mamavoice.presentation.auth.ForgotPasswordScreen(
+                onBackClick = { navController.navigateUp() }
             )
         }
 

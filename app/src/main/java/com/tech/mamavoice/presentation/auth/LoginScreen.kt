@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 fun LoginScreen(
     onAuthSuccess: (Boolean) -> Unit,
     onNeedsVerification: (email: String, otpId: String) -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val email by viewModel.email.collectAsState()
@@ -113,6 +115,16 @@ fun LoginScreen(
             } else {
                 Text("Log In", style = MaterialTheme.typography.titleMedium)
             }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        TextButton(onClick = onNavigateToForgotPassword) {
+            Text("Forgot Password?", color = MaterialTheme.colorScheme.primary, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
+        }
+        
+        TextButton(onClick = onNavigateToSignUp) {
+            Text("Don't have an account? Sign Up", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

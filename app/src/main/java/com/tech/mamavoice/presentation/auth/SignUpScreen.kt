@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 @Composable
 fun SignUpScreen(
     onAuthSuccess: (email: String, otpId: String) -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val email by viewModel.email.collectAsState()
@@ -127,6 +128,12 @@ fun SignUpScreen(
             } else {
                 Text("Create Account", style = MaterialTheme.typography.titleMedium)
             }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        TextButton(onClick = onNavigateToLogin) {
+            Text("Already have an account? Log In", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
