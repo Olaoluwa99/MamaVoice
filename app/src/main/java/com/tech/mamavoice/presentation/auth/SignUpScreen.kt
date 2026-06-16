@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun SignUpScreen(
-    onAuthSuccess: (String) -> Unit,
+    onAuthSuccess: (email: String, otpId: String) -> Unit,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val email by viewModel.email.collectAsState()
@@ -34,8 +34,9 @@ fun SignUpScreen(
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Success) {
-            onAuthSuccess(email)
+        if (uiState is AuthUiState.RegisterSuccess) {
+            val successState = uiState as AuthUiState.RegisterSuccess
+            onAuthSuccess(successState.email, successState.otpId)
         }
     }
 

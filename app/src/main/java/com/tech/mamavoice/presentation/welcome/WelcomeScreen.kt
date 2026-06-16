@@ -27,7 +27,7 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Image(
-            painter = painterResource(id = R.drawable.ic_logo),
+            painter = painterResource(id = R.drawable.mama_voice_logo),
             contentDescription = "App Logo",
             modifier = Modifier.size(140.dp)
         )

@@ -63,7 +63,10 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.register(_email.value, _password.value)) {
-                is Resource.Success -> _uiState.value = AuthUiState.Success
+                is Resource.Success -> _uiState.value = AuthUiState.RegisterSuccess(
+                    email = _email.value,
+                    otpId = result.data ?: ""
+                )
                 is Resource.Error -> _uiState.value = AuthUiState.Error(result.message ?: "Registration failed")
                 is Resource.Loading -> _uiState.value = AuthUiState.Loading
             }

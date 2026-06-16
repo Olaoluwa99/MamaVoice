@@ -11,8 +11,8 @@ sealed class Screen(val route: String) {
     data object Welcome : Screen("welcome")
     data object Login : Screen("login")
     data object SignUp : Screen("sign_up")
-    data object Otp : Screen("otp/{email}") {
-        fun createRoute(email: String) = "otp/$email"
+    data object Otp : Screen("otp/{email}/{otpId}") {
+        fun createRoute(email: String, otpId: String) = "otp/$email/$otpId"
     }
     data object ProfileSetup : Screen("profile_setup")
 

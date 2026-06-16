@@ -38,7 +38,7 @@ fun SplashScreen(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_splash_logo),
+            painter = painterResource(id = R.drawable.mama_voice_logo),
             contentDescription = "MamaVoice Logo",
             tint = Color.White,
             modifier = Modifier.size(120.dp)

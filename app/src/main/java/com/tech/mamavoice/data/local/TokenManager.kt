@@ -22,6 +22,7 @@ class TokenManager @Inject constructor(
 
     companion object {
         private val AUTH_TOKEN = stringPreferencesKey("auth_token")
+        private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         private val IS_EXISTING_USER = booleanPreferencesKey("is_existing_user")
     }
 
@@ -29,13 +30,18 @@ class TokenManager @Inject constructor(
         preferences[AUTH_TOKEN]
     }
 
+    val refreshToken: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[REFRESH_TOKEN]
+    }
+
     val isExistingUser: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IS_EXISTING_USER] ?: false
     }
 
-    suspend fun saveAuthData(token: String, isExistingUser: Boolean) {
+    suspend fun saveAuthData(accessToken: String, refreshTokenStr: String, isExistingUser: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[AUTH_TOKEN] = token
+            preferences[AUTH_TOKEN] = accessToken
+            preferences[REFRESH_TOKEN] = refreshTokenStr
             preferences[IS_EXISTING_USER] = isExistingUser
         }
     }

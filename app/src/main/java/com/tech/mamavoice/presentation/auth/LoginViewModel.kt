@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.login(_email.value, _password.value)) {
-                is Resource.Success -> _uiState.value = AuthUiState.Success
+                is Resource.Success -> _uiState.value = AuthUiState.LoginSuccess(result.data ?: false)
                 is Resource.Error -> _uiState.value = AuthUiState.Error(result.message ?: "Login failed")
                 is Resource.Loading -> _uiState.value = AuthUiState.Loading
             }

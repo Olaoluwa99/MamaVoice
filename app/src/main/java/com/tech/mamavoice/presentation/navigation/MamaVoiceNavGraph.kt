@@ -48,8 +48,9 @@ fun MamaVoiceNavGraph(
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onAuthSuccess = { email ->
-                    navController.navigate(Screen.Otp.createRoute(email)) {
+                onAuthSuccess = { isProfileCompleted ->
+                    val destination = if (isProfileCompleted) Screen.Dashboard.route else Screen.ProfileSetup.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
@@ -59,8 +60,8 @@ fun MamaVoiceNavGraph(
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
-                onAuthSuccess = { email ->
-                    navController.navigate(Screen.Otp.createRoute(email)) {
+                onAuthSuccess = { email, otpId ->
+                    navController.navigate(Screen.Otp.createRoute(email, otpId)) {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.SignUp.route) { inclusive = true }
                     }
@@ -70,10 +71,13 @@ fun MamaVoiceNavGraph(
 
         composable(Screen.Otp.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
+            val otpId = backStackEntry.arguments?.getString("otpId") ?: ""
             com.tech.mamavoice.presentation.auth.OtpScreen(
                 email = email,
-                onSuccess = {
-                    navController.navigate(Screen.ProfileSetup.route) {
+                otpId = otpId,
+                onSuccess = { isProfileCompleted ->
+                    val destination = if (isProfileCompleted) Screen.Dashboard.route else Screen.ProfileSetup.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Otp.route) { inclusive = true }
                     }
                 }

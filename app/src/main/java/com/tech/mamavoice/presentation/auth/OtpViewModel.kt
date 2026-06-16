@@ -29,14 +29,24 @@ class OtpViewModel @Inject constructor(
         }
     }
 
-    fun verifyOtp(email: String) {
+    private var currentOtpId: String = ""
+    private var userEmail: String = ""
+
+    fun initializeData(email: String, initialOtpId: String) {
+        if (userEmail.isEmpty()) {
+            userEmail = email
+            currentOtpId = initialOtpId
+        }
+    }
+
+    fun verifyOtp() {
         if (_uiState.value.otp.length != 6) return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            when (val result = authRepository.verifyOtp(email, _uiState.value.otp)) {
+            when (val result = authRepository.verifyOtp(currentOtpId, _uiState.value.otp)) {
                 is Resource.Success -> {
-                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                    _uiState.update { it.copy(isLoading = false, isSuccess = true, isProfileCompleted = result.data ?: false) }
                 }
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, errorMessage = result.message) }
@@ -47,8 +57,19 @@ class OtpViewModel @Inject constructor(
     }
 
     fun onResendClick() {
-        // Mock resend logic
-        _uiState.update { it.copy(otp = "", errorMessage = null) }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = authRepository.resendOtp(userEmail)) {
+                is Resource.Success -> {
+                    currentOtpId = result.data ?: currentOtpId
+                    _uiState.update { it.copy(isLoading = false, otp = "", errorMessage = "A new verification OTP has been sent to your email") }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.message) }
+                }
+                is Resource.Loading -> Unit
+            }
+        }
     }
 }
 
@@ -56,5 +77,6 @@ data class OtpUiState(
     val otp: String = "",
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
+    val isProfileCompleted: Boolean = false,
     val errorMessage: String? = null
 )

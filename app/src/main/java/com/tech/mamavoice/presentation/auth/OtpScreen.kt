@@ -46,14 +46,19 @@ import com.tech.mamavoice.R
 @Composable
 fun OtpScreen(
     email: String,
-    onSuccess: () -> Unit,
+    otpId: String,
+    onSuccess: (Boolean) -> Unit,
     viewModel: OtpViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.initializeData(email, otpId)
+    }
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onSuccess()
+            onSuccess(uiState.isProfileCompleted)
         }
     }
 
@@ -68,7 +73,7 @@ fun OtpScreen(
         Spacer(modifier = Modifier.height(64.dp))
         
         Image(
-            painter = painterResource(id = R.drawable.ic_logo),
+            painter = painterResource(id = R.drawable.mama_voice_logo),
             contentDescription = "Logo",
             modifier = Modifier.size(80.dp)
         )
@@ -167,7 +172,7 @@ fun OtpScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = { viewModel.verifyOtp(email) },
+            onClick = { viewModel.verifyOtp() },
             enabled = uiState.otp.length == 6 && !uiState.isLoading,
             modifier = Modifier
                 .fillMaxWidth()
