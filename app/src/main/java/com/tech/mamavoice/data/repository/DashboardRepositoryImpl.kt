@@ -40,7 +40,11 @@ class DashboardRepositoryImpl @Inject constructor(
             val response = apiService.queryAi(
                 request = AiQueryRequest(textQuery = textQuery)
             )
-            Resource.Success(response)
+            if (response.success) {
+                Resource.Success(response.data)
+            } else {
+                Resource.Error(response.message)
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "An unknown error occurred")
         }

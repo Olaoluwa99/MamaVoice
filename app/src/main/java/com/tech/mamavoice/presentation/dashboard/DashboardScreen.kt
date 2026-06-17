@@ -23,6 +23,11 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,10 +57,10 @@ fun DashboardScreen(
     val context = LocalContext.current
     val dashboardData by viewModel.dashboardData.collectAsState()
     val isRecording by viewModel.isRecording.collectAsState()
-    val aiResponse by viewModel.aiResponse.collectAsState()
-    val isDangerSign by viewModel.isDangerSign.collectAsState()
     val showVoiceOverlay by viewModel.showVoiceOverlay.collectAsState()
-    val transcript by viewModel.transcript.collectAsState()
+    val chatHistory by viewModel.chatHistory.collectAsState()
+    val draftQuery by viewModel.draftQuery.collectAsState()
+    val isPlayingTts by viewModel.isPlayingTts.collectAsState()
 
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
     
@@ -84,15 +89,14 @@ fun DashboardScreen(
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
                     val finalTranscript = matches[0]
-                    viewModel.updateTranscript(finalTranscript)
-                    viewModel.queryAi(finalTranscript)
+                    viewModel.updateDraftQuery(finalTranscript)
                 }
                 viewModel.setRecordingState(false)
             }
             override fun onPartialResults(partialResults: Bundle?) {
                 val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
-                    viewModel.updateTranscript(matches[0])
+                    viewModel.updateDraftQuery(matches[0])
                 }
             }
             override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -299,20 +303,34 @@ fun DashboardScreen(
     }
 
     if (showVoiceOverlay) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             onDismissRequest = { 
                 speechRecognizer.stopListening()
                 viewModel.toggleVoiceOverlay(false) 
             },
+            sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+            modifier = Modifier.fillMaxHeight(/*0.9f*/)
         ) {
             VoiceAssistantBottomSheetContent(
                 isRecording = isRecording,
-                transcript = transcript,
-                aiResponse = aiResponse,
-                isDangerSign = isDangerSign,
-                onStopClicked = {
+                isPlayingTts = isPlayingTts,
+                chatHistory = chatHistory,
+                draftQuery = draftQuery,
+                onDraftQueryChange = { viewModel.updateDraftQuery(it) },
+                onSubmitClicked = { viewModel.submitDraftQuery() },
+                onMicClicked = {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        viewModel.stopTts()
+                        startListening(speechRecognizer, viewModel)
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                },
+                onStopTtsClicked = { viewModel.stopTts() },
+                onCloseClicked = {
                     speechRecognizer.stopListening()
                     viewModel.toggleVoiceOverlay(false)
                 }
@@ -324,134 +342,176 @@ fun DashboardScreen(
 @Composable
 fun VoiceAssistantBottomSheetContent(
     isRecording: Boolean,
-    transcript: String,
-    aiResponse: String,
-    isDangerSign: Boolean,
-    onStopClicked: () -> Unit
+    isPlayingTts: Boolean,
+    chatHistory: List<ChatMessage>,
+    draftQuery: String,
+    onDraftQueryChange: (String) -> Unit,
+    onSubmitClicked: () -> Unit,
+    onMicClicked: () -> Unit,
+    onStopTtsClicked: () -> Unit,
+    onCloseClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp)
-            .padding(bottom = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+            .navigationBarsPadding()
+            .imePadding()
+            .padding(bottom = 24.dp)
     ) {
         Text(
-            text = if (isRecording) "Listening..." else if (aiResponse.isBlank()) "Processing..." else "MamaVoice",
+            text = "MamaVoice",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Sonar Animation
-        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-        val scale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = if (isRecording) 1.5f else 1.1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1200, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "pulseAnimation"
-        )
-
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.height(160.dp)) {
-            if (isRecording) {
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .scale(scale)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                )
-                Box(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .scale(scale * 0.8f)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-                )
-            }
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (isRecording) MaterialTheme.colorScheme.error 
-                        else MaterialTheme.colorScheme.primary
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Microphone",
-                    modifier = Modifier.size(36.dp),
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+        // Chat History
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            reverseLayout = false
+        ) {
+            items(chatHistory) { message ->
+                ChatBubble(message = message)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (transcript.isNotBlank()) {
-            Text(
-                text = "\"$transcript\"",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
+        // Input Area
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = draftQuery,
+                onValueChange = onDraftQueryChange,
+                placeholder = { Text(if (isRecording) "Listening..." else "Type or tap mic...") },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                ),
+                maxLines = 3
             )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+            
+            Spacer(modifier = Modifier.width(12.dp))
 
-        if (aiResponse.isNotBlank()) {
-            if (isDangerSign) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    ),
-                    shape = RoundedCornerShape(24.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = aiResponse, style = MaterialTheme.typography.bodyLarge)
-                    }
+            val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+            val scale by infiniteTransition.animateFloat(
+                initialValue = 1f,
+                targetValue = if (isRecording || isPlayingTts) 1.2f else 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(800, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "pulseAnimation"
+            )
+
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(56.dp)) {
+                if (isRecording || isPlayingTts) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .scale(scale)
+                            .clip(CircleShape)
+                            .background(
+                                if (isRecording) MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                                else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                            )
+                    )
                 }
-            } else {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    shape = RoundedCornerShape(24.dp),
-                    modifier = Modifier.fillMaxWidth()
+
+                IconButton(
+                    onClick = {
+                        if (isPlayingTts) onStopTtsClicked()
+                        else if (draftQuery.isNotBlank()) onSubmitClicked()
+                        else onMicClicked()
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(
+                            when {
+                                isPlayingTts -> MaterialTheme.colorScheme.error
+                                draftQuery.isNotBlank() -> MaterialTheme.colorScheme.primary
+                                isRecording -> MaterialTheme.colorScheme.error
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+                        )
                 ) {
-                    Text(
-                        text = aiResponse,
-                        modifier = Modifier.padding(20.dp),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center
+                    Icon(
+                        imageVector = when {
+                            isPlayingTts -> Icons.Default.Stop
+                            draftQuery.isNotBlank() -> Icons.Default.Send
+                            else -> Icons.Default.Mic
+                        },
+                        contentDescription = "Action",
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onStopClicked,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = RoundedCornerShape(24.dp)
+            onClick = onCloseClicked,
+            modifier = Modifier.fillMaxWidth().height(48.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
         ) {
             Text("Close", style = MaterialTheme.typography.titleMedium)
+        }
+    }
+}
+
+@Composable
+fun ChatBubble(message: ChatMessage) {
+    val isUser = message.isUser
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+    ) {
+        if (!isUser && message.isDangerSign) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer),
+                shape = RoundedCornerShape(24.dp, 24.dp, 24.dp, 4.dp),
+                modifier = Modifier.fillMaxWidth(0.85f)
+            ) {
+                Row(modifier = Modifier.padding(16.dp)) {
+                    Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = message.text, style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+        } else {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                shape = RoundedCornerShape(
+                    topStart = 24.dp,
+                    topEnd = 24.dp,
+                    bottomStart = if (isUser) 24.dp else 4.dp,
+                    bottomEnd = if (isUser) 4.dp else 24.dp
+                ),
+                modifier = Modifier.widthIn(max = 300.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 }

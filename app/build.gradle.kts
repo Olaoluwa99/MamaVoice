@@ -21,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://mama-voice.pxxl.click/\"")
+        buildConfigField("String", "BASE_URL", "\"https://mama-voice.vercel.app/\"")
     }
 
     buildTypes {

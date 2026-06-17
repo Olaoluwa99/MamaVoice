@@ -29,7 +29,7 @@ interface MamaVoiceApiService {
     @POST("api/ai/query")
     suspend fun queryAi(
         @Body request: AiQueryRequest
-    ): AiQueryResponse
+    ): ApiResponse<AiQueryResponse>
 
     @GET("api/foods")
     suspend fun getFoods(

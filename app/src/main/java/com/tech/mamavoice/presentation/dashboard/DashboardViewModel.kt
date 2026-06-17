@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.dashboard
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
@@ -13,8 +14,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 import java.util.Locale
 import javax.inject.Inject
+
+data class ChatMessage(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val text: String,
+    val isUser: Boolean,
+    val isDangerSign: Boolean = false,
+    val isError: Boolean = false,
+    val isLoading: Boolean = false
+)
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -30,17 +41,17 @@ class DashboardViewModel @Inject constructor(
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
 
-    private val _aiResponse = MutableStateFlow("")
-    val aiResponse: StateFlow<String> = _aiResponse.asStateFlow()
-
-    private val _isDangerSign = MutableStateFlow(false)
-    val isDangerSign: StateFlow<Boolean> = _isDangerSign.asStateFlow()
-
     private val _showVoiceOverlay = MutableStateFlow(false)
     val showVoiceOverlay: StateFlow<Boolean> = _showVoiceOverlay.asStateFlow()
 
-    private val _transcript = MutableStateFlow("")
-    val transcript: StateFlow<String> = _transcript.asStateFlow()
+    private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
+    val chatHistory: StateFlow<List<ChatMessage>> = _chatHistory.asStateFlow()
+
+    private val _draftQuery = MutableStateFlow("")
+    val draftQuery: StateFlow<String> = _draftQuery.asStateFlow()
+
+    private val _isPlayingTts = MutableStateFlow(false)
+    val isPlayingTts: StateFlow<Boolean> = _isPlayingTts.asStateFlow()
 
     init {
         textToSpeech = TextToSpeech(context, this)
@@ -50,6 +61,17 @@ class DashboardViewModel @Inject constructor(
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             textToSpeech?.language = Locale.US
+            textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {
+                    _isPlayingTts.value = true
+                }
+                override fun onDone(utteranceId: String?) {
+                    _isPlayingTts.value = false
+                }
+                override fun onError(utteranceId: String?) {
+                    _isPlayingTts.value = false
+                }
+            })
         }
     }
 
@@ -64,36 +86,76 @@ class DashboardViewModel @Inject constructor(
         _isRecording.value = isRecording
     }
 
-    fun updateTranscript(text: String) {
-        _transcript.value = text
+    fun updateDraftQuery(text: String) {
+        _draftQuery.value = text
+    }
+
+    fun discardDraftQuery() {
+        _draftQuery.value = ""
+    }
+
+    fun stopTts() {
+        textToSpeech?.stop()
+        _isPlayingTts.value = false
+    }
+
+    fun replayLastTts() {
+        val lastAiMessage = _chatHistory.value.lastOrNull { !it.isUser && !it.isLoading && !it.isError }
+        if (lastAiMessage != null) {
+            speakText(lastAiMessage.text)
+        }
     }
 
     fun toggleVoiceOverlay(show: Boolean) {
         _showVoiceOverlay.value = show
         if (!show) {
-            _transcript.value = ""
-            _aiResponse.value = ""
-            _isDangerSign.value = false
+            _draftQuery.value = ""
             _isRecording.value = false
-            textToSpeech?.stop()
+            stopTts()
         }
     }
 
-    fun queryAi(text: String) {
+    fun clearHistory() {
+        _chatHistory.value = emptyList()
+    }
+
+    fun submitDraftQuery() {
+        val query = _draftQuery.value.trim()
+        if (query.isEmpty()) return
+        
+        // Stop any currently playing TTS
+        stopTts()
+
+        // Add user message to history
+        val userMsg = ChatMessage(text = query, isUser = true)
+        
+        // Add loading message
+        val loadingMsg = ChatMessage(text = "Thinking...", isUser = false, isLoading = true)
+        
+        _chatHistory.update { current -> current + listOf(userMsg, loadingMsg) }
+        _draftQuery.value = ""
+
         viewModelScope.launch {
-            _aiResponse.value = "Thinking..."
-            _isDangerSign.value = false
+            val result = repository.queryAi(query)
             
-            val result = repository.queryAi(text)
-            if (result is Resource.Success) {
-                val responseText = result.data?.aiResponseText ?: ""
-                _aiResponse.value = responseText
-                _isDangerSign.value = result.data?.isDangerSign ?: false
-                
-                textToSpeech?.speak(responseText, TextToSpeech.QUEUE_FLUSH, null, null)
-            } else if (result is Resource.Error) {
-                _aiResponse.value = "Error: ${result.message}"
+            _chatHistory.update { current ->
+                val listWithoutLoading = current.filterNot { it.isLoading }
+                if (result is Resource.Success) {
+                    val responseText = result.data?.aiResponseText ?: ""
+                    val isDanger = result.data?.isDangerSign ?: false
+                    speakText(responseText)
+                    listWithoutLoading + ChatMessage(text = responseText, isUser = false, isDangerSign = isDanger)
+                } else {
+                    listWithoutLoading + ChatMessage(text = "Error: ${result.message}", isUser = false, isError = true)
+                }
             }
+        }
+    }
+
+    private fun speakText(text: String) {
+        if (text.isNotBlank()) {
+            val utteranceId = java.util.UUID.randomUUID().toString()
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
         }
     }
 
