@@ -97,7 +97,7 @@ data class RefreshTokenRequest(
 )
 
 @Serializable
-data class RefreshTokenResponse(
+data class RefreshTokenData(
     val token: String,
     val refreshToken: String
 )

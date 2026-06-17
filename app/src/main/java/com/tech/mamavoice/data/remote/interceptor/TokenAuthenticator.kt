@@ -1,5 +1,6 @@
 package com.tech.mamavoice.data.remote.interceptor
 
+import android.util.Log
 import com.tech.mamavoice.data.local.TokenManager
 import com.tech.mamavoice.data.remote.api.AuthApiService
 import com.tech.mamavoice.data.remote.dto.RefreshTokenRequest
@@ -17,7 +18,19 @@ class TokenAuthenticator @Inject constructor(
     private val authApiProvider: Provider<AuthApiService>
 ) : Authenticator {
 
+    companion object {
+        private const val TAG = "TokenAuthenticator"
+    }
+
     override fun authenticate(route: Route?, response: Response): Request? {
+        // Prevent infinite loop: if we've already retried once, give up
+        val retryCount = response.request.header("X-Retry-Count")?.toIntOrNull() ?: 0
+        if (retryCount >= 1) {
+            Log.w(TAG, "Already retried once, clearing session")
+            runBlocking { tokenManager.clearSession() }
+            return null
+        }
+
         val currentToken = runBlocking { tokenManager.authToken.firstOrNull() }
 
         synchronized(this) {
@@ -27,31 +40,46 @@ class TokenAuthenticator @Inject constructor(
             if (currentToken != newToken && newToken != null) {
                 return response.request.newBuilder()
                     .header("Authorization", "Bearer $newToken")
+                    .header("X-Retry-Count", "${retryCount + 1}")
                     .build()
             }
 
             val refreshToken = runBlocking { tokenManager.refreshToken.firstOrNull() }
             if (refreshToken.isNullOrBlank()) {
+                Log.w(TAG, "No refresh token available, clearing session")
+                runBlocking { tokenManager.clearSession() }
                 return null
             }
 
             return try {
+                Log.d(TAG, "Attempting token refresh...")
                 val refreshResponse = runBlocking {
                     authApiProvider.get().refreshToken(RefreshTokenRequest(refreshToken))
                 }
 
-                runBlocking {
-                    tokenManager.saveAuthData(
-                        accessToken = refreshResponse.token,
-                        refreshTokenStr = refreshResponse.refreshToken,
-                        isExistingUser = tokenManager.isExistingUser.firstOrNull() ?: false
-                    )
-                }
+                if (refreshResponse.success) {
+                    val tokenData = refreshResponse.data
+                    Log.d(TAG, "Token refresh successful")
 
-                response.request.newBuilder()
-                    .header("Authorization", "Bearer ${refreshResponse.token}")
-                    .build()
+                    runBlocking {
+                        tokenManager.saveAuthData(
+                            accessToken = tokenData.token,
+                            refreshTokenStr = tokenData.refreshToken,
+                            isExistingUser = tokenManager.isExistingUser.firstOrNull() ?: false
+                        )
+                    }
+
+                    response.request.newBuilder()
+                        .header("Authorization", "Bearer ${tokenData.token}")
+                        .header("X-Retry-Count", "${retryCount + 1}")
+                        .build()
+                } else {
+                    Log.w(TAG, "Refresh failed: ${refreshResponse.message}")
+                    runBlocking { tokenManager.clearSession() }
+                    null
+                }
             } catch (e: Exception) {
+                Log.e(TAG, "Refresh exception: ${e.message}", e)
                 runBlocking { tokenManager.clearSession() }
                 null
             }

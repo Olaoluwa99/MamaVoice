@@ -21,7 +21,7 @@ interface AuthApiService {
     suspend fun resendOtp(@Body request: ResendOtpRequest): RegisterResponse
 
     @POST("api/auth/refresh")
-    suspend fun refreshToken(@Body request: RefreshTokenRequest): RefreshTokenResponse
+    suspend fun refreshToken(@Body request: RefreshTokenRequest): ApiResponse<RefreshTokenData>
 
     @PATCH("api/users/profile")
     suspend fun updateProfile(
