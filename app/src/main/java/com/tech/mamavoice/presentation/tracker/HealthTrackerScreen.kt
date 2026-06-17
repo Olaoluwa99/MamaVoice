@@ -3,6 +3,8 @@ package com.tech.mamavoice.presentation.tracker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -86,7 +88,7 @@ fun HealthTrackerScreen(
                 }
                 else -> {
                     LazyColumn(
-                        contentPadding = PaddingValues(24.dp),
+                        contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -137,7 +139,7 @@ fun HealthLogCard(log: HealthLog) {
             )
     ) {
         Column(
-            modifier = Modifier.padding(24.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -152,7 +154,7 @@ fun HealthLogCard(log: HealthLog) {
                 )
             }
             
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -168,7 +170,7 @@ fun HealthLogCard(log: HealthLog) {
 
             if (!log.nutrition.isNullOrBlank() || !log.symptoms.isNullOrBlank()) {
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 20.dp),
+                    modifier = Modifier.padding(vertical = 12.dp),
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                 )
             }
@@ -261,20 +263,17 @@ fun AddLogBottomSheetContent(
     var nutrition by remember { mutableStateOf("") }
     var symptoms by remember { mutableStateOf("") }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(bottom = 48.dp, top = 8.dp)
+            .navigationBarsPadding()
+            .imePadding()
+            .padding(bottom = 24.dp, top = 8.dp)
+            .verticalScroll(scrollState)
     ) {
-        Box(
-            modifier = Modifier
-                .width(48.dp)
-                .height(4.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.outlineVariant)
-                .align(Alignment.CenterHorizontally)
-        )
         
         Spacer(modifier = Modifier.height(24.dp))
         

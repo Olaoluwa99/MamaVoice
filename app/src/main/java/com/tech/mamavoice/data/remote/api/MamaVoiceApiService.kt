@@ -37,18 +37,18 @@ interface MamaVoiceApiService {
     ): ApiResponse<FoodsResponseData>
 
     @GET("api/vaccines")
-    suspend fun getVaccines(): List<VaccineItem>
+    suspend fun getVaccines(): ApiResponse<com.tech.mamavoice.data.remote.dto.VaccinesData>
 
     @POST("api/vaccines/log")
     suspend fun logVaccine(
         @Body request: VaccineLogRequest
-    ): StatusResponse
+    ): ApiResponse<com.tech.mamavoice.data.remote.dto.VaccineLogResponse>
 
     @GET("api/tracker/history")
-    suspend fun getTrackerHistory(): List<HealthLog>
+    suspend fun getTrackerHistory(): ApiResponse<com.tech.mamavoice.data.remote.dto.TrackerHistoryData>
 
     @POST("api/tracker/log")
     suspend fun logHealth(
         @Body request: HealthLogRequest
-    ): StatusResponse
+    ): ApiResponse<HealthLog>
 }

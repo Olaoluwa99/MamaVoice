@@ -86,13 +86,17 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getImmunizationTimeline(): Flow<Resource<List<VaccineItem>>> = flow {
         emit(Resource.Loading())
         try {
-            val dtos = apiService.getVaccines()
+            val response = apiService.getVaccines()
+            val dtos = response.data.vaccines
             val domainModels = dtos.map { dto ->
                 VaccineItem(
                     id = dto.vaccineId,
-                    name = dto.name,
+                    name = dto.vaccineName,
                     dueDateString = dto.dueDateString,
-                    isCompleted = dto.isCompleted
+                    dueDate = dto.dueDate,
+                    isCompleted = dto.isCompleted,
+                    administeredDate = dto.administeredDate,
+                    sideEffects = dto.sideEffects
                 )
             }
             emit(Resource.Success(domainModels))
@@ -101,11 +105,27 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun markVaccineCompleted(vaccineId: String): Resource<Unit> {
+    override suspend fun markVaccineCompleted(
+        vaccineId: String,
+        vaccineName: String,
+        date: String,
+        isCompleted: Boolean,
+        sideEffects: String?
+    ): Resource<Unit> {
         return try {
-            val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            apiService.logVaccine(VaccineLogRequest(vaccineId, date))
-            Resource.Success(Unit)
+            val request = VaccineLogRequest(
+                vaccineId = vaccineId,
+                administeredDate = date,
+                vaccineName = vaccineName,
+                isCompleted = isCompleted,
+                sideEffects = sideEffects
+            )
+            val response = apiService.logVaccine(request)
+            if (response.success) {
+                Resource.Success(Unit)
+            } else {
+                Resource.Error(response.message)
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to log vaccine")
         }
@@ -114,10 +134,11 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
     override fun getHealthLogs(): Flow<Resource<List<HealthLog>>> = flow {
         emit(Resource.Loading())
         try {
-            val dtos = apiService.getTrackerHistory()
+            val response = apiService.getTrackerHistory()
+            val dtos = response.data.logs
             val domainModels = dtos.map { dto ->
                 HealthLog(
-                    id = dto.logId,
+                    id = dto.id,
                     dateString = dto.logDate,
                     weight = dto.weightKg,
                     bp = dto.bloodPressure,
@@ -146,8 +167,12 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
                 nutritionNotes = nutrition,
                 symptoms = symptoms
             )
-            apiService.logHealth(request)
-            Resource.Success(Unit)
+            val response = apiService.logHealth(request)
+            if (response.success) {
+                Resource.Success(Unit)
+            } else {
+                Resource.Error(response.message)
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to log health data")
         }

@@ -52,14 +52,31 @@ class ImmunizationViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun markVaccineCompleted(vaccineId: String) {
+    fun logVaccine(
+        vaccineId: String,
+        vaccineName: String,
+        date: String,
+        isCompleted: Boolean,
+        sideEffects: String?
+    ) {
         viewModelScope.launch {
-            val result = repository.markVaccineCompleted(vaccineId)
+            val result = repository.markVaccineCompleted(
+                vaccineId = vaccineId,
+                vaccineName = vaccineName,
+                date = date,
+                isCompleted = isCompleted,
+                sideEffects = sideEffects
+            )
             if (result is Resource.Success) {
-                // Ideally, repository would emit new list via Flow.
-                // For now, we optimistically update the state.
+                // Optimistically update the state.
                 val updatedVaccines = _state.value.vaccines.map {
-                    if (it.id == vaccineId) it.copy(isCompleted = true) else it
+                    if (it.id == vaccineId) {
+                        it.copy(
+                            isCompleted = isCompleted,
+                            administeredDate = date,
+                            sideEffects = sideEffects
+                        )
+                    } else it
                 }
                 _state.value = _state.value.copy(vaccines = updatedVaccines)
             } else if (result is Resource.Error) {

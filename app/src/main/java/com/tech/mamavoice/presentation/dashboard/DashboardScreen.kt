@@ -17,15 +17,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Vaccines
+import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -280,21 +280,21 @@ fun DashboardScreen(
             ) {
                 QuickActionCard(
                     title = "Food",
-                    icon = Icons.Default.ShoppingCart,
+                    icon = Icons.Default.RestaurantMenu,
                     onClick = onNavigateToFoodDirectory,
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 QuickActionCard(
                     title = "Vaccines",
-                    icon = Icons.Default.AddCircle,
+                    icon = Icons.Default.Vaccines,
                     onClick = onNavigateToImmunization,
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 QuickActionCard(
                     title = "Health",
-                    icon = Icons.Default.Favorite,
+                    icon = Icons.Default.MonitorHeart,
                     onClick = onNavigateToHealthTracker,
                     modifier = Modifier.weight(1f)
                 )

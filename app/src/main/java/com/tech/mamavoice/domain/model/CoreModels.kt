@@ -44,7 +44,10 @@ data class VaccineItem(
     val id: String,
     val name: String,
     val dueDateString: String,
-    val isCompleted: Boolean
+    val dueDate: String? = null,
+    val isCompleted: Boolean,
+    val administeredDate: String? = null,
+    val sideEffects: String? = null
 )
 
 data class HealthLog(

@@ -144,33 +144,34 @@ fun ProfileSetupScreen(
                     }
                 }
 
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = targetDate,
-                        onValueChange = { },
-                        readOnly = true,
-                        label = {
-                            Text(if (motherStage == "Pregnant") "Expected Due Date" else "Baby's Date of Birth")
-                        },
-                        placeholder = { Text("YYYY-MM-DD") },
-                        leadingIcon = {
-                            Icon(imageVector = Icons.Default.DateRange, contentDescription = "Date")
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        singleLine = true
-                    )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = targetDate,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = {
+                                Text(if (motherStage == "Pregnant") "Expected Due Date" else "Baby's Date of Birth")
+                            },
+                            placeholder = { Text("YYYY-MM-DD") },
+                            leadingIcon = {
+                                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Date")
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            singleLine = true
+                        )
 
-                    Spacer(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.Transparent)
-                            .clickable { showDatePicker = true }
-                    )
+                        Spacer(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(Color.Transparent)
+                                .clickable { showDatePicker = true }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             AppDropdown(
                 label = "Language Preference",

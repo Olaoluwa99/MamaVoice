@@ -1,5 +1,7 @@
 package com.tech.mamavoice.presentation.food
 
+import androidx.activity.compose.BackHandler
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
@@ -48,7 +50,10 @@ fun FoodDirectoryScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (state.selectedFood != null) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            BackHandler {
+                viewModel.selectFood(null)
+            }
+            Box(modifier = Modifier.fillMaxSize()) {
                 FoodDetailScreen(
                     food = state.selectedFood!!,
                     onBackClick = { viewModel.selectFood(null) }
@@ -149,11 +154,11 @@ fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
             }
             
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp)
             ) {
                 Text(
                     text = food.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -191,7 +196,9 @@ fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
                         text = "Rich in: ${food.keyNutrients.take(2).joinToString(", ")}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

@@ -80,22 +80,47 @@ data class FoodsResponseData(
 @Serializable
 data class VaccineItem(
     val vaccineId: String,
-    val name: String,
+    val vaccineName: String,
     val dueDateString: String,
+    val dueDate: String? = null,
     val isCompleted: Boolean,
     val administeredDate: String? = null,
-    val sideEffects: String
+    val sideEffects: String? = null
 )
 
 @Serializable
 data class VaccineLogRequest(
     val vaccineId: String,
-    val administeredDate: String
+    val administeredDate: String,
+    val vaccineName: String,
+    val isCompleted: Boolean,
+    val sideEffects: String? = null
+)
+
+@Serializable
+data class VaccineLogResponse(
+    val id: String,
+    val vaccineId: String,
+    val vaccineName: String,
+    val isCompleted: Boolean,
+    val administeredDate: String? = null,
+    val sideEffects: String? = null,
+    val updatedAt: String? = null
+)
+
+@Serializable
+data class VaccinesData(
+    val vaccines: List<VaccineItem> = emptyList()
+)
+
+@Serializable
+data class TrackerHistoryData(
+    val logs: List<HealthLog> = emptyList()
 )
 
 @Serializable
 data class HealthLog(
-    val logId: String,
+    val id: String,
     val logDate: String,
     val weightKg: Double? = null,
     val bloodPressure: String? = null,
