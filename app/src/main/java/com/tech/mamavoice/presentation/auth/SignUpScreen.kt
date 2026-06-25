@@ -1,25 +1,33 @@
 package com.tech.mamavoice.presentation.auth
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.hilt.navigation.compose.hiltViewModel
-
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SignUpScreen(
@@ -36,33 +44,49 @@ fun SignUpScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.RegisterSuccess) {
-            val successState = uiState as AuthUiState.RegisterSuccess
-            onAuthSuccess(successState.email, successState.otpId)
+            val s = uiState as AuthUiState.RegisterSuccess
+            onAuthSuccess(s.email, s.otpId)
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
+            .imePadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
     ) {
-        Text(
-            text = "Create Account",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Spacer(modifier = Modifier.height(40.dp))
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text("Create account", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Spacer(modifier = Modifier.height(6.dp))
+        Text("Start your journey with MamaVoice.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Spacer(modifier = Modifier.height(28.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = viewModel::onEmailChange,
             label = { Text("Email") },
+            leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -71,33 +95,31 @@ fun SignUpScreen(
             value = password,
             onValueChange = viewModel::onPasswordChange,
             label = { Text("Password") },
+            leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
                 }
             },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         val rules = PasswordRule.entries.toList()
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             for (i in rules.indices step 2) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    PasswordRuleChip(rule = rules[i], unfulfilledRules = unfulfilledRules, modifier = Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    PasswordRuleChip(rules[i], unfulfilledRules, Modifier.weight(1f))
                     if (i + 1 < rules.size) {
-                        PasswordRuleChip(rule = rules[i + 1], unfulfilledRules = unfulfilledRules, modifier = Modifier.weight(1f))
+                        PasswordRuleChip(rules[i + 1], unfulfilledRules, Modifier.weight(1f))
                     } else {
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -105,35 +127,40 @@ fun SignUpScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
         if (uiState is AuthUiState.Error) {
-            Text(
-                text = (uiState as AuthUiState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
-            )
             Spacer(modifier = Modifier.height(16.dp))
+            Text((uiState as AuthUiState.Error).message, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = viewModel::onSignUpClick,
             enabled = isPasswordValid && email.isNotBlank() && uiState !is AuthUiState.Loading,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             if (uiState is AuthUiState.Loading) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
             } else {
-                Text("Create Account", style = MaterialTheme.typography.titleMedium)
+                Text("Create Account", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        TextButton(onClick = onNavigateToLogin) {
-            Text("Already have an account? Log In", color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text("Already have an account? ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "Log In",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(onClick = onNavigateToLogin)
+            )
         }
     }
 }
@@ -142,7 +169,7 @@ fun SignUpScreen(
 fun PasswordRuleChip(rule: PasswordRule, unfulfilledRules: List<PasswordRule>, modifier: Modifier = Modifier) {
     val isMet = !unfulfilledRules.contains(rule)
     Surface(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(14.dp),
         color = if (isMet) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
@@ -151,7 +178,7 @@ fun PasswordRuleChip(rule: PasswordRule, unfulfilledRules: List<PasswordRule>, m
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Icon(
-                imageVector = if (isMet) Icons.Default.Check else Icons.Default.Close,
+                imageVector = if (isMet) Icons.Filled.Check else Icons.Filled.Close,
                 contentDescription = null,
                 tint = if (isMet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(14.dp)
@@ -159,7 +186,7 @@ fun PasswordRuleChip(rule: PasswordRule, unfulfilledRules: List<PasswordRule>, m
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = rule.description,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = if (isMet) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

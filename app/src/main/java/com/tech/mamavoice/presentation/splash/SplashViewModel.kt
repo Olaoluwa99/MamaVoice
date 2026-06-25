@@ -37,7 +37,7 @@ class SplashViewModel @Inject constructor(
             } else if (!isExistingUser) {
                 Screen.ProfileSetup.route
             } else {
-                Screen.Dashboard.route
+                Screen.Main.route
             }
         }
     }

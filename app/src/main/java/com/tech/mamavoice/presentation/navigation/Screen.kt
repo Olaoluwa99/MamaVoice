@@ -17,10 +17,20 @@ sealed class Screen(val route: String) {
     }
     data object ProfileSetup : Screen("profile_setup")
 
-    // Main app flow
-    data object Dashboard : Screen("dashboard")
+    // Main app flow — the bottom-nav host (Home · Food · Speak · Vaccines · Health)
+    data object Main : Screen("main")
     data object Profile : Screen("profile_screen")
+
+    // Individual feature destinations (also reachable inside the Main host's tabs)
     data object FoodDirectory : Screen("food_directory_screen")
     data object ImmunizationTimeline : Screen("immunization_timeline")
     data object HealthTracker : Screen("health_tracker")
+}
+
+/**
+ * Tabs hosted inside the [Screen.Main] bottom-navigation scaffold.
+ * "Speak" is an action (opens the voice overlay), not a navigable destination.
+ */
+enum class MainTab {
+    HOME, FOOD, VACCINES, HEALTH
 }

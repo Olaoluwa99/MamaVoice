@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.immunization
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,52 +15,46 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.mamavoice.domain.model.VaccineItem
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import com.tech.mamavoice.ui.theme.MamaTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImmunizationTimelineScreen(
     viewModel: ImmunizationViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var vaccineToLog by remember { mutableStateOf<VaccineItem?>(null) }
-
     var selectedVaccineDetails by remember { mutableStateOf<VaccineItem?>(null) }
-    
-    if (selectedVaccineDetails != null) {
-        VaccineDetailSheet(
-            vaccine = selectedVaccineDetails!!,
-            onDismiss = { selectedVaccineDetails = null }
-        )
+
+    selectedVaccineDetails?.let {
+        VaccineDetailSheet(vaccine = it, onDismiss = { selectedVaccineDetails = null })
     }
 
-    if (vaccineToLog != null) {
+    vaccineToLog?.let { v ->
         LogVaccineDialog(
-            vaccine = vaccineToLog!!,
+            vaccine = v,
             onDismiss = { vaccineToLog = null },
             onConfirm = { date, sideEffects ->
                 val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                val isCompleted = date <= todayStr
                 viewModel.logVaccine(
-                    vaccineId = vaccineToLog!!.id,
-                    vaccineName = vaccineToLog!!.name,
+                    vaccineId = v.id,
+                    vaccineName = v.name,
                     date = date,
-                    isCompleted = isCompleted,
+                    isCompleted = date <= todayStr,
                     sideEffects = sideEffects.takeIf { it.isNotBlank() }
                 )
                 vaccineToLog = null
@@ -67,61 +62,56 @@ fun ImmunizationTimelineScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Immunization Timeline", style = MaterialTheme.typography.headlineMedium) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+    val completedCount = state.vaccines.count { it.isCompleted }
+    val total = state.vaccines.size
+    val activeIndex = state.vaccines.indexOfFirst { !it.isCompleted }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
+            .padding(horizontal = 20.dp)
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Vaccines", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Text("Baby's immunization schedule", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(modifier = Modifier.fillMaxSize()) {
             when {
-                state.isLoading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                state.error != null -> {
-                    Text(
-                        text = state.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                    )
-                }
-                state.vaccines.isEmpty() && !state.isLoading -> {
-                    Text(
-                        text = "No upcoming vaccines.",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        itemsIndexed(state.vaccines) { index, vaccine ->
-                            val isLast = index == state.vaccines.size - 1
-                            TimelineItem(
-                                vaccine = vaccine,
-                                isLast = isLast,
-                                onMarkCompleted = { vaccineToLog = vaccine },
-                                onClick = { selectedVaccineDetails = vaccine }
-                            )
-                        }
+                state.isLoading -> CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                state.error != null -> Text(
+                    text = state.error!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                )
+                state.vaccines.isEmpty() -> Text(
+                    text = "No upcoming vaccines.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+                else -> LazyColumn(
+                    contentPadding = PaddingValues(bottom = 24.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        ProgressSummaryCard(completed = completedCount, total = total)
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    itemsIndexed(state.vaccines) { index, vaccine ->
+                        TimelineItem(
+                            vaccine = vaccine,
+                            isLast = index == state.vaccines.size - 1,
+                            isActive = index == activeIndex,
+                            onMarkDone = { vaccineToLog = vaccine },
+                            onClick = { selectedVaccineDetails = vaccine }
+                        )
                     }
                 }
             }
@@ -130,140 +120,170 @@ fun ImmunizationTimelineScreen(
 }
 
 @Composable
-fun TimelineItem(
+private fun ProgressSummaryCard(completed: Int, total: Int) {
+    val fraction = if (total > 0) completed.toFloat() / total else 0f
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$completed of $total completed",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "On track",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MamaTheme.colors.success
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            LinearProgressIndicator(
+                progress = { fraction },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(50)),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimelineItem(
     vaccine: VaccineItem,
     isLast: Boolean,
-    onMarkCompleted: () -> Unit,
+    isActive: Boolean,
+    onMarkDone: () -> Unit,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-    ) {
-        // Timeline connector
+    val lineColor = MaterialTheme.colorScheme.outlineVariant
+    Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+        // Connector
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(48.dp)
+            modifier = Modifier.width(40.dp)
         ) {
-            val indicatorColor = if (vaccine.isCompleted) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-            }
-
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(28.dp)
                     .clip(CircleShape)
-                    .background(indicatorColor),
+                    .background(
+                        if (vaccine.isCompleted) MaterialTheme.colorScheme.primary
+                        else Color.Transparent
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = if (vaccine.isCompleted || isActive) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.outline,
+                        shape = CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (vaccine.isCompleted) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Completed",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(18.dp)
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface)
-                    )
+                    Icon(Icons.Filled.Check, contentDescription = "Done", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
+                } else if (isActive) {
+                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
                 }
             }
             if (!isLast) {
-                val lineColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                Canvas(
-                    modifier = Modifier
-                        .width(2.dp)
-                        .fillMaxHeight()
-                        .padding(vertical = 4.dp)
-                ) {
+                Canvas(modifier = Modifier.width(2.dp).fillMaxHeight().padding(vertical = 2.dp)) {
                     drawLine(
                         color = lineColor,
                         start = Offset(size.width / 2, 0f),
                         end = Offset(size.width / 2, size.height),
-                        strokeWidth = 4f,
-                        pathEffect = pathEffect
+                        strokeWidth = 3f
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(14.dp))
 
-        // Content Card
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (vaccine.isCompleted) 
-                    MaterialTheme.colorScheme.surfaceVariant
-                else MaterialTheme.colorScheme.surface,
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = if (vaccine.isCompleted) 0.dp else 4.dp
-            ),
+        // Card
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+            border = if (isActive) androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 32.dp)
-                .clickable { onClick() }
+                .padding(bottom = 18.dp)
+                .clickable(onClick = onClick)
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
-                Text(
-                    text = vaccine.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f) else MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.wrapContentSize()
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        text = "Due: ${vaccine.dueDateString}",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        text = vaccine.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (vaccine.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
                     )
-                }
-                
-                if (vaccine.isCompleted && vaccine.administeredDate != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Given: ${vaccine.administeredDate}",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    if (isActive) {
+                        Surface(shape = RoundedCornerShape(8.dp), color = MamaTheme.colors.accentContainer) {
+                            Text(
+                                "Due now",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MamaTheme.colors.accent,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
 
-                if (!vaccine.isCompleted) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Button(
-                        onClick = onMarkCompleted,
-                        shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                Spacer(modifier = Modifier.height(4.dp))
+                Row {
+                    Text(
+                        text = "Due: ${vaccine.dueDateString}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (vaccine.isCompleted && vaccine.administeredDate != null) {
+                        Text(
+                            text = "  ·  Given ${vaccine.administeredDate}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Mark Completed", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                if (isActive) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Button(
+                            onClick = onMarkDone,
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Mark done", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                        }
+                        OutlinedButton(
+                            onClick = onClick,
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("Details", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
             }
@@ -280,7 +300,6 @@ fun LogVaccineDialog(
 ) {
     var dateText by remember { mutableStateOf(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())) }
     var sideEffectsText by remember { mutableStateOf("") }
-    
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
@@ -293,18 +312,10 @@ fun LogVaccineDialog(
                         dateText = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(millis))
                     }
                     showDatePicker = false
-                }) {
-                    Text("OK")
-                }
+                }) { Text("OK") }
             },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
+        ) { DatePicker(state = datePickerState) }
     }
 
     AlertDialog(
@@ -314,7 +325,6 @@ fun LogVaccineDialog(
             Column {
                 Text("Logging: ${vaccine.name}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(16.dp))
-                
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = dateText,
@@ -324,15 +334,9 @@ fun LogVaccineDialog(
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable { showDatePicker = true }
-                    )
+                    Box(modifier = Modifier.matchParentSize().clickable { showDatePicker = true })
                 }
-                
                 Spacer(modifier = Modifier.height(12.dp))
-                
                 OutlinedTextField(
                     value = sideEffectsText,
                     onValueChange = { sideEffectsText = it },
@@ -342,25 +346,15 @@ fun LogVaccineDialog(
                 )
             }
         },
-        confirmButton = {
-            Button(
-                onClick = { onConfirm(dateText, sideEffectsText) }
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+        confirmButton = { Button(onClick = { onConfirm(dateText, sideEffectsText) }) { Text("Save") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VaccineDetailSheet(vaccine: VaccineItem, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
         Column(modifier = Modifier.padding(24.dp).padding(bottom = 24.dp)) {
             Text(vaccine.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.height(16.dp))

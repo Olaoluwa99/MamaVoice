@@ -15,3 +15,6 @@
 local.properties
 
 /HAND_OFF/
+
+# Design-reference renders extracted from redesign PDFs (local only)
+/.pdf_render/

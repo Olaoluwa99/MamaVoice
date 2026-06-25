@@ -1,15 +1,16 @@
 package com.tech.mamavoice.presentation.food
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.PriorityHigh
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,26 +24,27 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.tech.mamavoice.domain.model.FoodItem
 import com.tech.mamavoice.domain.model.NutritionalValues
+import com.tech.mamavoice.ui.theme.MamaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodDetailScreen(
     food: FoodItem,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAskMamaVoice: (() -> Unit)? = null
 ) {
-    val scrollState = rememberScrollState()
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Food Details", style = MaterialTheme.typography.titleLarge) },
+                title = { Text("Food details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
@@ -52,16 +54,20 @@ fun FoodDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(scrollState)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
         ) {
-            // Hero Image
+            // Hero
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
-                    .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(
+                        Brush.linearGradient(
+                            listOf(MamaTheme.colors.cardVeg, MaterialTheme.colorScheme.primary)
+                        )
+                    )
             ) {
                 if (food.imageUrls.isNotEmpty()) {
                     AsyncImage(
@@ -70,167 +76,220 @@ fun FoodDetailScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Title & Category
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                Text(
-                    text = food.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                ) {
+                } else {
+                    Icon(
+                        Icons.Filled.Spa,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.85f),
+                        modifier = Modifier.size(56.dp).align(Alignment.Center)
+                    )
                     Text(
-                        text = food.category,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        text = "photo optional",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
                     )
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Danger Warning
-                if (!food.dangerWarning.isNullOrBlank()) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer
-                        ),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = food.dangerWarning, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                // MamaVoice Tip
-                if (!food.mamaVoiceTip.isNullOrBlank()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                    )
-                                )
-                            )
-                            .padding(20.dp)
-                    ) {
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Info, contentDescription = "Tip", tint = MaterialTheme.colorScheme.onPrimary)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "MamaVoice Tip",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = food.mamaVoiceTip,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-
-                // Benefits
-                Text("Benefits", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = food.benefits, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Nutritional Info
-                if (food.nutritionalValues != null) {
-                    Text("Nutritional Values (per 100g)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    NutritionalGrid(food.nutritionalValues)
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-
-                // Preparation Tips
-                if (!food.preparationTips.isNullOrBlank()) {
-                    Text("Preparation Tips", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = food.preparationTips, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                
-                // Serving Suggestion
-                if (!food.servingSuggestion.isNullOrBlank()) {
-                    Text("Serving Suggestion", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = food.servingSuggestion, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
             }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Text(
+                text = food.name,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Category + key-nutrient chips
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                InfoChip(food.category)
+                if (food.keyNutrients.isNotEmpty()) {
+                    InfoChip(food.keyNutrients.take(2).joinToString(" · "))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Danger / caution
+            if (!food.dangerWarning.isNullOrBlank()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MamaTheme.colors.accentContainer)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier.size(28.dp).clip(RoundedCornerShape(50)).background(MamaTheme.colors.accent),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.PriorityHigh, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = food.dangerWarning,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MamaTheme.colors.onAccentContainer
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // MamaVoice tip
+            if (!food.mamaVoiceTip.isNullOrBlank()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            Brush.linearGradient(
+                                listOf(MamaTheme.colors.voiceGradientStart, MamaTheme.colors.voiceGradientEnd)
+                            )
+                        )
+                        .padding(18.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Mic, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("MamaVoice tip", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = food.mamaVoiceTip,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.92f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            // Nutrition
+            if (food.nutritionalValues != null) {
+                Text("Per 100g", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(12.dp))
+                NutritionGrid(food.nutritionalValues)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            // Benefits
+            if (food.benefits.isNotBlank()) {
+                Text("Benefits", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(food.benefits, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            if (!food.preparationTips.isNullOrBlank()) {
+                Text("Preparation tips", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(food.preparationTips, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            if (!food.servingSuggestion.isNullOrBlank()) {
+                Text("Serving suggestion", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(food.servingSuggestion, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            // Ask MamaVoice
+            if (onAskMamaVoice != null) {
+                Surface(
+                    onClick = onAskMamaVoice,
+                    shape = RoundedCornerShape(18.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.fillMaxWidth().height(52.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Ask MamaVoice about ${food.name.substringBefore(" ")}",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
 @Composable
-fun NutritionalGrid(nutrition: NutritionalValues) {
+private fun InfoChip(text: String) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
+private fun NutritionGrid(nutrition: NutritionalValues) {
     val items = listOfNotNull(
-        nutrition.calories?.let { "Calories" to "${it.toInt()} kcal" },
-        nutrition.protein?.let { "Protein" to "${it}g" },
-        nutrition.carbs?.let { "Carbs" to "${it}g" },
-        nutrition.iron?.let { "Iron" to "${it}mg" },
-        nutrition.calcium?.let { "Calcium" to "${it}mg" },
-        nutrition.folate?.let { "Folate" to "${it}mcg" }
+        nutrition.calories?.let { Triple("${it.toInt()}", "", "KCAL") },
+        nutrition.protein?.let { Triple("$it", "g", "PROTEIN") },
+        nutrition.iron?.let { Triple("$it", "mg", "IRON") },
+        nutrition.folate?.let { Triple("${it.toInt()}", "µg", "FOLATE") },
+        nutrition.calcium?.let { Triple("${it.toInt()}", "mg", "CALCIUM") },
+        nutrition.carbs?.let { Triple("$it", "g", "CARBS") }
     )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        for (i in items.indices step 2) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                NutritionItem(items[i].first, items[i].second, Modifier.weight(1f))
-                Spacer(modifier = Modifier.width(16.dp))
-                if (i + 1 < items.size) {
-                    NutritionItem(items[i + 1].first, items[i + 1].second, Modifier.weight(1f))
-                } else {
-                    Spacer(modifier = Modifier.weight(1f))
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        items.chunked(3).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                row.forEach { (value, unit, label) ->
+                    NutritionTile(value, unit, label, Modifier.weight(1f))
                 }
+                repeat(3 - row.size) { Spacer(modifier = Modifier.weight(1f)) }
             }
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-fun NutritionItem(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
+private fun NutritionTile(value: String, unit: String, label: String, modifier: Modifier = Modifier) {
+    Surface(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        color = MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+        Column(
+            modifier = Modifier.padding(vertical = 14.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                if (unit.isNotEmpty()) {
+                    Text(unit, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

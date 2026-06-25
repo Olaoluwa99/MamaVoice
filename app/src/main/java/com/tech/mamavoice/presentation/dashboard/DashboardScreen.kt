@@ -1,33 +1,21 @@
 package com.tech.mamavoice.presentation.dashboard
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Vaccines
-import androidx.compose.material.icons.filled.MonitorHeart
-import androidx.compose.material.icons.filled.RestaurantMenu
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,309 +23,297 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.util.Resource
+import com.tech.mamavoice.ui.theme.MamaTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Home tab — voice-first landing screen.
+ * Greeting card + pulsing mic + quick suggestion chips. Purely presentational;
+ * all voice orchestration is hoisted to [com.tech.mamavoice.presentation.main.MainScreen].
+ */
 @Composable
-fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel(),
-    onNavigateToFoodDirectory: () -> Unit,
-    onNavigateToImmunization: () -> Unit,
-    onNavigateToHealthTracker: () -> Unit,
-    onNavigateToProfile: () -> Unit
+fun HomeScreen(
+    dashboardData: Resource<DashboardResponse>,
+    onProfileClick: () -> Unit,
+    onMicClick: () -> Unit,
+    onSuggestionClick: (String) -> Unit
 ) {
-    val context = LocalContext.current
-    val dashboardData by viewModel.dashboardData.collectAsState()
-    val isRecording by viewModel.isRecording.collectAsState()
-    val showVoiceOverlay by viewModel.showVoiceOverlay.collectAsState()
-    val chatHistory by viewModel.chatHistory.collectAsState()
-    val draftQuery by viewModel.draftQuery.collectAsState()
-    val isPlayingTts by viewModel.isPlayingTts.collectAsState()
+    val data = (dashboardData as? Resource.Success)?.data
+    val firstName = data?.firstName ?: "Mama"
+    val initial = firstName.firstOrNull()?.uppercase() ?: "M"
 
-    val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
-    
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            viewModel.toggleVoiceOverlay(true)
-            startListening(speechRecognizer, viewModel)
-        }
-    }
-
-    DisposableEffect(Unit) {
-        val listener = object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {
-                viewModel.setRecordingState(false)
-            }
-            override fun onError(error: Int) {
-                viewModel.setRecordingState(false)
-            }
-            override fun onResults(results: Bundle?) {
-                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    val finalTranscript = matches[0]
-                    viewModel.updateDraftQuery(finalTranscript)
-                }
-                viewModel.setRecordingState(false)
-            }
-            override fun onPartialResults(partialResults: Bundle?) {
-                val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    viewModel.updateDraftQuery(matches[0])
-                }
-            }
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        }
-        speechRecognizer.setRecognitionListener(listener)
-        
-        onDispose {
-            speechRecognizer.destroy()
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("MamaVoice", style = MaterialTheme.typography.headlineMedium) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                ),
-                actions = {
-                    IconButton(
-                        onClick = onNavigateToProfile,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Top bar: brand + profile avatar
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Mic,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "MamaVoice",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .clickable(onClick = onProfileClick),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = initial,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
 
-            // Top Section: Greeting Card
-            when (val result = dashboardData) {
-                is Resource.Loading -> {
-                    Box(modifier = Modifier.fillMaxWidth().height(140.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-                is Resource.Error -> {
-                    Text(
-                        text = "Error: ${result.message}",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
+        // Greeting card
+        GreetingCard(dashboardData)
+
+        // Center mic
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                PulsingMic(onClick = onMicClick)
+                Spacer(modifier = Modifier.height(28.dp))
+                Text(
+                    text = "Tap to speak to MamaVoice",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Ask about food, symptoms — anything",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                SuggestionChip("\"Is ugu safe to eat?\"", onSuggestionClick)
+                Spacer(modifier = Modifier.height(10.dp))
+                SuggestionChip("\"How big is my baby?\"", onSuggestionClick)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(28.dp))
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MamaTheme.colors.voiceGradientStart,
+                        MamaTheme.colors.voiceGradientEnd
                     )
-                }
-                is Resource.Success -> {
-                    result.data?.let { data ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(32.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                                        )
-                                    )
-                                )
-                                .padding(24.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Hello, ${data.firstName}!",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = data.statusText,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                ) {
-                                    Text(
-                                        text = "Week ${data.currentWeek} | Next Vaccine in ${data.daysToNextVaccine} days",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
-                            }
-                        }
-                    }
+                )
+            )
+            .padding(20.dp)
+    ) {
+        when (dashboardData) {
+            is Resource.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(64.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = androidx.compose.ui.graphics.Color.White)
                 }
             }
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Middle Section: Trigger Microphone
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-                    val scale by infiniteTransition.animateFloat(
-                        initialValue = 1f,
-                        targetValue = 1.15f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(1200, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "pulseAnimation"
-                    )
-
-                    Box(contentAlignment = Alignment.Center) {
-                        // Pulsing background
-                        Box(
-                            modifier = Modifier
-                                .size(130.dp)
-                                .scale(scale)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+            is Resource.Error -> {
+                Text(
+                    text = dashboardData.message ?: "Couldn't load your overview.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.ui.graphics.Color.White
+                )
+            }
+            is Resource.Success -> {
+                val data = dashboardData.data
+                val vaccineTiming = when (val d = data?.daysToNextVaccine ?: -1) {
+                    0 -> "Today"
+                    1 -> "Tomorrow"
+                    in 1..Int.MAX_VALUE -> "in $d days"
+                    else -> "—"
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Hello, ${data?.firstName ?: "Mama"}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.White
                         )
-                        // Main button
-                        Box(
-                            contentAlignment = Alignment.Center,
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = data?.statusText ?: "",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .size(110.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary)
-                                .clickable {
-                                    if (ContextCompat.checkSelfPermission(
-                                            context,
-                                            Manifest.permission.RECORD_AUDIO
-                                        ) == PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        viewModel.toggleVoiceOverlay(true)
-                                        startListening(speechRecognizer, viewModel)
-                                    } else {
-                                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                                    }
-                                }
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(androidx.compose.ui.graphics.Color.White.copy(alpha = 0.18f))
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Microphone",
-                                modifier = Modifier.size(56.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                imageVector = Icons.Filled.CalendarMonth,
+                                contentDescription = null,
+                                tint = androidx.compose.ui.graphics.Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Next vaccine · $vaccineTiming",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = androidx.compose.ui.graphics.Color.White
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        "Tap to speak to MamaVoice",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    WeekBadge(week = data?.currentWeek ?: 0)
                 }
-            }
-
-            // Bottom Section: Quick Actions Grid
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                QuickActionCard(
-                    title = "Food",
-                    icon = Icons.Default.RestaurantMenu,
-                    onClick = onNavigateToFoodDirectory,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                QuickActionCard(
-                    title = "Vaccines",
-                    icon = Icons.Default.Vaccines,
-                    onClick = onNavigateToImmunization,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                QuickActionCard(
-                    title = "Health",
-                    icon = Icons.Default.MonitorHeart,
-                    onClick = onNavigateToHealthTracker,
-                    modifier = Modifier.weight(1f)
-                )
             }
         }
     }
+}
 
-    if (showVoiceOverlay) {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ModalBottomSheet(
-            onDismissRequest = { 
-                speechRecognizer.stopListening()
-                viewModel.toggleVoiceOverlay(false) 
-            },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-            modifier = Modifier.fillMaxHeight(/*0.9f*/)
-        ) {
-            VoiceAssistantBottomSheetContent(
-                isRecording = isRecording,
-                isPlayingTts = isPlayingTts,
-                chatHistory = chatHistory,
-                draftQuery = draftQuery,
-                onDraftQueryChange = { viewModel.updateDraftQuery(it) },
-                onSubmitClicked = { viewModel.submitDraftQuery() },
-                onMicClicked = {
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                        viewModel.stopTts()
-                        startListening(speechRecognizer, viewModel)
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                    }
-                },
-                onStopTtsClicked = { viewModel.stopTts() },
-                onCloseClicked = {
-                    speechRecognizer.stopListening()
-                    viewModel.toggleVoiceOverlay(false)
-                }
+@Composable
+private fun WeekBadge(week: Int) {
+    Box(
+        modifier = Modifier
+            .size(64.dp)
+            .clip(CircleShape)
+            .border(3.dp, androidx.compose.ui.graphics.Color.White, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "$week",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = androidx.compose.ui.graphics.Color.White
+            )
+            Text(
+                text = "WEEKS",
+                style = MaterialTheme.typography.labelSmall,
+                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.85f)
             )
         }
     }
 }
+
+@Composable
+private fun PulsingMic(onClick: () -> Unit) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.18f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1300, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
+
+    Box(contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .size(132.dp)
+                .scale(scale)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(104.dp)
+                .clip(CircleShape)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MamaTheme.colors.voiceGradientEnd
+                        )
+                    )
+                )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Mic,
+                contentDescription = "Microphone",
+                modifier = Modifier.size(44.dp),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun SuggestionChip(text: String, onClick: (String) -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.clickable { onClick(text) }
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+        )
+    }
+}
+
+// =====================================================================================
+//  Voice assistant overlay (bottom sheet) — hosted by MainScreen.
+// =====================================================================================
 
 @Composable
 fun VoiceAssistantBottomSheetContent(
@@ -354,25 +330,38 @@ fun VoiceAssistantBottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 20.dp)
             .navigationBarsPadding()
             .imePadding()
-            .padding(bottom = 24.dp)
+            .padding(bottom = 20.dp)
     ) {
-        Text(
-            text = "MamaVoice",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 16.dp)
-        )
+        // Header row: close + status pill
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onCloseClicked) {
+                Icon(Icons.Filled.Stop, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Text(
+                    text = if (isRecording) "Listening…" else if (isPlayingTts) "Speaking…" else "MamaVoice",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(48.dp))
+        }
 
-        // Chat History
         LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            reverseLayout = false
+            modifier = Modifier.weight(1f).fillMaxWidth()
         ) {
             items(chatHistory) { message ->
                 ChatBubble(message = message)
@@ -380,9 +369,8 @@ fun VoiceAssistantBottomSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Input Area
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -390,18 +378,18 @@ fun VoiceAssistantBottomSheetContent(
             OutlinedTextField(
                 value = draftQuery,
                 onValueChange = onDraftQueryChange,
-                placeholder = { Text(if (isRecording) "Listening..." else "Type or tap mic...") },
+                placeholder = { Text(if (isRecording) "Listening…" else "Type or tap mic…") },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 ),
                 maxLines = 3
             )
-            
+
             Spacer(modifier = Modifier.width(12.dp))
 
             val infiniteTransition = rememberInfiniteTransition(label = "pulse")
@@ -422,13 +410,9 @@ fun VoiceAssistantBottomSheetContent(
                             .fillMaxSize()
                             .scale(scale)
                             .clip(CircleShape)
-                            .background(
-                                if (isRecording) MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-                                else MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                            )
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                     )
                 }
-
                 IconButton(
                     onClick = {
                         if (isPlayingTts) onStopTtsClicked()
@@ -438,37 +422,19 @@ fun VoiceAssistantBottomSheetContent(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(
-                            when {
-                                isPlayingTts -> MaterialTheme.colorScheme.error
-                                draftQuery.isNotBlank() -> MaterialTheme.colorScheme.primary
-                                isRecording -> MaterialTheme.colorScheme.error
-                                else -> MaterialTheme.colorScheme.primary
-                            }
-                        )
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(
                         imageVector = when {
-                            isPlayingTts -> Icons.Default.Stop
-                            draftQuery.isNotBlank() -> Icons.Default.Send
-                            else -> Icons.Default.Mic
+                            isPlayingTts -> Icons.Filled.Stop
+                            draftQuery.isNotBlank() -> Icons.Filled.Send
+                            else -> Icons.Filled.Mic
                         },
                         contentDescription = "Action",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onCloseClicked,
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-        ) {
-            Text("Close", style = MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -482,92 +448,39 @@ fun ChatBubble(message: ChatMessage) {
     ) {
         if (!isUser && message.isDangerSign) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer),
-                shape = RoundedCornerShape(24.dp, 24.dp, 24.dp, 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp),
                 modifier = Modifier.fillMaxWidth(0.85f)
             ) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Default.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Filled.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = message.text, style = MaterialTheme.typography.bodyLarge)
+                    Text(text = message.text, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         } else {
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                    contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 ),
                 shape = RoundedCornerShape(
-                    topStart = 24.dp,
-                    topEnd = 24.dp,
-                    bottomStart = if (isUser) 24.dp else 4.dp,
-                    bottomEnd = if (isUser) 4.dp else 24.dp
+                    topStart = 20.dp,
+                    topEnd = 20.dp,
+                    bottomStart = if (isUser) 20.dp else 4.dp,
+                    bottomEnd = if (isUser) 4.dp else 20.dp
                 ),
                 modifier = Modifier.widthIn(max = 300.dp)
             ) {
                 Text(
                     text = message.text,
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge
+                    modifier = Modifier.padding(14.dp),
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-        }
-    }
-}
-
-private fun startListening(speechRecognizer: SpeechRecognizer, viewModel: DashboardViewModel) {
-    viewModel.setRecordingState(true)
-    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-    }
-    speechRecognizer.startListening(intent)
-}
-
-@Composable
-fun QuickActionCard(
-    title: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .aspectRatio(0.85f)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(24.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }

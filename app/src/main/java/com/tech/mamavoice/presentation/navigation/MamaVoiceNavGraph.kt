@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tech.mamavoice.presentation.auth.LoginScreen
 import com.tech.mamavoice.presentation.auth.SignUpScreen
+import com.tech.mamavoice.presentation.main.MainScreen
 import com.tech.mamavoice.presentation.profile.ProfileSetupScreen
 import com.tech.mamavoice.presentation.splash.SplashScreen
 import com.tech.mamavoice.presentation.welcome.WelcomeScreen
@@ -49,7 +50,7 @@ fun MamaVoiceNavGraph(
         composable(Screen.Login.route) {
             LoginScreen(
                 onAuthSuccess = { isProfileCompleted ->
-                    val destination = if (isProfileCompleted) Screen.Dashboard.route else Screen.ProfileSetup.route
+                    val destination = if (isProfileCompleted) Screen.Main.route else Screen.ProfileSetup.route
                     navController.navigate(destination) {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                         popUpTo(Screen.Login.route) { inclusive = true }
@@ -100,8 +101,9 @@ fun MamaVoiceNavGraph(
             com.tech.mamavoice.presentation.auth.OtpScreen(
                 email = email,
                 otpId = otpId,
+                onBack = { navController.navigateUp() },
                 onSuccess = { isProfileCompleted ->
-                    val destination = if (isProfileCompleted) Screen.Dashboard.route else Screen.ProfileSetup.route
+                    val destination = if (isProfileCompleted) Screen.Main.route else Screen.ProfileSetup.route
                     navController.navigate(destination) {
                         popUpTo(Screen.Otp.route) { inclusive = true }
                     }
@@ -112,19 +114,16 @@ fun MamaVoiceNavGraph(
         composable(Screen.ProfileSetup.route) {
             ProfileSetupScreen(
                 onSetupComplete = {
-                    navController.navigate(Screen.Dashboard.route) {
+                    navController.navigate(Screen.Main.route) {
                         popUpTo(Screen.ProfileSetup.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        // --- Main App Flow ---
-        composable(Screen.Dashboard.route) {
-            com.tech.mamavoice.presentation.dashboard.DashboardScreen(
-                onNavigateToFoodDirectory = { navController.navigate(Screen.FoodDirectory.route) },
-                onNavigateToImmunization = { navController.navigate(Screen.ImmunizationTimeline.route) },
-                onNavigateToHealthTracker = { navController.navigate(Screen.HealthTracker.route) },
+        // --- Main App Flow (bottom-nav host: Home · Food · Speak · Vaccines · Health) ---
+        composable(Screen.Main.route) {
+            MainScreen(
                 onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
             )
         }
@@ -138,18 +137,6 @@ fun MamaVoiceNavGraph(
                     }
                 }
             )
-        }
-
-        composable(Screen.FoodDirectory.route) {
-            com.tech.mamavoice.presentation.food.FoodDirectoryScreen()
-        }
-
-        composable(Screen.ImmunizationTimeline.route) {
-            com.tech.mamavoice.presentation.immunization.ImmunizationTimelineScreen()
-        }
-
-        composable(Screen.HealthTracker.route) {
-            com.tech.mamavoice.presentation.tracker.HealthTrackerScreen()
         }
     }
 }

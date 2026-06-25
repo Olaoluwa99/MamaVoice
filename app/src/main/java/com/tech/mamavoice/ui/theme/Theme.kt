@@ -1,86 +1,92 @@
 package com.tech.mamavoice.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 
 private val LightColorScheme = lightColorScheme(
     primary = MamaPrimary,
     onPrimary = MamaOnPrimary,
-    primaryContainer = MamaPrimaryLight,
-    secondary = MamaSecondary,
-    onSecondary = MamaOnSecondary,
-    secondaryContainer = MamaSecondaryLight,
-    tertiary = MamaTertiary,
-    onTertiary = MamaOnTertiary,
-    tertiaryContainer = MamaTertiaryLight,
-    error = MamaError,
-    onError = MamaOnError,
-    errorContainer = MamaErrorContainer,
-    onErrorContainer = MamaOnErrorContainer,
-    background = MamaBackground,
-    onBackground = MamaOnBackground,
-    surface = MamaSurface,
-    onSurface = MamaOnSurface,
-    surfaceVariant = MamaSurfaceVariant,
-    onSurfaceVariant = MamaOnSurfaceVariant,
-    outline = MamaOutline
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
+    secondary = MamaPrimaryDeep,
+    onSecondary = MamaOnPrimary,
+    secondaryContainer = LightPrimaryContainer,
+    onSecondaryContainer = LightOnPrimaryContainer,
+    tertiary = MamaCoral,
+    onTertiary = MamaOnPrimary,
+    error = MamaCoralDeep,
+    onError = MamaOnPrimary,
+    errorContainer = LightErrorContainer,
+    onErrorContainer = LightOnErrorContainer,
+    background = LightBackground,
+    onBackground = LightOnBackground,
+    surface = LightSurface,
+    onSurface = LightOnSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    outline = LightOutline,
+    outlineVariant = LightOutlineVariant
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MamaPrimaryDarkTheme,
-    onPrimary = MamaPrimaryDark,
-    primaryContainer = MamaPrimaryDark,
-    secondary = MamaSecondaryDarkTheme,
-    onSecondary = MamaSecondaryDark,
-    secondaryContainer = MamaSecondaryDark,
-    tertiary = MamaTertiaryDarkTheme,
-    onTertiary = MamaTertiaryDark,
-    tertiaryContainer = MamaTertiaryDark,
-    error = MamaError,
-    onError = MamaOnError,
-    errorContainer = MamaErrorContainer,
-    onErrorContainer = MamaOnErrorContainer,
-    background = MamaBackgroundDark,
-    onBackground = MamaOnBackgroundDark,
-    surface = MamaSurfaceDark,
-    onSurface = MamaOnSurfaceDark,
-    surfaceVariant = MamaSurfaceVariantDark,
-    onSurfaceVariant = MamaOnSurfaceVariantDark,
-    outline = MamaOutline
+    primary = MamaPrimaryMint,
+    onPrimary = MamaOnPrimaryDark,
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnPrimaryContainer,
+    secondary = MamaPrimaryMint,
+    onSecondary = MamaOnPrimaryDark,
+    secondaryContainer = DarkPrimaryContainer,
+    onSecondaryContainer = DarkOnPrimaryContainer,
+    tertiary = MamaCoral,
+    onTertiary = MamaOnPrimaryDark,
+    error = MamaCoral,
+    onError = MamaOnPrimaryDark,
+    errorContainer = DarkErrorContainer,
+    onErrorContainer = DarkOnErrorContainer,
+    background = DarkBackground,
+    onBackground = DarkOnBackground,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    outline = DarkOutline,
+    outlineVariant = DarkOutlineVariant
 )
+
+/**
+ * Accessor for MamaVoice's extended (non-Material) brand colors.
+ * Usage: `MamaTheme.colors.success`
+ */
+object MamaTheme {
+    val colors: MamaExtraColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalMamaExtraColors.current
+}
 
 /**
  * MamaVoice app theme using Material3.
  *
- * Note: MaterialExpressiveTheme requires material3 1.5.0-alpha+ which needs
- * compileSdk 37 and AGP 9.1.0+. Once the project upgrades to those,
- * swap MaterialTheme -> MaterialExpressiveTheme for spring-based motion.
+ * Note: dynamic color is intentionally disabled — the brand palette is fixed so the
+ * warm-teal identity is consistent across devices.
  */
 @Composable
 fun MamaVoiceTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disabled to use our brand colors
+    darkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val extraColors = if (darkTheme) DarkExtraColors else LightExtraColors
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalMamaExtraColors provides extraColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

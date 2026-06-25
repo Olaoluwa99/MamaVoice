@@ -2,49 +2,51 @@ package com.tech.mamavoice.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// --- MamaVoice Brand Palette ---
-// Warm, nurturing tones inspired by maternal care
+// =====================================================================================
+//  MamaVoice Brand Palette — "Warm teal & charcoal"
+//  Sampled from the MamaVoice Redesign (light: warm cream + pine teal,
+//  dark: green-tinted charcoal + bright mint). Calm, nurturing, voice-first.
+// =====================================================================================
 
-// Primary - Soft Teal (Trust, calm, health)
-val MamaPrimary = Color(0xFF00897B)
-val MamaPrimaryLight = Color(0xFF4DB6AC)
-val MamaPrimaryDark = Color(0xFF00695C)
+// ---- Core teal/mint ----
+val MamaPrimary = Color(0xFF128577)        // pine teal — buttons, mic, active states (light)
+val MamaPrimaryDeep = Color(0xFF0B4338)    // deep pine — headings (light)
+val MamaPrimaryMint = Color(0xFF25B79F)    // bright mint — primary (dark)
 val MamaOnPrimary = Color(0xFFFFFFFF)
+val MamaOnPrimaryDark = Color(0xFF06231D)  // dark text on mint buttons
 
-// Secondary - Warm Peach/Coral (Warmth, care, motherhood)
-val MamaSecondary = Color(0xFFFF8A65)
-val MamaSecondaryLight = Color(0xFFFFBB93)
-val MamaSecondaryDark = Color(0xFFC75B39)
-val MamaOnSecondary = Color(0xFFFFFFFF)
+// ---- Coral accent (warnings, destructive, sparing use) ----
+val MamaCoral = Color(0xFFE8825E)
+val MamaCoralDeep = Color(0xFFC75B39)
 
-// Tertiary - Soft Lavender (Gentleness, comfort)
-val MamaTertiary = Color(0xFF9575CD)
-val MamaTertiaryLight = Color(0xFFC7A4FF)
-val MamaTertiaryDark = Color(0xFF65499C)
-val MamaOnTertiary = Color(0xFFFFFFFF)
+// =====================================================================================
+//  LIGHT scheme
+// =====================================================================================
+val LightBackground = Color(0xFFF7F1EC)        // warm cream
+val LightOnBackground = Color(0xFF1B2B26)
+val LightSurface = Color(0xFFFFFFFF)           // white cards, fields
+val LightOnSurface = Color(0xFF1B2B26)
+val LightSurfaceVariant = Color(0xFFEFE7DF)    // subtle warm fill (chips, tiles)
+val LightOnSurfaceVariant = Color(0xFF5E6E68)
+val LightPrimaryContainer = Color(0xFFD7EDE4)  // light mint pill
+val LightOnPrimaryContainer = Color(0xFF0B4338)
+val LightOutline = Color(0xFFD8CFC6)
+val LightOutlineVariant = Color(0xFFE6DED5)
+val LightErrorContainer = Color(0xFFF8DCCE)    // soft coral container
+val LightOnErrorContainer = Color(0xFF7A3A22)
 
-// Error / Danger Sign
-val MamaError = Color(0xFFD32F2F)
-val MamaOnError = Color(0xFFFFFFFF)
-val MamaErrorContainer = Color(0xFFFFDAD6)
-val MamaOnErrorContainer = Color(0xFF410002)
-
-// Light scheme surfaces
-val MamaBackground = Color(0xFFFFF8F5)
-val MamaOnBackground = Color(0xFF1C1B1F)
-val MamaSurface = Color(0xFFFFFBFE)
-val MamaOnSurface = Color(0xFF1C1B1F)
-val MamaSurfaceVariant = Color(0xFFF2E8E5)
-val MamaOnSurfaceVariant = Color(0xFF49454F)
-val MamaOutline = Color(0xFF79747E)
-
-// Dark scheme
-val MamaPrimaryDarkTheme = Color(0xFF80CBC4)
-val MamaSecondaryDarkTheme = Color(0xFFFFAB91)
-val MamaTertiaryDarkTheme = Color(0xFFB39DDB)
-val MamaBackgroundDark = Color(0xFF1C1B1F)
-val MamaOnBackgroundDark = Color(0xFFE6E1E5)
-val MamaSurfaceDark = Color(0xFF1C1B1F)
-val MamaOnSurfaceDark = Color(0xFFE6E1E5)
-val MamaSurfaceVariantDark = Color(0xFF49454F)
-val MamaOnSurfaceVariantDark = Color(0xFFCAC4D0)
+// =====================================================================================
+//  DARK scheme
+// =====================================================================================
+val DarkBackground = Color(0xFF0F1F1B)         // deep green-charcoal
+val DarkOnBackground = Color(0xFFEAF3EF)
+val DarkSurface = Color(0xFF16302A)            // cards, sheets
+val DarkOnSurface = Color(0xFFEAF3EF)
+val DarkSurfaceVariant = Color(0xFF1E3A33)
+val DarkOnSurfaceVariant = Color(0xFF9FB4AD)
+val DarkPrimaryContainer = Color(0xFF1C4A40)
+val DarkOnPrimaryContainer = Color(0xFFBFF3E6)
+val DarkOutline = Color(0xFF2C453E)
+val DarkOutlineVariant = Color(0xFF274039)
+val DarkErrorContainer = Color(0xFF4A2A1E)
+val DarkOnErrorContainer = Color(0xFFF6C9B3)
