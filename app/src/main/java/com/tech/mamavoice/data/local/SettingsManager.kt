@@ -22,6 +22,7 @@ class SettingsManager @Inject constructor(
 ) {
     companion object {
         private val THEME_KEY = stringPreferencesKey("app_theme")
+        private val LANGUAGE_KEY = stringPreferencesKey("app_language")
     }
 
     val appTheme: Flow<AppTheme> = context.settingsDataStore.data.map { preferences ->
@@ -36,6 +37,25 @@ class SettingsManager @Inject constructor(
     suspend fun setAppTheme(theme: AppTheme) {
         context.settingsDataStore.edit { preferences ->
             preferences[THEME_KEY] = theme.name
+        }
+    }
+
+    /** The user's chosen language; defaults to [AppLanguage.ENGLISH] until one is picked. */
+    val appLanguage: Flow<AppLanguage> = context.settingsDataStore.data.map { preferences ->
+        AppLanguage.fromCode(preferences[LANGUAGE_KEY])
+    }
+
+    /**
+     * Whether the user has ever explicitly chosen a language. Used to gate the onboarding
+     * language-selection step (distinct from the default English fall-back above).
+     */
+    val isLanguageSelected: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+        preferences[LANGUAGE_KEY] != null
+    }
+
+    suspend fun setAppLanguage(language: AppLanguage) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[LANGUAGE_KEY] = language.code
         }
     }
 }
