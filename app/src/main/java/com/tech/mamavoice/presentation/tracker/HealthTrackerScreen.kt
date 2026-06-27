@@ -22,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.HealthLog
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -47,8 +49,8 @@ fun HealthTrackerScreen(
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Health", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-            Text("Your check-ins this week", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.health_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+            Text(stringResource(R.string.health_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,7 +75,7 @@ fun HealthTrackerScreen(
                         if (earlier.isNotEmpty()) {
                             item {
                                 Text(
-                                    "EARLIER",
+                                    stringResource(R.string.health_earlier),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -85,7 +87,7 @@ fun HealthTrackerScreen(
                         if (state.logs.isEmpty()) {
                             item {
                                 Text(
-                                    "No health logs yet. Tap + to add one.",
+                                    stringResource(R.string.health_empty),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(top = 32.dp)
@@ -107,7 +109,7 @@ fun HealthTrackerScreen(
                 .padding(20.dp)
                 .size(56.dp)
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add Health Log", modifier = Modifier.size(28.dp))
+            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.cd_add_log), modifier = Modifier.size(28.dp))
         }
 
         if (showBottomSheet) {
@@ -143,10 +145,10 @@ private fun TodaySummaryCard(log: HealthLog) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Today · ${log.dateString}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.health_today, log.dateString), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 Surface(shape = RoundedCornerShape(12.dp), color = if (stable) MamaTheme.colors.successContainer else MamaTheme.colors.accentContainer) {
                     Text(
-                        text = if (stable) "Stable" else "Check symptoms",
+                        text = if (stable) stringResource(R.string.health_stable) else stringResource(R.string.health_check_symptoms),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = if (stable) MamaTheme.colors.success else MamaTheme.colors.accent,
@@ -158,8 +160,8 @@ private fun TodaySummaryCard(log: HealthLog) {
             Spacer(modifier = Modifier.height(14.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                log.weight?.let { MetricTile("Weight", "$it", "kg", Modifier.weight(1f)) }
-                log.bp?.let { MetricTile("Blood pressure", it, "", Modifier.weight(1f)) }
+                log.weight?.let { MetricTile(stringResource(R.string.metric_weight), "$it", "kg", Modifier.weight(1f)) }
+                log.bp?.let { MetricTile(stringResource(R.string.metric_bp), it, "", Modifier.weight(1f)) }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -173,7 +175,7 @@ private fun TodaySummaryCard(log: HealthLog) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (stable) "No symptoms reported today" else log.symptoms!!,
+                    text = if (stable) stringResource(R.string.health_no_symptoms_today) else log.symptoms!!,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -226,8 +228,8 @@ private fun VoiceLogCard(onClick: () -> Unit) {
         }
         Spacer(modifier = Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text("Tell MamaVoice how you feel", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Color.White)
-            Text("Log by voice — no typing", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
+            Text(stringResource(R.string.voicelog_title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(stringResource(R.string.voicelog_subtitle), style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
         }
         Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.White)
     }
@@ -263,7 +265,7 @@ private fun EarlierLogRow(log: HealthLog) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = if (hasSymptoms) log.symptoms!! else "No symptoms",
+                text = if (hasSymptoms) log.symptoms!! else stringResource(R.string.health_no_symptoms),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = if (hasSymptoms) FontWeight.SemiBold else FontWeight.Normal,
                 color = if (hasSymptoms) MamaTheme.colors.accent else MaterialTheme.colorScheme.onSurfaceVariant
@@ -293,14 +295,14 @@ fun AddLogBottomSheetContent(
             .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text("New Health Log", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.addlog_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(
                 value = weightStr,
                 onValueChange = { weightStr = it },
-                label = { Text("Weight (kg)") },
+                label = { Text(stringResource(R.string.field_weight_kg)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.weight(1f)
@@ -308,8 +310,8 @@ fun AddLogBottomSheetContent(
             OutlinedTextField(
                 value = bp,
                 onValueChange = { bp = it },
-                label = { Text("Blood Pressure") },
-                placeholder = { Text("e.g. 120/80") },
+                label = { Text(stringResource(R.string.field_bp)) },
+                placeholder = { Text(stringResource(R.string.field_bp_hint)) },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.weight(1f)
             )
@@ -319,7 +321,7 @@ fun AddLogBottomSheetContent(
         OutlinedTextField(
             value = nutrition,
             onValueChange = { nutrition = it },
-            label = { Text("Notes") },
+            label = { Text(stringResource(R.string.field_notes)) },
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
@@ -328,7 +330,7 @@ fun AddLogBottomSheetContent(
         OutlinedTextField(
             value = symptoms,
             onValueChange = { symptoms = it },
-            label = { Text("Symptoms (if any)") },
+            label = { Text(stringResource(R.string.field_symptoms)) },
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
@@ -346,7 +348,7 @@ fun AddLogBottomSheetContent(
             if (isSubmitting) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
             } else {
-                Text("Save Health Log", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.health_save), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
     }

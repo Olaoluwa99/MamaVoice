@@ -36,10 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.data.local.AppLanguage
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -82,7 +84,7 @@ fun LanguageSelectionScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Choose your language",
+            text = stringResource(R.string.language_select_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,
@@ -92,7 +94,7 @@ fun LanguageSelectionScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Pick the language you'd like to use. You can change this anytime in Settings.",
+            text = stringResource(R.string.language_select_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -126,7 +128,7 @@ fun LanguageSelectionScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
-            Text("Continue", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.action_continue), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -164,7 +166,7 @@ private fun LanguageOption(
             if (selected) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = "Selected",
+                    contentDescription = stringResource(R.string.cd_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp)
                 )

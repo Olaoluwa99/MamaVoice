@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Hausa (ha) — DRAFT translations of generic UI strings.
+  NEEDS NATIVE-SPEAKER REVIEW before production. Verify hooked letters (ƙ, ɗ, ɓ),
+  feminine address (app speaks to mothers), and "theme/system" terminology. Untranslated
+  keys fall back to English (values/strings.xml).
+-->
+<resources>
+    <!-- Common actions -->
+    <string name="action_continue">Ci gaba</string>
+    <string name="action_cancel">Soke</string>
+    <string name="action_login">Shiga</string>
+    <string name="action_create_account">Ƙirƙiri asusu</string>
+    <string name="action_logout">Fita</string>
+    <string name="action_logout_confirm">Ee, fita</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Koma baya</string>
+    <string name="cd_selected">An zaɓa</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Muryarki. Cikinki. Kulawarki.</string>
+
+    <!-- Language selection (onboarding) -->
+    <string name="language_select_title">Zaɓi harshenki</string>
+    <string name="language_select_subtitle">Zaɓi harshen da kuke son amfani. Kuna iya canza shi kowane lokaci a cikin Saiti.</string>
+    <string name="language_dialog_title">Zaɓi harshe</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Barka da zuwa\nMamaVoice</string>
+    <string name="welcome_subtitle">Yi tambaya kan duk wani abu game da cikinki — da murya, a harshenki. Za mu bishe ki, mako zuwa mako.</string>
+
+    <!-- Profile / settings -->
+    <string name="profile_title">Bayanin martaba</string>
+    <string name="profile_user_role">Mai amfani da MamaVoice</string>
+    <string name="profile_edit">Gyara bayanin martaba</string>
+    <string name="section_preferences">ABUBUWAN DA AKA FI SO</string>
+    <string name="section_app_theme">JIGON APP</string>
+    <string name="pref_language">Harshe</string>
+    <string name="pref_reminders">Tunatarwa</string>
+    <string name="pref_help">Taimako da tallafi</string>
+    <string name="theme_system">Tsarin na\'ura</string>
+    <string name="theme_light">Haske</string>
+    <string name="theme_dark">Duhu</string>
+    <string name="logout_dialog_title">Tabbatar da fita</string>
+    <string name="logout_dialog_message">Kin tabbata kina son fita daga MamaVoice?</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Gida</string>
+    <string name="nav_food">Abinci</string>
+    <string name="nav_vaccines">Allurar rigakafi</string>
+    <string name="nav_health">Lafiya</string>
+    <string name="nav_speak">Yi magana</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">To</string>
+    <string name="action_save">Ajiye</string>
+    <string name="action_signup">Yi rajista</string>
+    <string name="action_verify">Tabbatar</string>
+
+    <!-- Voice assistant -->
+    <string name="voice_status_listening">Ana saurara…</string>
+    <string name="voice_status_speaking">Ana magana…</string>
+    <string name="voice_input_placeholder">Rubuta ko danna makirufo…</string>
+    <string name="chat_thinking">Ana tunani…</string>
+</resources>

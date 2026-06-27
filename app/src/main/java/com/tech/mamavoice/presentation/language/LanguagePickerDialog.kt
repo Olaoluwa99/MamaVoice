@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tech.mamavoice.R
 import com.tech.mamavoice.data.local.AppLanguage
 
 /**
@@ -33,7 +35,7 @@ fun LanguagePickerDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Choose language", fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.language_dialog_title), fontWeight = FontWeight.Bold) },
         text = {
             Column {
                 AppLanguage.entries.forEach { language ->
@@ -61,7 +63,7 @@ fun LanguagePickerDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }

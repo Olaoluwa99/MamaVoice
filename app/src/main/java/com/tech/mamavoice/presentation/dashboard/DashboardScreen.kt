@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tech.mamavoice.R
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.util.Resource
 import com.tech.mamavoice.ui.theme.MamaTheme
@@ -43,7 +45,7 @@ fun HomeScreen(
     onSuggestionClick: (String) -> Unit
 ) {
     val data = (dashboardData as? Resource.Success)?.data
-    val firstName = data?.firstName ?: "Mama"
+    val firstName = data?.firstName ?: stringResource(R.string.home_default_name)
     val initial = firstName.firstOrNull()?.uppercase() ?: "M"
 
     Column(
@@ -111,21 +113,21 @@ fun HomeScreen(
                 PulsingMic(onClick = onMicClick)
                 Spacer(modifier = Modifier.height(28.dp))
                 Text(
-                    text = "Tap to speak to MamaVoice",
+                    text = stringResource(R.string.home_tap_to_speak),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Ask about food, symptoms — anything",
+                    text = stringResource(R.string.home_speak_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                SuggestionChip("\"Is ugu safe to eat?\"", onSuggestionClick)
+                SuggestionChip(stringResource(R.string.suggestion_ugu), onSuggestionClick)
                 Spacer(modifier = Modifier.height(10.dp))
-                SuggestionChip("\"How big is my baby?\"", onSuggestionClick)
+                SuggestionChip(stringResource(R.string.suggestion_baby_size), onSuggestionClick)
             }
         }
 
@@ -160,7 +162,7 @@ private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
             }
             is Resource.Error -> {
                 Text(
-                    text = dashboardData.message ?: "Couldn't load your overview.",
+                    text = dashboardData.message ?: stringResource(R.string.dashboard_load_error),
                     style = MaterialTheme.typography.bodyMedium,
                     color = androidx.compose.ui.graphics.Color.White
                 )
@@ -168,15 +170,15 @@ private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
             is Resource.Success -> {
                 val data = dashboardData.data
                 val vaccineTiming = when (val d = data?.daysToNextVaccine ?: -1) {
-                    0 -> "Today"
-                    1 -> "Tomorrow"
-                    in 1..Int.MAX_VALUE -> "in $d days"
+                    0 -> stringResource(R.string.vaccine_today)
+                    1 -> stringResource(R.string.vaccine_tomorrow)
+                    in 1..Int.MAX_VALUE -> stringResource(R.string.vaccine_in_days, d)
                     else -> "—"
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Hello, ${data?.firstName ?: "Mama"}",
+                            text = stringResource(R.string.home_greeting, data?.firstName ?: stringResource(R.string.home_default_name)),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = androidx.compose.ui.graphics.Color.White
@@ -203,7 +205,7 @@ private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Next vaccine · $vaccineTiming",
+                                text = stringResource(R.string.vaccine_next_label, vaccineTiming),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = androidx.compose.ui.graphics.Color.White
@@ -235,7 +237,7 @@ private fun WeekBadge(week: Int) {
                 color = androidx.compose.ui.graphics.Color.White
             )
             Text(
-                text = "WEEKS",
+                text = stringResource(R.string.weeks_label),
                 style = MaterialTheme.typography.labelSmall,
                 color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.85f)
             )
@@ -285,7 +287,7 @@ private fun PulsingMic(onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Filled.Mic,
-                contentDescription = "Microphone",
+                contentDescription = stringResource(R.string.cd_microphone),
                 modifier = Modifier.size(44.dp),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
@@ -341,7 +343,7 @@ fun VoiceAssistantBottomSheetContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onCloseClicked) {
-                Icon(Icons.Filled.Stop, contentDescription = "Close", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.Filled.Stop, contentDescription = stringResource(R.string.cd_close), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Spacer(modifier = Modifier.weight(1f))
             Surface(
@@ -349,7 +351,7 @@ fun VoiceAssistantBottomSheetContent(
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Text(
-                    text = if (isRecording) "Listening…" else if (isPlayingTts) "Speaking…" else "MamaVoice",
+                    text = if (isRecording) stringResource(R.string.voice_status_listening) else if (isPlayingTts) stringResource(R.string.voice_status_speaking) else stringResource(R.string.app_name),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -378,7 +380,7 @@ fun VoiceAssistantBottomSheetContent(
             OutlinedTextField(
                 value = draftQuery,
                 onValueChange = onDraftQueryChange,
-                placeholder = { Text(if (isRecording) "Listening…" else "Type or tap mic…") },
+                placeholder = { Text(if (isRecording) stringResource(R.string.voice_status_listening) else stringResource(R.string.voice_input_placeholder)) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -430,7 +432,7 @@ fun VoiceAssistantBottomSheetContent(
                             draftQuery.isNotBlank() -> Icons.Filled.Send
                             else -> Icons.Filled.Mic
                         },
-                        contentDescription = "Action",
+                        contentDescription = stringResource(R.string.cd_action),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -456,7 +458,7 @@ fun ChatBubble(message: ChatMessage) {
                 modifier = Modifier.fillMaxWidth(0.85f)
             ) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Filled.Warning, contentDescription = "Warning", tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Filled.Warning, contentDescription = stringResource(R.string.cd_warning), tint = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = message.text, style = MaterialTheme.typography.bodyMedium)
                 }

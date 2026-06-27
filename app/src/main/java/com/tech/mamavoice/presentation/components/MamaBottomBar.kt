@@ -35,8 +35,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tech.mamavoice.R
 import com.tech.mamavoice.presentation.navigation.MainTab
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -74,14 +76,14 @@ fun MamaBottomBar(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 NavBarItem(
-                    label = "Home",
+                    label = stringResource(R.string.nav_home),
                     icon = Icons.Filled.Home,
                     selected = selectedTab == MainTab.HOME,
                     onClick = { onTabSelected(MainTab.HOME) },
                     modifier = Modifier.weight(1f)
                 )
                 NavBarItem(
-                    label = "Food",
+                    label = stringResource(R.string.nav_food),
                     icon = Icons.Filled.Restaurant,
                     selected = selectedTab == MainTab.FOOD,
                     onClick = { onTabSelected(MainTab.FOOD) },
@@ -90,14 +92,14 @@ fun MamaBottomBar(
                 // Center slot reserved for the elevated Speak button.
                 Spacer(modifier = Modifier.weight(1f))
                 NavBarItem(
-                    label = "Vaccines",
+                    label = stringResource(R.string.nav_vaccines),
                     icon = Icons.Filled.Vaccines,
                     selected = selectedTab == MainTab.VACCINES,
                     onClick = { onTabSelected(MainTab.VACCINES) },
                     modifier = Modifier.weight(1f)
                 )
                 NavBarItem(
-                    label = "Health",
+                    label = stringResource(R.string.nav_health),
                     icon = Icons.Filled.MonitorHeart,
                     selected = selectedTab == MainTab.HEALTH,
                     onClick = { onTabSelected(MainTab.HEALTH) },
@@ -135,14 +137,14 @@ fun MamaBottomBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Mic,
-                    contentDescription = "Speak to MamaVoice",
+                    contentDescription = stringResource(R.string.cd_speak),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(26.dp)
                 )
             }
             Spacer(modifier = Modifier.height(3.dp))
             Text(
-                text = "Speak",
+                text = stringResource(R.string.nav_speak),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = if (speakActive) MaterialTheme.colorScheme.primary

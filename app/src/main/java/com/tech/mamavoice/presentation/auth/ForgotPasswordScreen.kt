@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tech.mamavoice.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,7 +23,7 @@ fun ForgotPasswordScreen(
                 title = { Text("") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -36,16 +38,16 @@ fun ForgotPasswordScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Forgot Password",
+                text = stringResource(R.string.forgot_title),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
-                text = "This feature hasn't been implemented yet.",
+                text = stringResource(R.string.forgot_not_implemented),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

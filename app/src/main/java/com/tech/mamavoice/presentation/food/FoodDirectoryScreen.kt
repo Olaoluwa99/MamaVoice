@@ -26,11 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.FoodItem
 import com.tech.mamavoice.ui.theme.MamaExtraColors
 import com.tech.mamavoice.ui.theme.MamaTheme
@@ -70,13 +72,13 @@ fun FoodDirectoryScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Food guide",
+            text = stringResource(R.string.food_guide_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary
         )
         Text(
-            text = "Safe, nourishing foods for your week",
+            text = stringResource(R.string.food_guide_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -87,7 +89,7 @@ fun FoodDirectoryScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search foods…") },
+            placeholder = { Text(stringResource(R.string.food_search_placeholder)) },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
             trailingIcon = { Icon(Icons.Filled.Tune, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
             singleLine = true,
@@ -133,7 +135,7 @@ fun FoodDirectoryScreen(
                     modifier = Modifier.align(Alignment.Center).padding(16.dp)
                 )
                 filtered.isEmpty() -> Text(
-                    text = "No food items found.",
+                    text = stringResource(R.string.food_empty),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center)
@@ -233,7 +235,7 @@ fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
                 if (food.keyNutrients.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Rich in ${food.keyNutrients.take(2).joinToString(", ")}",
+                        text = stringResource(R.string.food_rich_in, food.keyNutrients.take(2).joinToString(", ")),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = fg.copy(alpha = 0.85f),

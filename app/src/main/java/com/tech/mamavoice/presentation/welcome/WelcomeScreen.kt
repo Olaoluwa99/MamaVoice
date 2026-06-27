@@ -18,10 +18,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.presentation.language.LanguagePickerDialog
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -112,7 +114,7 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Welcome to\nMamaVoice",
+            text = stringResource(R.string.welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,
@@ -122,7 +124,7 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Ask anything about your pregnancy — out loud, in your own language. We'll guide you, week by week.",
+            text = stringResource(R.string.welcome_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -138,7 +140,7 @@ fun WelcomeScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(18.dp)
         ) {
-            Text("Log In", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.action_login), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -154,7 +156,7 @@ fun WelcomeScreen(
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    "Create an Account",
+                    stringResource(R.string.action_create_account),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

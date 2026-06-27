@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nigerian Pidgin (pcm) — DRAFT translations of generic UI strings.
+  NEEDS NATIVE-SPEAKER REVIEW before production. Pidgin has no standard orthography, so
+  spelling/register choices need confirming. Single-word UI actions often stay close to
+  English; full sentences are rendered in natural Pidgin. Untranslated keys fall back to
+  English (values/strings.xml).
+-->
+<resources>
+    <!-- Common actions -->
+    <string name="action_continue">Continue</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_login">Login</string>
+    <string name="action_create_account">Open Account</string>
+    <string name="action_logout">Comot</string>
+    <string name="action_logout_confirm">Yes, Comot</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Go Back</string>
+    <string name="cd_selected">Wetin you pick</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Your voice. Your belle. Your care.</string>
+
+    <!-- Language selection (onboarding) -->
+    <string name="language_select_title">Choose your language</string>
+    <string name="language_select_subtitle">Pick the language wey you wan use. You fit change am anytime for Settings.</string>
+    <string name="language_dialog_title">Choose language</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Welcome to\nMamaVoice</string>
+    <string name="welcome_subtitle">Ask anytin about your belle — by mouth, for your own language. We go guide you, week by week.</string>
+
+    <!-- Profile / settings -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_user_role">MamaVoice User</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="section_preferences">WETIN YOU LIKE</string>
+    <string name="section_app_theme">APP THEME</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_reminders">Reminders</string>
+    <string name="pref_help">Help &amp; support</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="logout_dialog_title">You wan Comot?</string>
+    <string name="logout_dialog_message">You sure say you wan comot from MamaVoice?</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_food">Food</string>
+    <string name="nav_vaccines">Vaccines</string>
+    <string name="nav_health">Health</string>
+    <string name="nav_speak">Speak</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_save">Save</string>
+    <string name="action_signup">Sign Up</string>
+    <string name="action_verify">Verify</string>
+
+    <!-- Voice assistant -->
+    <string name="voice_status_listening">I dey listen…</string>
+    <string name="voice_status_speaking">I dey talk…</string>
+    <string name="voice_input_placeholder">Type or tap the mic…</string>
+    <string name="chat_thinking">I dey think…</string>
+</resources>

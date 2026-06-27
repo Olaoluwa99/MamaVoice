@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.R
 import com.tech.mamavoice.data.local.AppLanguage
 import com.tech.mamavoice.data.local.LanguageManager
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
@@ -145,7 +146,7 @@ class DashboardViewModel @Inject constructor(
         val userMsg = ChatMessage(text = query, isUser = true)
         
         // Add loading message
-        val loadingMsg = ChatMessage(text = "Thinking...", isUser = false, isLoading = true)
+        val loadingMsg = ChatMessage(text = context.getString(R.string.chat_thinking), isUser = false, isLoading = true)
         
         _chatHistory.update { current -> current + listOf(userMsg, loadingMsg) }
         _draftQuery.value = ""
@@ -161,7 +162,7 @@ class DashboardViewModel @Inject constructor(
                     speakText(responseText)
                     listWithoutLoading + ChatMessage(text = responseText, isUser = false, isDangerSign = isDanger)
                 } else {
-                    listWithoutLoading + ChatMessage(text = "Error: ${result.message}", isUser = false, isError = true)
+                    listWithoutLoading + ChatMessage(text = context.getString(R.string.chat_error_prefix, result.message ?: ""), isUser = false, isError = true)
                 }
             }
         }

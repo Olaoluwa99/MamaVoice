@@ -26,10 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.data.local.AppTheme
 import com.tech.mamavoice.presentation.language.LanguagePickerDialog
 import com.tech.mamavoice.ui.theme.MamaTheme
@@ -60,8 +62,8 @@ fun ProfileScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Confirm Logout") },
-            text = { Text("Are you sure you want to logout from MamaVoice?") },
+            title = { Text(stringResource(R.string.logout_dialog_title)) },
+            text = { Text(stringResource(R.string.logout_dialog_message)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -69,10 +71,10 @@ fun ProfileScreen(
                         viewModel.logout(onLogout)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MamaTheme.colors.accent)
-                ) { Text("Yes, Logout") }
+                ) { Text(stringResource(R.string.action_logout_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showLogoutDialog = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -80,10 +82,10 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.profile_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back), tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -136,7 +138,7 @@ fun ProfileScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "MamaVoice User",
+                            text = stringResource(R.string.profile_user_role),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -146,7 +148,7 @@ fun ProfileScreen(
                             color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Text(
-                                text = "Edit profile",
+                                text = stringResource(R.string.profile_edit),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -159,7 +161,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SectionLabel("PREFERENCES")
+            SectionLabel(stringResource(R.string.section_preferences))
             Spacer(modifier = Modifier.height(10.dp))
 
             Surface(
@@ -170,7 +172,7 @@ fun ProfileScreen(
                 Column {
                     PreferenceRow(
                         icon = Icons.Filled.Language,
-                        title = "Language",
+                        title = stringResource(R.string.pref_language),
                         onClick = { showLanguageDialog = true },
                         trailing = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -191,7 +193,7 @@ fun ProfileScreen(
                     PreferenceDivider()
                     PreferenceRow(
                         icon = Icons.Filled.Notifications,
-                        title = "Reminders",
+                        title = stringResource(R.string.pref_reminders),
                         trailing = {
                             Switch(
                                 checked = remindersEnabled,
@@ -206,7 +208,7 @@ fun ProfileScreen(
                     PreferenceDivider()
                     PreferenceRow(
                         icon = Icons.Filled.HelpOutline,
-                        title = "Help & support",
+                        title = stringResource(R.string.pref_help),
                         trailing = {
                             Icon(
                                 Icons.Filled.ChevronRight,
@@ -220,7 +222,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SectionLabel("APP THEME")
+            SectionLabel(stringResource(R.string.section_app_theme))
             Spacer(modifier = Modifier.height(10.dp))
 
             ThemeSegmentedControl(
@@ -251,7 +253,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Log Out",
+                        stringResource(R.string.action_logout),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MamaTheme.colors.accent
@@ -329,9 +331,9 @@ fun ThemeSegmentedControl(
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(6.dp)) {
-            ThemeSegment("System", currentTheme == AppTheme.SYSTEM, { onThemeSelected(AppTheme.SYSTEM) }, Modifier.weight(1f))
-            ThemeSegment("Light", currentTheme == AppTheme.LIGHT, { onThemeSelected(AppTheme.LIGHT) }, Modifier.weight(1f))
-            ThemeSegment("Dark", currentTheme == AppTheme.DARK, { onThemeSelected(AppTheme.DARK) }, Modifier.weight(1f))
+            ThemeSegment(stringResource(R.string.theme_system), currentTheme == AppTheme.SYSTEM, { onThemeSelected(AppTheme.SYSTEM) }, Modifier.weight(1f))
+            ThemeSegment(stringResource(R.string.theme_light), currentTheme == AppTheme.LIGHT, { onThemeSelected(AppTheme.LIGHT) }, Modifier.weight(1f))
+            ThemeSegment(stringResource(R.string.theme_dark), currentTheme == AppTheme.DARK, { onThemeSelected(AppTheme.DARK) }, Modifier.weight(1f))
         }
     }
 }

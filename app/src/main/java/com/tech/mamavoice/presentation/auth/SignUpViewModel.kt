@@ -1,7 +1,9 @@
 package com.tech.mamavoice.presentation.auth
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.repository.AuthRepository
 import com.tech.mamavoice.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,11 +17,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class PasswordRule(val description: String) {
-    MIN_LENGTH("At least 8 characters"),
-    UPPERCASE("At least 1 uppercase letter"),
-    NUMBER("At least 1 number"),
-    SPECIAL_CHAR("At least 1 special character")
+enum class PasswordRule(@StringRes val descriptionRes: Int) {
+    MIN_LENGTH(R.string.pwd_rule_min_length),
+    UPPERCASE(R.string.pwd_rule_uppercase),
+    NUMBER(R.string.pwd_rule_number),
+    SPECIAL_CHAR(R.string.pwd_rule_special)
 }
 
 @HiltViewModel

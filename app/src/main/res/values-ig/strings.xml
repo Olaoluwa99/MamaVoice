@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Igbo (ig) — DRAFT translations of generic UI strings.
+  NEEDS NATIVE-SPEAKER REVIEW before production. Verify diacritics (ụ, ọ, ị, ọ),
+  "theme/system/light/dark" terminology, and onboarding phrasing. Untranslated keys fall
+  back to English (values/strings.xml).
+-->
+<resources>
+    <!-- Common actions -->
+    <string name="action_continue">Gaa n\'ihu</string>
+    <string name="action_cancel">Kagbuo</string>
+    <string name="action_login">Banye</string>
+    <string name="action_create_account">Mepụta akaụntụ</string>
+    <string name="action_logout">Pụọ</string>
+    <string name="action_logout_confirm">Ee, pụọ</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Laghachi</string>
+    <string name="cd_selected">Ahọpụtara</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Olu gị. Ime gị. Nlekọta gị.</string>
+
+    <!-- Language selection (onboarding) -->
+    <string name="language_select_title">Họrọ asụsụ gị</string>
+    <string name="language_select_subtitle">Họrọ asụsụ ị chọrọ iji. Ị nwere ike ịgbanwe ya mgbe ọ bụla na Ntọala.</string>
+    <string name="language_dialog_title">Họrọ asụsụ</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Nnọọ na\nMamaVoice</string>
+    <string name="welcome_subtitle">Jụọ ihe ọ bụla gbasara ime gị — n\'olu, n\'asụsụ nke gị. Anyị ga-eduzi gị, izu na izu.</string>
+
+    <!-- Profile / settings -->
+    <string name="profile_title">Profaịlụ</string>
+    <string name="profile_user_role">Onye ọrụ MamaVoice</string>
+    <string name="profile_edit">Dezie profaịlụ</string>
+    <string name="section_preferences">NHỌRỌ</string>
+    <string name="section_app_theme">ỌDỊDỊ APP</string>
+    <string name="pref_language">Asụsụ</string>
+    <string name="pref_reminders">Ncheta</string>
+    <string name="pref_help">Enyemaka na nkwado</string>
+    <string name="theme_system">Sistemu</string>
+    <string name="theme_light">Ìhè</string>
+    <string name="theme_dark">Ọchịchịrị</string>
+    <string name="logout_dialog_title">Kwenye ịpụ</string>
+    <string name="logout_dialog_message">Ị ji n\'aka na ị chọrọ ịpụ na MamaVoice?</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Ụlọ</string>
+    <string name="nav_food">Nri</string>
+    <string name="nav_vaccines">Ọgwụ mgbochi</string>
+    <string name="nav_health">Ahụ ike</string>
+    <string name="nav_speak">Kwuo okwu</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">Ọ dị mma</string>
+    <string name="action_save">Chekwaa</string>
+    <string name="action_signup">Debanye aha</string>
+    <string name="action_verify">Kwenye</string>
+
+    <!-- Voice assistant -->
+    <string name="voice_status_listening">Na-ege ntị…</string>
+    <string name="voice_status_speaking">Na-ekwu okwu…</string>
+    <string name="voice_input_placeholder">Pịnye ma ọ bụ pịa igwe okwu…</string>
+    <string name="chat_thinking">Na-eche…</string>
+</resources>

@@ -29,10 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 
@@ -78,7 +80,7 @@ fun OtpScreen(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back), tint = MaterialTheme.colorScheme.primary)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -95,10 +97,10 @@ fun OtpScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Enter verification code", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Text(stringResource(R.string.otp_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "We sent a 6-digit code to",
+            text = stringResource(R.string.otp_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -163,17 +165,17 @@ fun OtpScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Didn't get it? ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.otp_didnt_get), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (secondsLeft > 0) {
                 Text(
-                    text = "Resend in 0:%02d".format(secondsLeft),
+                    text = stringResource(R.string.otp_resend_in, secondsLeft),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 Text(
-                    text = "Resend",
+                    text = stringResource(R.string.otp_resend),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -203,7 +205,7 @@ fun OtpScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
             } else {
-                Text("Verify", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.action_verify), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
     }

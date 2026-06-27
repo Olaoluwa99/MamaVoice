@@ -1,3 +1,189 @@
 <resources>
-    <string name="app_name">MamaVoice</string>
+    <string name="app_name" translatable="false">MamaVoice</string>
+
+    <!-- Common actions -->
+    <string name="action_continue">Continue</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_login">Log In</string>
+    <string name="action_create_account">Create an Account</string>
+    <string name="action_logout">Log Out</string>
+    <string name="action_logout_confirm">Yes, Logout</string>
+    <string name="action_signup">Sign Up</string>
+    <string name="action_verify">Verify</string>
+    <string name="action_ok">OK</string>
+    <string name="action_save">Save</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Back</string>
+    <string name="cd_selected">Selected</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_action">Action</string>
+    <string name="cd_warning">Warning</string>
+    <string name="cd_microphone">Microphone</string>
+    <string name="cd_speak">Speak to MamaVoice</string>
+    <string name="cd_show_password">Show password</string>
+    <string name="cd_hide_password">Hide password</string>
+    <string name="cd_done">Done</string>
+    <string name="cd_add_log">Add health log</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Your voice. Your pregnancy. Your care.</string>
+
+    <!-- Language selection (onboarding) -->
+    <string name="language_select_title">Choose your language</string>
+    <string name="language_select_subtitle">Pick the language you\'d like to use. You can change this anytime in Settings.</string>
+    <string name="language_dialog_title">Choose language</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Welcome to\nMamaVoice</string>
+    <string name="welcome_subtitle">Ask anything about your pregnancy — out loud, in your own language. We\'ll guide you, week by week.</string>
+
+    <!-- Profile / settings -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_user_role">MamaVoice User</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="section_preferences">PREFERENCES</string>
+    <string name="section_app_theme">APP THEME</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_reminders">Reminders</string>
+    <string name="pref_help">Help &amp; support</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="logout_dialog_title">Confirm Logout</string>
+    <string name="logout_dialog_message">Are you sure you want to logout from MamaVoice?</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_food">Food</string>
+    <string name="nav_vaccines">Vaccines</string>
+    <string name="nav_health">Health</string>
+    <string name="nav_speak">Speak</string>
+
+    <!-- Auth: form fields -->
+    <string name="field_email">Email address</string>
+    <string name="field_email_short">Email</string>
+    <string name="field_password">Password</string>
+
+    <!-- Auth: login -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Log in to pick up where you left off.</string>
+    <string name="login_forgot">Forgot password?</string>
+    <string name="login_no_account">"Don\'t have an account? "</string>
+
+    <!-- Auth: sign up -->
+    <string name="signup_title">Create account</string>
+    <string name="signup_subtitle">Start your journey with MamaVoice.</string>
+    <string name="signup_submit">Create Account</string>
+    <string name="signup_have_account">"Already have an account? "</string>
+
+    <!-- Auth: password rules -->
+    <string name="pwd_rule_min_length">At least 8 characters</string>
+    <string name="pwd_rule_uppercase">At least 1 uppercase letter</string>
+    <string name="pwd_rule_number">At least 1 number</string>
+    <string name="pwd_rule_special">At least 1 special character</string>
+
+    <!-- Auth: OTP -->
+    <string name="otp_title">Enter verification code</string>
+    <string name="otp_subtitle">We sent a 6-digit code to</string>
+    <string name="otp_didnt_get">"Didn\'t get it? "</string>
+    <string name="otp_resend_in">Resend in 0:%02d</string>
+    <string name="otp_resend">Resend</string>
+
+    <!-- Auth: forgot password -->
+    <string name="forgot_title">Forgot Password</string>
+    <string name="forgot_not_implemented">This feature hasn\'t been implemented yet.</string>
+
+    <!-- Home / dashboard -->
+    <string name="home_greeting">Hello, %1$s</string>
+    <string name="home_default_name">Mama</string>
+    <string name="dashboard_load_error">Couldn\'t load your overview.</string>
+    <string name="home_tap_to_speak">Tap to speak to MamaVoice</string>
+    <string name="home_speak_hint">Ask about food, symptoms — anything</string>
+    <string name="weeks_label">WEEKS</string>
+    <string name="vaccine_today">Today</string>
+    <string name="vaccine_tomorrow">Tomorrow</string>
+    <string name="vaccine_in_days">in %1$d days</string>
+    <string name="vaccine_next_label">Next vaccine · %1$s</string>
+
+    <!-- Home suggestion chips (example questions) — review with a translator for natural phrasing -->
+    <string name="suggestion_ugu">\"Is ugu safe to eat?\"</string>
+    <string name="suggestion_baby_size">\"How big is my baby?\"</string>
+
+    <!-- Voice assistant overlay -->
+    <string name="voice_status_listening">Listening…</string>
+    <string name="voice_status_speaking">Speaking…</string>
+    <string name="voice_input_placeholder">Type or tap mic…</string>
+    <string name="chat_thinking">Thinking…</string>
+    <string name="chat_error_prefix">Error: %1$s</string>
+
+    <!-- Food directory -->
+    <string name="food_guide_title">Food guide</string>
+    <string name="food_guide_subtitle">Safe, nourishing foods for your week</string>
+    <string name="food_search_placeholder">Search foods…</string>
+    <string name="food_empty">No food items found.</string>
+    <string name="food_rich_in">Rich in %1$s</string>
+
+    <!-- Food detail -->
+    <string name="food_detail_title">Food details</string>
+    <string name="food_photo_optional">photo optional</string>
+    <string name="food_tip_title">MamaVoice tip</string>
+    <string name="food_per_100g">Per 100g</string>
+    <string name="food_benefits">Benefits</string>
+    <string name="food_prep_tips">Preparation tips</string>
+    <string name="food_serving">Serving suggestion</string>
+    <string name="food_ask_about">Ask MamaVoice about %1$s</string>
+
+    <!-- Health tracker -->
+    <string name="health_title">Health</string>
+    <string name="health_subtitle">Your check-ins this week</string>
+    <string name="health_earlier">EARLIER</string>
+    <string name="health_empty">No health logs yet. Tap + to add one.</string>
+    <string name="health_today">Today · %1$s</string>
+    <string name="health_stable">Stable</string>
+    <string name="health_check_symptoms">Check symptoms</string>
+    <string name="health_no_symptoms_today">No symptoms reported today</string>
+    <string name="health_no_symptoms">No symptoms</string>
+    <string name="metric_weight">Weight</string>
+    <string name="metric_bp">Blood pressure</string>
+    <string name="voicelog_title">Tell MamaVoice how you feel</string>
+    <string name="voicelog_subtitle">Log by voice — no typing</string>
+    <string name="addlog_title">New Health Log</string>
+    <string name="field_weight_kg">Weight (kg)</string>
+    <string name="field_bp">Blood Pressure</string>
+    <string name="field_bp_hint">e.g. 120/80</string>
+    <string name="field_notes">Notes</string>
+    <string name="field_symptoms">Symptoms (if any)</string>
+    <string name="health_save">Save Health Log</string>
+
+    <!-- Immunization timeline -->
+    <string name="immun_title">Vaccines</string>
+    <string name="immun_subtitle">Baby\'s immunization schedule</string>
+    <string name="immun_empty">No upcoming vaccines.</string>
+    <string name="immun_progress">%1$d of %2$d completed</string>
+    <string name="immun_on_track">On track</string>
+    <string name="immun_due_now">Due now</string>
+    <string name="immun_due">Due: %1$s</string>
+    <string name="immun_given">"  ·  Given %1$s"</string>
+    <string name="immun_mark_done">Mark done</string>
+    <string name="immun_details">Details</string>
+    <string name="vaccine_log_title">Log Vaccine</string>
+    <string name="vaccine_logging">Logging: %1$s</string>
+    <string name="field_administered_date">Administered Date</string>
+    <string name="field_side_effects_optional">Side Effects (Optional)</string>
+    <string name="vaccine_administered">Administered: %1$s</string>
+    <string name="vaccine_side_effects">Side Effects:</string>
+
+    <!-- Profile setup -->
+    <string name="setup_submit">Complete Setup</string>
+    <string name="setup_title">Complete your profile</string>
+    <string name="setup_subtitle">We\'ll tailor MamaVoice to your journey.</string>
+    <string name="field_first_name">First name</string>
+    <string name="field_last_name">Last name</string>
+    <string name="field_mother_stage">Mother stage</string>
+    <string name="field_due_date">Expected due date</string>
+    <string name="field_dob">Baby\'s date of birth</string>
+    <string name="field_select_date">Select a date</string>
+    <string name="field_state">State</string>
+    <string name="field_lga">LGA</string>
 </resources>

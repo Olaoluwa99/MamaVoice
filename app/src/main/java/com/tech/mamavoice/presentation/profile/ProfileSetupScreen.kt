@@ -14,9 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.presentation.components.AppDropdown
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +78,7 @@ fun ProfileSetupScreen(
                     if (uiState is ProfileSetupUiState.Loading) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                     } else {
-                        Text("Complete Setup", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.setup_submit), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -107,9 +109,9 @@ fun ProfileSetupScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text("Complete your profile", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+            Text(stringResource(R.string.setup_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
             Spacer(modifier = Modifier.height(6.dp))
-            Text("We'll tailor MamaVoice to your journey.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.setup_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -118,7 +120,7 @@ fun ProfileSetupScreen(
                 OutlinedTextField(
                     value = firstName,
                     onValueChange = viewModel::onFirstNameChange,
-                    label = { Text("First name") },
+                    label = { Text(stringResource(R.string.field_first_name)) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.weight(1f)
@@ -126,7 +128,7 @@ fun ProfileSetupScreen(
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = viewModel::onLastNameChange,
-                    label = { Text("Last name") },
+                    label = { Text(stringResource(R.string.field_last_name)) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.weight(1f)
@@ -136,7 +138,7 @@ fun ProfileSetupScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             AppDropdown(
-                label = "Mother stage",
+                label = stringResource(R.string.field_mother_stage),
                 options = appEnums.motherStages,
                 selectedOption = motherStage,
                 onOptionSelected = viewModel::onMotherStageChange
@@ -160,9 +162,9 @@ fun ProfileSetupScreen(
                                         .toLocalDate()
                                     viewModel.onTargetDateChange(date.toString())
                                 }
-                            }) { Text("OK") }
+                            }) { Text(stringResource(R.string.action_ok)) }
                         },
-                        dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
+                        dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.action_cancel)) } }
                     ) { DatePicker(state = datePickerState) }
                 }
 
@@ -171,8 +173,8 @@ fun ProfileSetupScreen(
                         value = formatDate(targetDate),
                         onValueChange = { },
                         readOnly = true,
-                        label = { Text(if (motherStage == "Pregnant") "Expected due date" else "Baby's date of birth") },
-                        placeholder = { Text("Select a date") },
+                        label = { Text(if (motherStage == "Pregnant") stringResource(R.string.field_due_date) else stringResource(R.string.field_dob)) },
+                        placeholder = { Text(stringResource(R.string.field_select_date)) },
                         leadingIcon = { Icon(Icons.Filled.CalendarMonth, contentDescription = null) },
                         singleLine = true,
                         shape = RoundedCornerShape(16.dp),
@@ -185,7 +187,7 @@ fun ProfileSetupScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             AppDropdown(
-                label = "Language",
+                label = stringResource(R.string.pref_language),
                 options = appEnums.languages,
                 selectedOption = language,
                 onOptionSelected = viewModel::onLanguageChange
@@ -196,14 +198,14 @@ fun ProfileSetupScreen(
             // State + LGA
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 AppDropdown(
-                    label = "State",
+                    label = stringResource(R.string.field_state),
                     options = appEnums.states,
                     selectedOption = state,
                     onOptionSelected = viewModel::onStateChange,
                     modifier = Modifier.weight(1f)
                 )
                 AppDropdown(
-                    label = "LGA",
+                    label = stringResource(R.string.field_lga),
                     options = appEnums.stateLgas[state] ?: emptyList(),
                     selectedOption = lga,
                     onOptionSelected = viewModel::onLgaChange,

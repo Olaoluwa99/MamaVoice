@@ -19,9 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.FoodItem
 import com.tech.mamavoice.domain.model.NutritionalValues
 import com.tech.mamavoice.ui.theme.MamaTheme
@@ -36,10 +38,10 @@ fun FoodDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Food details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.food_detail_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back), tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -84,7 +86,7 @@ fun FoodDetailScreen(
                         modifier = Modifier.size(56.dp).align(Alignment.Center)
                     )
                     Text(
-                        text = "photo optional",
+                        text = stringResource(R.string.food_photo_optional),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
@@ -158,7 +160,7 @@ fun FoodDetailScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.Mic, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("MamaVoice tip", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(R.string.food_tip_title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -172,7 +174,7 @@ fun FoodDetailScreen(
 
             // Nutrition
             if (food.nutritionalValues != null) {
-                Text("Per 100g", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(stringResource(R.string.food_per_100g), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(12.dp))
                 NutritionGrid(food.nutritionalValues)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -180,21 +182,21 @@ fun FoodDetailScreen(
 
             // Benefits
             if (food.benefits.isNotBlank()) {
-                Text("Benefits", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(stringResource(R.string.food_benefits), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(food.benefits, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
             if (!food.preparationTips.isNullOrBlank()) {
-                Text("Preparation tips", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(stringResource(R.string.food_prep_tips), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(food.preparationTips, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
             if (!food.servingSuggestion.isNullOrBlank()) {
-                Text("Serving suggestion", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(stringResource(R.string.food_serving), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(food.servingSuggestion, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(20.dp))
@@ -217,7 +219,7 @@ fun FoodDetailScreen(
                         Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Ask MamaVoice about ${food.name.substringBefore(" ")}",
+                            stringResource(R.string.food_ask_about, food.name.substringBefore(" ")),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary

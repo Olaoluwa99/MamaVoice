@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.VaccineItem
 import com.tech.mamavoice.ui.theme.MamaTheme
 import java.text.SimpleDateFormat
@@ -74,8 +76,8 @@ fun ImmunizationTimelineScreen(
             .padding(horizontal = 20.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Vaccines", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-        Text("Baby's immunization schedule", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.immun_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Text(stringResource(R.string.immun_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -91,7 +93,7 @@ fun ImmunizationTimelineScreen(
                     modifier = Modifier.align(Alignment.Center).padding(16.dp)
                 )
                 state.vaccines.isEmpty() -> Text(
-                    text = "No upcoming vaccines.",
+                    text = stringResource(R.string.immun_empty),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center)
@@ -134,13 +136,13 @@ private fun ProgressSummaryCard(completed: Int, total: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$completed of $total completed",
+                    text = stringResource(R.string.immun_progress, completed, total),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "On track",
+                    text = stringResource(R.string.immun_on_track),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MamaTheme.colors.success
@@ -192,7 +194,7 @@ private fun TimelineItem(
                 contentAlignment = Alignment.Center
             ) {
                 if (vaccine.isCompleted) {
-                    Icon(Icons.Filled.Check, contentDescription = "Done", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.cd_done), tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
                 } else if (isActive) {
                     Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
                 }
@@ -238,7 +240,7 @@ private fun TimelineItem(
                     if (isActive) {
                         Surface(shape = RoundedCornerShape(8.dp), color = MamaTheme.colors.accentContainer) {
                             Text(
-                                "Due now",
+                                stringResource(R.string.immun_due_now),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MamaTheme.colors.accent,
@@ -251,13 +253,13 @@ private fun TimelineItem(
                 Spacer(modifier = Modifier.height(4.dp))
                 Row {
                     Text(
-                        text = "Due: ${vaccine.dueDateString}",
+                        text = stringResource(R.string.immun_due, vaccine.dueDateString),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     if (vaccine.isCompleted && vaccine.administeredDate != null) {
                         Text(
-                            text = "  ·  Given ${vaccine.administeredDate}",
+                            text = stringResource(R.string.immun_given, vaccine.administeredDate),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -274,7 +276,7 @@ private fun TimelineItem(
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Mark done", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.immun_mark_done), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
                             onClick = onClick,
@@ -282,7 +284,7 @@ private fun TimelineItem(
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                             border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Details", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            Text(stringResource(R.string.immun_details), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -312,25 +314,25 @@ fun LogVaccineDialog(
                         dateText = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(millis))
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.action_ok)) }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.action_cancel)) } }
         ) { DatePicker(state = datePickerState) }
     }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Log Vaccine") },
+        title = { Text(stringResource(R.string.vaccine_log_title)) },
         text = {
             Column {
-                Text("Logging: ${vaccine.name}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.vaccine_logging, vaccine.name), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = dateText,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Administered Date") },
+                        label = { Text(stringResource(R.string.field_administered_date)) },
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -340,14 +342,14 @@ fun LogVaccineDialog(
                 OutlinedTextField(
                     value = sideEffectsText,
                     onValueChange = { sideEffectsText = it },
-                    label = { Text("Side Effects (Optional)") },
+                    label = { Text(stringResource(R.string.field_side_effects_optional)) },
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
-        confirmButton = { Button(onClick = { onConfirm(dateText, sideEffectsText) }) { Text("Save") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+        confirmButton = { Button(onClick = { onConfirm(dateText, sideEffectsText) }) { Text(stringResource(R.string.action_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } }
     )
 }
 
@@ -358,14 +360,14 @@ fun VaccineDetailSheet(vaccine: VaccineItem, onDismiss: () -> Unit) {
         Column(modifier = Modifier.padding(24.dp).padding(bottom = 24.dp)) {
             Text(vaccine.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Due: ${vaccine.dueDateString}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.immun_due, vaccine.dueDateString), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (vaccine.isCompleted && vaccine.administeredDate != null) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Administered: ${vaccine.administeredDate}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.vaccine_administered, vaccine.administeredDate), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
             }
             if (!vaccine.sideEffects.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Side Effects:", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.vaccine_side_effects), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(vaccine.sideEffects, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Yorùbá (yo) — DRAFT translations of generic UI strings.
+  NEEDS NATIVE-SPEAKER REVIEW before production. Tone marks included; verify diacritics,
+  "theme/system" terminology, and the welcome/onboarding phrasing. Untranslated keys fall
+  back to English (values/strings.xml).
+-->
+<resources>
+    <!-- Common actions -->
+    <string name="action_continue">Tẹ̀síwájú</string>
+    <string name="action_cancel">Fagilé</string>
+    <string name="action_login">Wọlé</string>
+    <string name="action_create_account">Ṣẹ̀dá àkáǹtì</string>
+    <string name="action_logout">Jáde</string>
+    <string name="action_logout_confirm">Bẹ́ẹ̀ni, jáde</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_back">Padà</string>
+    <string name="cd_selected">Tí a yàn</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Ohùn rẹ. Oyún rẹ. Ìtọ́jú rẹ.</string>
+
+    <!-- Language selection (onboarding) -->
+    <string name="language_select_title">Yan èdè rẹ</string>
+    <string name="language_select_subtitle">Yan èdè tí o fẹ́ lò. O lè yí i padà nígbàkigbà nínú Ètò.</string>
+    <string name="language_dialog_title">Yan èdè</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Káàbọ̀ sí\nMamaVoice</string>
+    <string name="welcome_subtitle">Béèrè ohunkóhun nípa oyún rẹ — lóhùn, ní èdè tìrẹ. A ó tọ́ ọ sọ́nà, ọ̀sẹ̀ dé ọ̀sẹ̀.</string>
+
+    <!-- Profile / settings -->
+    <string name="profile_title">Profáìlì</string>
+    <string name="profile_user_role">Òlùmúlò MamaVoice</string>
+    <string name="profile_edit">Ṣàtúnṣe profáìlì</string>
+    <string name="section_preferences">ÀWỌN ÌFẸ́</string>
+    <string name="section_app_theme">ÌRÍSÍ ÁÀPÙ</string>
+    <string name="pref_language">Èdè</string>
+    <string name="pref_reminders">Ìránnilétí</string>
+    <string name="pref_help">Ìrànlọ́wọ́ àti àtìlẹ́yìn</string>
+    <string name="theme_system">Sístẹ̀mù</string>
+    <string name="theme_light">Ìmọ́lẹ̀</string>
+    <string name="theme_dark">Òkùnkùn</string>
+    <string name="logout_dialog_title">Jẹ́rìí ìjáde</string>
+    <string name="logout_dialog_message">Ṣé o dájú pé o fẹ́ jáde kúrò nínú MamaVoice?</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Ilé</string>
+    <string name="nav_food">Oúnjẹ</string>
+    <string name="nav_vaccines">Àjẹsára</string>
+    <string name="nav_health">Ìlera</string>
+    <string name="nav_speak">Sọ̀rọ̀</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">O dáa</string>
+    <string name="action_save">Fipamọ́</string>
+    <string name="action_signup">Forúkọsílẹ̀</string>
+    <string name="action_verify">Jẹ́rìí sí</string>
+
+    <!-- Voice assistant -->
+    <string name="voice_status_listening">Ń gbọ́…</string>
+    <string name="voice_status_speaking">Ń sọ̀rọ̀…</string>
+    <string name="voice_input_placeholder">Tẹ̀ tàbí tẹ gbohùngbohùn…</string>
+    <string name="chat_thinking">Ń ronú…</string>
+</resources>

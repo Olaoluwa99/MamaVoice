@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.Mic
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
 
 @Composable
 fun LoginScreen(
@@ -73,16 +75,16 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Welcome back", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+        Text(stringResource(R.string.login_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
         Spacer(modifier = Modifier.height(6.dp))
-        Text("Log in to pick up where you left off.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.login_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Spacer(modifier = Modifier.height(28.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = viewModel::onEmailChange,
-            label = { Text("Email address") },
+            label = { Text(stringResource(R.string.field_email)) },
             leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
@@ -95,7 +97,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = viewModel::onPasswordChange,
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.field_password)) },
             leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -103,7 +105,7 @@ fun LoginScreen(
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        contentDescription = if (passwordVisible) stringResource(R.string.cd_hide_password) else stringResource(R.string.cd_show_password)
                     )
                 }
             },
@@ -128,14 +130,14 @@ fun LoginScreen(
             if (uiState is AuthUiState.Loading) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
             } else {
-                Text("Log In", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.action_login), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         TextButton(onClick = onNavigateToForgotPassword, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text("Forgot password?", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.login_forgot), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -144,9 +146,9 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text("Don't have an account? ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.login_no_account), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                "Sign Up",
+                stringResource(R.string.action_signup),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
