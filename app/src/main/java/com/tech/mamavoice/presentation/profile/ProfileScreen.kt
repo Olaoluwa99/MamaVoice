@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.data.local.AppLanguage
 import com.tech.mamavoice.data.local.AppTheme
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -42,7 +43,19 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var remindersEnabled by remember { mutableStateOf(true) }
+
+    if (showLanguageDialog) {
+        LanguagePickerDialog(
+            current = state.currentLanguage,
+            onSelect = {
+                showLanguageDialog = false
+                viewModel.setLanguage(it)
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -158,10 +171,11 @@ fun ProfileScreen(
                     PreferenceRow(
                         icon = Icons.Filled.Language,
                         title = "Language",
+                        onClick = { showLanguageDialog = true },
                         trailing = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    "English",
+                                    state.currentLanguage.displayName,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.primary
@@ -265,12 +279,14 @@ private fun SectionLabel(text: String) {
 private fun PreferenceRow(
     icon: ImageVector,
     title: String,
+    onClick: (() -> Unit)? = null,
     trailing: @Composable () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Box(
@@ -342,4 +358,45 @@ private fun ThemeSegment(
             color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
+}
+
+@Composable
+private fun LanguagePickerDialog(
+    current: AppLanguage,
+    onSelect: (AppLanguage) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Choose language", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                AppLanguage.entries.forEach { language ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { onSelect(language) }
+                            .padding(vertical = 12.dp, horizontal = 4.dp)
+                    ) {
+                        RadioButton(
+                            selected = language == current,
+                            onClick = { onSelect(language) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = language.displayName,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = if (language == current) FontWeight.SemiBold else FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }

@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.data.local.TokenManager
 import com.tech.mamavoice.presentation.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     private val _startDestination = MutableStateFlow<String?>(null)
@@ -29,6 +31,13 @@ class SplashViewModel @Inject constructor(
     private fun determineStartDestination() {
         viewModelScope.launch {
             delay(1500)
+
+            // First run: let the user pick a language before anything else.
+            if (!settingsManager.isLanguageSelected.first()) {
+                _startDestination.value = Screen.LanguageSelection.route
+                return@launch
+            }
+
             val token = tokenManager.authToken.firstOrNull()
             val isExistingUser = tokenManager.isExistingUser.first()
 

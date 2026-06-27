@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tech.mamavoice.presentation.auth.LoginScreen
 import com.tech.mamavoice.presentation.auth.SignUpScreen
+import com.tech.mamavoice.presentation.language.LanguageSelectionScreen
 import com.tech.mamavoice.presentation.main.MainScreen
 import com.tech.mamavoice.presentation.profile.ProfileSetupScreen
 import com.tech.mamavoice.presentation.splash.SplashScreen
@@ -31,6 +32,16 @@ fun MamaVoiceNavGraph(
                 onNavigate = { route ->
                     navController.navigate(route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.LanguageSelection.route) {
+            LanguageSelectionScreen(
+                onContinue = { route ->
+                    navController.navigate(route) {
+                        popUpTo(Screen.LanguageSelection.route) { inclusive = true }
                     }
                 }
             )
