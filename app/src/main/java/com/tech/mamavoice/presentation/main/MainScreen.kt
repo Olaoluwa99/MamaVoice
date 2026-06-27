@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,13 @@ fun MainScreen(
     val chatHistory by viewModel.chatHistory.collectAsState()
     val draftQuery by viewModel.draftQuery.collectAsState()
     val isPlayingTts by viewModel.isPlayingTts.collectAsState()
+
+    // Device back on a non-Home tab returns to Home instead of exiting the app.
+    // Disabled while the voice overlay is open so back dismisses the sheet first, and
+    // composed before the tab content so a tab's own BackHandler (e.g. food detail) wins.
+    BackHandler(enabled = selectedTab != MainTab.HOME && !showVoiceOverlay) {
+        selectedTab = MainTab.HOME
+    }
 
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
 

@@ -1,30 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Yorùbá (yo). Contains every key in values/strings.xml (except the non-translatable
-  app_name) so this file is a complete translation worksheet with no missing keys.
-  The first section holds DRAFT Yorùbá translations (needs native-speaker review).
-  The "Awaiting translation" section below is still English — translate in place.
+  Yorùbá (yo) — DRAFT translations of every UI string (full coverage).
+  NEEDS NATIVE-SPEAKER REVIEW before production. Pay closest attention to the health/
+  immunization strings (symptoms, blood pressure, side effects, vaccine schedule) where
+  nuance matters. Verify diacritics throughout.
 -->
 <resources>
-    <!-- ===== Drafted Yorùbá (review needed) ===== -->
+    <!-- Common actions -->
     <string name="action_continue">Tẹ̀síwájú</string>
     <string name="action_cancel">Fagilé</string>
     <string name="action_login">Wọlé</string>
     <string name="action_create_account">Ṣẹ̀dá àkáǹtì</string>
     <string name="action_logout">Jáde</string>
     <string name="action_logout_confirm">Bẹ́ẹ̀ni, jáde</string>
-    <string name="action_ok">O dáa</string>
-    <string name="action_save">Fipamọ́</string>
     <string name="action_signup">Forúkọsílẹ̀</string>
     <string name="action_verify">Jẹ́rìí sí</string>
+    <string name="action_ok">O dáa</string>
+    <string name="action_save">Fipamọ́</string>
+
+    <!-- Content descriptions -->
     <string name="cd_back">Padà</string>
     <string name="cd_selected">Tí a yàn</string>
+    <string name="cd_close">Tì</string>
+    <string name="cd_action">Ìṣe</string>
+    <string name="cd_warning">Ìkìlọ̀</string>
+    <string name="cd_microphone">Gbohùngbohùn</string>
+    <string name="cd_speak">Sọ̀rọ̀ sí MamaVoice</string>
+    <string name="cd_show_password">Fi ọ̀rọ̀ìpamọ́ hàn</string>
+    <string name="cd_hide_password">Fi ọ̀rọ̀ìpamọ́ pamọ́</string>
+    <string name="cd_done">Tán</string>
+    <string name="cd_add_log">Fi àkọsílẹ̀ ìlera kún</string>
+
+    <!-- Splash -->
     <string name="splash_tagline">Ohùn rẹ. Oyún rẹ. Ìtọ́jú rẹ.</string>
+
+    <!-- Language selection -->
     <string name="language_select_title">Yan èdè rẹ</string>
     <string name="language_select_subtitle">Yan èdè tí o fẹ́ lò. O lè yí i padà nígbàkigbà nínú Ètò.</string>
     <string name="language_dialog_title">Yan èdè</string>
+
+    <!-- Welcome -->
     <string name="welcome_title">Káàbọ̀ sí\nMamaVoice</string>
     <string name="welcome_subtitle">Béèrè ohunkóhun nípa oyún rẹ — lóhùn, ní èdè tìrẹ. A ó tọ́ ọ sọ́nà, ọ̀sẹ̀ dé ọ̀sẹ̀.</string>
+
+    <!-- Profile / settings -->
     <string name="profile_title">Profáìlì</string>
     <string name="profile_user_role">Òlùmúlò MamaVoice</string>
     <string name="profile_edit">Ṣàtúnṣe profáìlì</string>
@@ -38,119 +57,136 @@
     <string name="theme_dark">Òkùnkùn</string>
     <string name="logout_dialog_title">Jẹ́rìí ìjáde</string>
     <string name="logout_dialog_message">Ṣé o dájú pé o fẹ́ jáde kúrò nínú MamaVoice?</string>
+
+    <!-- Bottom navigation -->
     <string name="nav_home">Ilé</string>
     <string name="nav_food">Oúnjẹ</string>
     <string name="nav_vaccines">Àjẹsára</string>
     <string name="nav_health">Ìlera</string>
     <string name="nav_speak">Sọ̀rọ̀</string>
+
+    <!-- Auth: form fields -->
+    <string name="field_email">Àdírẹ́sì ímeèlì</string>
+    <string name="field_email_short">Ímeèlì</string>
+    <string name="field_password">Ọ̀rọ̀ìpamọ́</string>
+
+    <!-- Auth: login -->
+    <string name="login_title">Káàbọ̀ padà</string>
+    <string name="login_subtitle">Wọlé láti tẹ̀síwájú níbi tí o ti dúró sí.</string>
+    <string name="login_forgot">Ṣé o gbàgbé ọ̀rọ̀ìpamọ́?</string>
+    <string name="login_no_account">"Ṣé o kò ní àkántì? "</string>
+
+    <!-- Auth: sign up -->
+    <string name="signup_title">Ṣẹ̀dá àkántì</string>
+    <string name="signup_subtitle">Bẹ̀rẹ̀ ìrìnàjò rẹ pẹ̀lú MamaVoice.</string>
+    <string name="signup_submit">Ṣẹ̀dá àkántì</string>
+    <string name="signup_have_account">"Ṣé o ti ní àkántì? "</string>
+
+    <!-- Auth: password rules -->
+    <string name="pwd_rule_min_length">Ó kéré tán àmì mẹ́jọ</string>
+    <string name="pwd_rule_uppercase">Ó kéré tán lẹ́tà ńlá kan</string>
+    <string name="pwd_rule_number">Ó kéré tán nọ́mbà kan</string>
+    <string name="pwd_rule_special">Ó kéré tán àmì pàtàkì kan</string>
+
+    <!-- Auth: OTP -->
+    <string name="otp_title">Tẹ kóòdù ìfọwọ́sí</string>
+    <string name="otp_subtitle">A fi kóòdù olónọ́mbà mẹ́fà ránṣẹ́ sí</string>
+    <string name="otp_didnt_get">"Ṣé o kò rí i? "</string>
+    <string name="otp_resend_in">Tún fi ránṣẹ́ ní 0:%02d</string>
+    <string name="otp_resend">Tún fi ránṣẹ́</string>
+
+    <!-- Auth: forgot password -->
+    <string name="forgot_title">Ọ̀rọ̀ìpamọ́ tí o gbàgbé</string>
+    <string name="forgot_not_implemented">A kò tíì ṣe ẹ̀yà yìí.</string>
+
+    <!-- Home / dashboard -->
+    <string name="home_greeting">Pẹ̀lẹ́, %1$s</string>
+    <string name="home_default_name">Màmá</string>
+    <string name="dashboard_load_error">A kò lè gbé àkópọ̀ rẹ wọlé.</string>
+    <string name="home_tap_to_speak">Tẹ̀ láti bá MamaVoice sọ̀rọ̀</string>
+    <string name="home_speak_hint">Béèrè nípa oúnjẹ, àmì àìsàn — ohunkóhun</string>
+    <string name="weeks_label">ỌSẸ̀</string>
+    <string name="vaccine_today">Lónìí</string>
+    <string name="vaccine_tomorrow">Lọ́la</string>
+    <string name="vaccine_in_days">ní ọjọ́ %1$d</string>
+    <string name="vaccine_next_label">Àjẹsára tókàn · %1$s</string>
+    <string name="suggestion_ugu">"Ṣé ó dára láti jẹ ugú?"</string>
+    <string name="suggestion_baby_size">"Báwo ni ọmọ mi ṣe tóbi tó?"</string>
+
+    <!-- Voice assistant -->
     <string name="voice_status_listening">Ń gbọ́…</string>
     <string name="voice_status_speaking">Ń sọ̀rọ̀…</string>
     <string name="voice_input_placeholder">Tẹ̀ tàbí tẹ gbohùngbohùn…</string>
     <string name="chat_thinking">Ń ronú…</string>
+    <string name="chat_error_prefix">Àṣìṣe: %1$s</string>
 
-    <!-- ===== Awaiting translation — currently English placeholders ===== -->
-    <string name="cd_close">Close</string>
-    <string name="cd_action">Action</string>
-    <string name="cd_warning">Warning</string>
-    <string name="cd_microphone">Microphone</string>
-    <string name="cd_speak">Speak to MamaVoice</string>
-    <string name="cd_show_password">Show password</string>
-    <string name="cd_hide_password">Hide password</string>
-    <string name="cd_done">Done</string>
-    <string name="cd_add_log">Add health log</string>
-    <string name="field_email">Email address</string>
-    <string name="field_email_short">Email</string>
-    <string name="field_password">Password</string>
-    <string name="login_title">Welcome back</string>
-    <string name="login_subtitle">Log in to pick up where you left off.</string>
-    <string name="login_forgot">Forgot password?</string>
-    <string name="login_no_account">"Don\'t have an account? "</string>
-    <string name="signup_title">Create account</string>
-    <string name="signup_subtitle">Start your journey with MamaVoice.</string>
-    <string name="signup_submit">Create Account</string>
-    <string name="signup_have_account">"Already have an account? "</string>
-    <string name="pwd_rule_min_length">At least 8 characters</string>
-    <string name="pwd_rule_uppercase">At least 1 uppercase letter</string>
-    <string name="pwd_rule_number">At least 1 number</string>
-    <string name="pwd_rule_special">At least 1 special character</string>
-    <string name="otp_title">Enter verification code</string>
-    <string name="otp_subtitle">We sent a 6-digit code to</string>
-    <string name="otp_didnt_get">"Didn\'t get it? "</string>
-    <string name="otp_resend_in">Resend in 0:%02d</string>
-    <string name="otp_resend">Resend</string>
-    <string name="forgot_title">Forgot Password</string>
-    <string name="forgot_not_implemented">This feature hasn\'t been implemented yet.</string>
-    <string name="home_greeting">Hello, %1$s</string>
-    <string name="home_default_name">Mama</string>
-    <string name="dashboard_load_error">Couldn\'t load your overview.</string>
-    <string name="home_tap_to_speak">Tap to speak to MamaVoice</string>
-    <string name="home_speak_hint">Ask about food, symptoms — anything</string>
-    <string name="weeks_label">WEEKS</string>
-    <string name="vaccine_today">Today</string>
-    <string name="vaccine_tomorrow">Tomorrow</string>
-    <string name="vaccine_in_days">in %1$d days</string>
-    <string name="vaccine_next_label">Next vaccine · %1$s</string>
-    <string name="suggestion_ugu">\"Is ugu safe to eat?\"</string>
-    <string name="suggestion_baby_size">\"How big is my baby?\"</string>
-    <string name="chat_error_prefix">Error: %1$s</string>
-    <string name="food_guide_title">Food guide</string>
-    <string name="food_guide_subtitle">Safe, nourishing foods for your week</string>
-    <string name="food_search_placeholder">Search foods…</string>
-    <string name="food_empty">No food items found.</string>
-    <string name="food_rich_in">Rich in %1$s</string>
-    <string name="food_detail_title">Food details</string>
-    <string name="food_photo_optional">photo optional</string>
-    <string name="food_tip_title">MamaVoice tip</string>
-    <string name="food_per_100g">Per 100g</string>
-    <string name="food_benefits">Benefits</string>
-    <string name="food_prep_tips">Preparation tips</string>
-    <string name="food_serving">Serving suggestion</string>
-    <string name="food_ask_about">Ask MamaVoice about %1$s</string>
-    <string name="health_title">Health</string>
-    <string name="health_subtitle">Your check-ins this week</string>
-    <string name="health_earlier">EARLIER</string>
-    <string name="health_empty">No health logs yet. Tap + to add one.</string>
-    <string name="health_today">Today · %1$s</string>
-    <string name="health_stable">Stable</string>
-    <string name="health_check_symptoms">Check symptoms</string>
-    <string name="health_no_symptoms_today">No symptoms reported today</string>
-    <string name="health_no_symptoms">No symptoms</string>
-    <string name="metric_weight">Weight</string>
-    <string name="metric_bp">Blood pressure</string>
-    <string name="voicelog_title">Tell MamaVoice how you feel</string>
-    <string name="voicelog_subtitle">Log by voice — no typing</string>
-    <string name="addlog_title">New Health Log</string>
-    <string name="field_weight_kg">Weight (kg)</string>
-    <string name="field_bp">Blood Pressure</string>
-    <string name="field_bp_hint">e.g. 120/80</string>
-    <string name="field_notes">Notes</string>
-    <string name="field_symptoms">Symptoms (if any)</string>
-    <string name="health_save">Save Health Log</string>
-    <string name="immun_title">Vaccines</string>
-    <string name="immun_subtitle">Baby\'s immunization schedule</string>
-    <string name="immun_empty">No upcoming vaccines.</string>
-    <string name="immun_progress">%1$d of %2$d completed</string>
-    <string name="immun_on_track">On track</string>
-    <string name="immun_due_now">Due now</string>
-    <string name="immun_due">Due: %1$s</string>
-    <string name="immun_given">"  ·  Given %1$s"</string>
-    <string name="immun_mark_done">Mark done</string>
-    <string name="immun_details">Details</string>
-    <string name="vaccine_log_title">Log Vaccine</string>
-    <string name="vaccine_logging">Logging: %1$s</string>
-    <string name="field_administered_date">Administered Date</string>
-    <string name="field_side_effects_optional">Side Effects (Optional)</string>
-    <string name="vaccine_administered">Administered: %1$s</string>
-    <string name="vaccine_side_effects">Side Effects:</string>
-    <string name="setup_submit">Complete Setup</string>
-    <string name="setup_title">Complete your profile</string>
-    <string name="setup_subtitle">We\'ll tailor MamaVoice to your journey.</string>
-    <string name="field_first_name">First name</string>
-    <string name="field_last_name">Last name</string>
-    <string name="field_mother_stage">Mother stage</string>
-    <string name="field_due_date">Expected due date</string>
-    <string name="field_dob">Baby\'s date of birth</string>
-    <string name="field_select_date">Select a date</string>
-    <string name="field_state">State</string>
-    <string name="field_lga">LGA</string>
+    <!-- Food directory -->
+    <string name="food_guide_title">Ìtọ́sọ́nà oúnjẹ</string>
+    <string name="food_guide_subtitle">Àwọn oúnjẹ tó ní àìléwu, tó ń ṣe oore fún ọ̀sẹ̀ rẹ</string>
+    <string name="food_search_placeholder">Wá oúnjẹ…</string>
+    <string name="food_empty">Kò sí oúnjẹ tí a rí.</string>
+    <string name="food_rich_in">Ó ní ọ̀pọ̀ %1$s</string>
+
+    <!-- Food detail -->
+    <string name="food_detail_title">Àlàyé oúnjẹ</string>
+    <string name="food_photo_optional">fọ́tò kì í ṣe dandan</string>
+    <string name="food_tip_title">Ìmọ̀ràn MamaVoice</string>
+    <string name="food_per_100g">Fún 100g</string>
+    <string name="food_benefits">Àwọn àǹfààní</string>
+    <string name="food_prep_tips">Ìmọ̀ràn ìsèdédé</string>
+    <string name="food_serving">Àbá ìfúnni</string>
+    <string name="food_ask_about">Béèrè lọ́wọ́ MamaVoice nípa %1$s</string>
+
+    <!-- Health tracker -->
+    <string name="health_title">Ìlera</string>
+    <string name="health_subtitle">Àwọn àyẹ̀wò rẹ ní ọ̀sẹ̀ yìí</string>
+    <string name="health_earlier">TẸ́LẸ̀</string>
+    <string name="health_empty">Kò sí àkọsílẹ̀ ìlera síbẹ̀. Tẹ + láti fi kún.</string>
+    <string name="health_today">Lónìí · %1$s</string>
+    <string name="health_stable">Ó dúró ṣinṣin</string>
+    <string name="health_check_symptoms">Ṣàyẹ̀wò àwọn àmì àìsàn</string>
+    <string name="health_no_symptoms_today">Kò sí àmì àìsàn tí a ròyìn lónìí</string>
+    <string name="health_no_symptoms">Kò sí àmì àìsàn</string>
+    <string name="metric_weight">Ìwọ̀n</string>
+    <string name="metric_bp">Ìfúnpá ẹ̀jẹ̀</string>
+    <string name="voicelog_title">Sọ fún MamaVoice bí o ṣe nímọ̀lára</string>
+    <string name="voicelog_subtitle">Ṣàkọsílẹ̀ pẹ̀lú ohùn — láìní títẹ̀</string>
+    <string name="addlog_title">Àkọsílẹ̀ ìlera tuntun</string>
+    <string name="field_weight_kg">Ìwọ̀n (kg)</string>
+    <string name="field_bp">Ìfúnpá ẹ̀jẹ̀</string>
+    <string name="field_bp_hint">f.a. 120/80</string>
+    <string name="field_notes">Àwọn àkọsílẹ̀</string>
+    <string name="field_symptoms">Àwọn àmì àìsàn (tí ó bá wà)</string>
+    <string name="health_save">Fi àkọsílẹ̀ ìlera pamọ́</string>
+
+    <!-- Immunization timeline -->
+    <string name="immun_title">Àjẹsára</string>
+    <string name="immun_subtitle">Ìṣètò àjẹsára ọmọ</string>
+    <string name="immun_empty">Kò sí àjẹsára tó ń bọ̀.</string>
+    <string name="immun_progress">%1$d nínú %2$d ti parí</string>
+    <string name="immun_on_track">Ó wà lọ́nà</string>
+    <string name="immun_due_now">Ó tó àkókò báyìí</string>
+    <string name="immun_due">Àkókò: %1$s</string>
+    <string name="immun_given">"  ·  Fífúnni %1$s"</string>
+    <string name="immun_mark_done">Sàmì sí pé ó parí</string>
+    <string name="immun_details">Àlàyé</string>
+    <string name="vaccine_log_title">Ṣàkọsílẹ̀ àjẹsára</string>
+    <string name="vaccine_logging">Ń ṣàkọsílẹ̀: %1$s</string>
+    <string name="field_administered_date">Ọjọ́ tí a fún ní</string>
+    <string name="field_side_effects_optional">Ìyọrísí (Kì í ṣe dandan)</string>
+    <string name="vaccine_administered">A fún ní: %1$s</string>
+    <string name="vaccine_side_effects">Àwọn ìyọrísí:</string>
+
+    <!-- Profile setup -->
+    <string name="setup_submit">Parí ìṣètò</string>
+    <string name="setup_title">Parí profáìlì rẹ</string>
+    <string name="setup_subtitle">A ó ṣe àtúnṣe MamaVoice sí ìrìnàjò rẹ.</string>
+    <string name="field_first_name">Orúkọ àkọ́kọ́</string>
+    <string name="field_last_name">Orúkọ ìdílé</string>
+    <string name="field_mother_stage">Ìpele ìyá</string>
+    <string name="field_due_date">Ọjọ́ tí a retí ìbí</string>
+    <string name="field_dob">Ọjọ́ ìbí ọmọ</string>
+    <string name="field_select_date">Yan ọjọ́ kan</string>
+    <string name="field_state">Ìpínlẹ̀</string>
+    <string name="field_lga">Ìjọba ìbílẹ̀ (LGA)</string>
 </resources>

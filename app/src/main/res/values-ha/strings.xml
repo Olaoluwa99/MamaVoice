@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Hausa (ha). Contains every key in values/strings.xml (except the non-translatable
-  app_name) so this file is a complete translation worksheet with no missing keys.
-  The first section holds DRAFT Hausa translations (needs native-speaker review).
-  The "Awaiting translation" section below is still English — translate in place.
+  Hausa (ha) — DRAFT translations of every UI string (full coverage).
+  NEEDS NATIVE-SPEAKER REVIEW before production. Pay closest attention to the health/
+  immunization strings (symptoms, blood pressure, side effects, vaccine schedule) where
+  nuance matters. Confirm feminine address (app speaks to mothers) and hooked letters
+  (ƙ, ɗ, ɓ) throughout.
 -->
 <resources>
-    <!-- ===== Drafted Hausa (review needed) ===== -->
+    <!-- Common actions -->
     <string name="action_continue">Ci gaba</string>
     <string name="action_cancel">Soke</string>
     <string name="action_login">Shiga</string>
     <string name="action_create_account">Ƙirƙiri asusu</string>
     <string name="action_logout">Fita</string>
     <string name="action_logout_confirm">Ee, fita</string>
-    <string name="action_ok">To</string>
-    <string name="action_save">Ajiye</string>
     <string name="action_signup">Yi rajista</string>
     <string name="action_verify">Tabbatar</string>
+    <string name="action_ok">To</string>
+    <string name="action_save">Ajiye</string>
+
+    <!-- Content descriptions -->
     <string name="cd_back">Koma baya</string>
     <string name="cd_selected">An zaɓa</string>
+    <string name="cd_close">Rufe</string>
+    <string name="cd_action">Aiki</string>
+    <string name="cd_warning">Gargaɗi</string>
+    <string name="cd_microphone">Makirufo</string>
+    <string name="cd_speak">Yi magana da MamaVoice</string>
+    <string name="cd_show_password">Nuna kalmar sirri</string>
+    <string name="cd_hide_password">Ɓoye kalmar sirri</string>
+    <string name="cd_done">An gama</string>
+    <string name="cd_add_log">Ƙara bayanan lafiya</string>
+
+    <!-- Splash -->
     <string name="splash_tagline">Muryarki. Cikinki. Kulawarki.</string>
+
+    <!-- Language selection -->
     <string name="language_select_title">Zaɓi harshenki</string>
     <string name="language_select_subtitle">Zaɓi harshen da kuke son amfani. Kuna iya canza shi kowane lokaci a cikin Saiti.</string>
     <string name="language_dialog_title">Zaɓi harshe</string>
+
+    <!-- Welcome -->
     <string name="welcome_title">Barka da zuwa\nMamaVoice</string>
     <string name="welcome_subtitle">Yi tambaya kan duk wani abu game da cikinki — da murya, a harshenki. Za mu bishe ki, mako zuwa mako.</string>
+
+    <!-- Profile / settings -->
     <string name="profile_title">Bayanin martaba</string>
     <string name="profile_user_role">Mai amfani da MamaVoice</string>
     <string name="profile_edit">Gyara bayanin martaba</string>
@@ -38,119 +58,136 @@
     <string name="theme_dark">Duhu</string>
     <string name="logout_dialog_title">Tabbatar da fita</string>
     <string name="logout_dialog_message">Kin tabbata kina son fita daga MamaVoice?</string>
+
+    <!-- Bottom navigation -->
     <string name="nav_home">Gida</string>
     <string name="nav_food">Abinci</string>
     <string name="nav_vaccines">Allurar rigakafi</string>
     <string name="nav_health">Lafiya</string>
     <string name="nav_speak">Yi magana</string>
+
+    <!-- Auth: form fields -->
+    <string name="field_email">Adireshin imel</string>
+    <string name="field_email_short">Imel</string>
+    <string name="field_password">Kalmar sirri</string>
+
+    <!-- Auth: login -->
+    <string name="login_title">Barka da dawowa</string>
+    <string name="login_subtitle">Shiga don ci gaba daga inda ka tsaya.</string>
+    <string name="login_forgot">Ka manta kalmar sirri?</string>
+    <string name="login_no_account">"Ba ki da asusu? "</string>
+
+    <!-- Auth: sign up -->
+    <string name="signup_title">Ƙirƙiri asusu</string>
+    <string name="signup_subtitle">Fara tafiyarki da MamaVoice.</string>
+    <string name="signup_submit">Ƙirƙiri asusu</string>
+    <string name="signup_have_account">"Kina da asusu tuni? "</string>
+
+    <!-- Auth: password rules -->
+    <string name="pwd_rule_min_length">Aƙalla haruffa takwas</string>
+    <string name="pwd_rule_uppercase">Aƙalla babban harafi ɗaya</string>
+    <string name="pwd_rule_number">Aƙalla lamba ɗaya</string>
+    <string name="pwd_rule_special">Aƙalla alama ta musamman ɗaya</string>
+
+    <!-- Auth: OTP -->
+    <string name="otp_title">Shigar da lambar tabbatarwa</string>
+    <string name="otp_subtitle">Mun aika lamba mai lambobi shida zuwa</string>
+    <string name="otp_didnt_get">"Ba ki samu ba? "</string>
+    <string name="otp_resend_in">Sake aikawa cikin 0:%02d</string>
+    <string name="otp_resend">Sake aikawa</string>
+
+    <!-- Auth: forgot password -->
+    <string name="forgot_title">Mantar Kalmar Sirri</string>
+    <string name="forgot_not_implemented">Ba a aiwatar da wannan fasalin ba tukuna.</string>
+
+    <!-- Home / dashboard -->
+    <string name="home_greeting">Sannu, %1$s</string>
+    <string name="home_default_name">Mama</string>
+    <string name="dashboard_load_error">Ba a iya loda taƙaitaccen bayaninki ba.</string>
+    <string name="home_tap_to_speak">Danna don yin magana da MamaVoice</string>
+    <string name="home_speak_hint">Tambaya game da abinci, alamomi — komai</string>
+    <string name="weeks_label">MAKONNI</string>
+    <string name="vaccine_today">Yau</string>
+    <string name="vaccine_tomorrow">Gobe</string>
+    <string name="vaccine_in_days">cikin kwanaki %1$d</string>
+    <string name="vaccine_next_label">Allura ta gaba · %1$s</string>
+    <string name="suggestion_ugu">"Shin ya dace a ci ugu?"</string>
+    <string name="suggestion_baby_size">"Yaya girman jaririna yake?"</string>
+
+    <!-- Voice assistant -->
     <string name="voice_status_listening">Ana saurara…</string>
     <string name="voice_status_speaking">Ana magana…</string>
     <string name="voice_input_placeholder">Rubuta ko danna makirufo…</string>
     <string name="chat_thinking">Ana tunani…</string>
+    <string name="chat_error_prefix">Kuskure: %1$s</string>
 
-    <!-- ===== Awaiting translation — currently English placeholders ===== -->
-    <string name="cd_close">Close</string>
-    <string name="cd_action">Action</string>
-    <string name="cd_warning">Warning</string>
-    <string name="cd_microphone">Microphone</string>
-    <string name="cd_speak">Speak to MamaVoice</string>
-    <string name="cd_show_password">Show password</string>
-    <string name="cd_hide_password">Hide password</string>
-    <string name="cd_done">Done</string>
-    <string name="cd_add_log">Add health log</string>
-    <string name="field_email">Email address</string>
-    <string name="field_email_short">Email</string>
-    <string name="field_password">Password</string>
-    <string name="login_title">Welcome back</string>
-    <string name="login_subtitle">Log in to pick up where you left off.</string>
-    <string name="login_forgot">Forgot password?</string>
-    <string name="login_no_account">"Don\'t have an account? "</string>
-    <string name="signup_title">Create account</string>
-    <string name="signup_subtitle">Start your journey with MamaVoice.</string>
-    <string name="signup_submit">Create Account</string>
-    <string name="signup_have_account">"Already have an account? "</string>
-    <string name="pwd_rule_min_length">At least 8 characters</string>
-    <string name="pwd_rule_uppercase">At least 1 uppercase letter</string>
-    <string name="pwd_rule_number">At least 1 number</string>
-    <string name="pwd_rule_special">At least 1 special character</string>
-    <string name="otp_title">Enter verification code</string>
-    <string name="otp_subtitle">We sent a 6-digit code to</string>
-    <string name="otp_didnt_get">"Didn\'t get it? "</string>
-    <string name="otp_resend_in">Resend in 0:%02d</string>
-    <string name="otp_resend">Resend</string>
-    <string name="forgot_title">Forgot Password</string>
-    <string name="forgot_not_implemented">This feature hasn\'t been implemented yet.</string>
-    <string name="home_greeting">Hello, %1$s</string>
-    <string name="home_default_name">Mama</string>
-    <string name="dashboard_load_error">Couldn\'t load your overview.</string>
-    <string name="home_tap_to_speak">Tap to speak to MamaVoice</string>
-    <string name="home_speak_hint">Ask about food, symptoms — anything</string>
-    <string name="weeks_label">WEEKS</string>
-    <string name="vaccine_today">Today</string>
-    <string name="vaccine_tomorrow">Tomorrow</string>
-    <string name="vaccine_in_days">in %1$d days</string>
-    <string name="vaccine_next_label">Next vaccine · %1$s</string>
-    <string name="suggestion_ugu">\"Is ugu safe to eat?\"</string>
-    <string name="suggestion_baby_size">\"How big is my baby?\"</string>
-    <string name="chat_error_prefix">Error: %1$s</string>
-    <string name="food_guide_title">Food guide</string>
-    <string name="food_guide_subtitle">Safe, nourishing foods for your week</string>
-    <string name="food_search_placeholder">Search foods…</string>
-    <string name="food_empty">No food items found.</string>
-    <string name="food_rich_in">Rich in %1$s</string>
-    <string name="food_detail_title">Food details</string>
-    <string name="food_photo_optional">photo optional</string>
-    <string name="food_tip_title">MamaVoice tip</string>
-    <string name="food_per_100g">Per 100g</string>
-    <string name="food_benefits">Benefits</string>
-    <string name="food_prep_tips">Preparation tips</string>
-    <string name="food_serving">Serving suggestion</string>
-    <string name="food_ask_about">Ask MamaVoice about %1$s</string>
-    <string name="health_title">Health</string>
-    <string name="health_subtitle">Your check-ins this week</string>
-    <string name="health_earlier">EARLIER</string>
-    <string name="health_empty">No health logs yet. Tap + to add one.</string>
-    <string name="health_today">Today · %1$s</string>
-    <string name="health_stable">Stable</string>
-    <string name="health_check_symptoms">Check symptoms</string>
-    <string name="health_no_symptoms_today">No symptoms reported today</string>
-    <string name="health_no_symptoms">No symptoms</string>
-    <string name="metric_weight">Weight</string>
-    <string name="metric_bp">Blood pressure</string>
-    <string name="voicelog_title">Tell MamaVoice how you feel</string>
-    <string name="voicelog_subtitle">Log by voice — no typing</string>
-    <string name="addlog_title">New Health Log</string>
-    <string name="field_weight_kg">Weight (kg)</string>
-    <string name="field_bp">Blood Pressure</string>
-    <string name="field_bp_hint">e.g. 120/80</string>
-    <string name="field_notes">Notes</string>
-    <string name="field_symptoms">Symptoms (if any)</string>
-    <string name="health_save">Save Health Log</string>
-    <string name="immun_title">Vaccines</string>
-    <string name="immun_subtitle">Baby\'s immunization schedule</string>
-    <string name="immun_empty">No upcoming vaccines.</string>
-    <string name="immun_progress">%1$d of %2$d completed</string>
-    <string name="immun_on_track">On track</string>
-    <string name="immun_due_now">Due now</string>
-    <string name="immun_due">Due: %1$s</string>
-    <string name="immun_given">"  ·  Given %1$s"</string>
-    <string name="immun_mark_done">Mark done</string>
-    <string name="immun_details">Details</string>
-    <string name="vaccine_log_title">Log Vaccine</string>
-    <string name="vaccine_logging">Logging: %1$s</string>
-    <string name="field_administered_date">Administered Date</string>
-    <string name="field_side_effects_optional">Side Effects (Optional)</string>
-    <string name="vaccine_administered">Administered: %1$s</string>
-    <string name="vaccine_side_effects">Side Effects:</string>
-    <string name="setup_submit">Complete Setup</string>
-    <string name="setup_title">Complete your profile</string>
-    <string name="setup_subtitle">We\'ll tailor MamaVoice to your journey.</string>
-    <string name="field_first_name">First name</string>
-    <string name="field_last_name">Last name</string>
-    <string name="field_mother_stage">Mother stage</string>
-    <string name="field_due_date">Expected due date</string>
-    <string name="field_dob">Baby\'s date of birth</string>
-    <string name="field_select_date">Select a date</string>
-    <string name="field_state">State</string>
+    <!-- Food directory -->
+    <string name="food_guide_title">Jagorar abinci</string>
+    <string name="food_guide_subtitle">Abinci masu aminci, masu gina jiki don makonki</string>
+    <string name="food_search_placeholder">Nemo abinci…</string>
+    <string name="food_empty">Ba a sami abinci ba.</string>
+    <string name="food_rich_in">Mai wadatar %1$s</string>
+
+    <!-- Food detail -->
+    <string name="food_detail_title">Cikakken bayanin abinci</string>
+    <string name="food_photo_optional">hoto ba dole ba</string>
+    <string name="food_tip_title">Shawarar MamaVoice</string>
+    <string name="food_per_100g">Kowane 100g</string>
+    <string name="food_benefits">Amfani</string>
+    <string name="food_prep_tips">Shawarwarin shirya</string>
+    <string name="food_serving">Shawarar yadda za a ci</string>
+    <string name="food_ask_about">Tambayi MamaVoice game da %1$s</string>
+
+    <!-- Health tracker -->
+    <string name="health_title">Lafiya</string>
+    <string name="health_subtitle">Binciken lafiyarki na wannan mako</string>
+    <string name="health_earlier">A BAYA</string>
+    <string name="health_empty">Babu bayanan lafiya tukuna. Danna + don ƙara ɗaya.</string>
+    <string name="health_today">Yau · %1$s</string>
+    <string name="health_stable">Tsayayye</string>
+    <string name="health_check_symptoms">Duba alamomi</string>
+    <string name="health_no_symptoms_today">Ba a ba da rahoton wata alama ba yau</string>
+    <string name="health_no_symptoms">Babu alamomi</string>
+    <string name="metric_weight">Nauyi</string>
+    <string name="metric_bp">Hawan jini</string>
+    <string name="voicelog_title">Gaya wa MamaVoice yadda kike ji</string>
+    <string name="voicelog_subtitle">Yi rikodi da murya — ba buƙatar rubutu</string>
+    <string name="addlog_title">Sabon Bayanan Lafiya</string>
+    <string name="field_weight_kg">Nauyi (kg)</string>
+    <string name="field_bp">Hawan Jini</string>
+    <string name="field_bp_hint">misali 120/80</string>
+    <string name="field_notes">Bayanai</string>
+    <string name="field_symptoms">Alamomi (idan akwai)</string>
+    <string name="health_save">Ajiye Bayanan Lafiya</string>
+
+    <!-- Immunization timeline -->
+    <string name="immun_title">Allurar rigakafi</string>
+    <string name="immun_subtitle">Jadawalin rigakafin jariri</string>
+    <string name="immun_empty">Babu allurar rigakafi mai zuwa.</string>
+    <string name="immun_progress">%1$d daga cikin %2$d an kammala</string>
+    <string name="immun_on_track">A kan hanya</string>
+    <string name="immun_due_now">Ya kai lokaci yanzu</string>
+    <string name="immun_due">Lokaci: %1$s</string>
+    <string name="immun_given">"  ·  An bayar %1$s"</string>
+    <string name="immun_mark_done">Yi alama an gama</string>
+    <string name="immun_details">Cikakken bayani</string>
+    <string name="vaccine_log_title">Yi rikodin allura</string>
+    <string name="vaccine_logging">Ana yin rikodi: %1$s</string>
+    <string name="field_administered_date">Ranar bayarwa</string>
+    <string name="field_side_effects_optional">Illoli (Na zaɓi)</string>
+    <string name="vaccine_administered">An bayar: %1$s</string>
+    <string name="vaccine_side_effects">Illoli:</string>
+
+    <!-- Profile setup -->
+    <string name="setup_submit">Kammala saiti</string>
+    <string name="setup_title">Kammala bayanan martabarki</string>
+    <string name="setup_subtitle">Za mu daidaita MamaVoice da tafiyarki.</string>
+    <string name="field_first_name">Sunan farko</string>
+    <string name="field_last_name">Sunan ƙarshe</string>
+    <string name="field_mother_stage">Matakin uwa</string>
+    <string name="field_due_date">Ranar haihuwa da ake tsammani</string>
+    <string name="field_dob">Ranar haihuwar jariri</string>
+    <string name="field_select_date">Zaɓi rana</string>
+    <string name="field_state">Jiha</string>
     <string name="field_lga">LGA</string>
 </resources>
