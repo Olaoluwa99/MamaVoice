@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.tech.mamavoice.data.local.AppLanguage
 import com.tech.mamavoice.data.local.AppTheme
+import com.tech.mamavoice.presentation.language.LanguagePickerDialog
 import com.tech.mamavoice.ui.theme.MamaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -360,43 +360,3 @@ private fun ThemeSegment(
     }
 }
 
-@Composable
-private fun LanguagePickerDialog(
-    current: AppLanguage,
-    onSelect: (AppLanguage) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Choose language", fontWeight = FontWeight.Bold) },
-        text = {
-            Column {
-                AppLanguage.entries.forEach { language ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { onSelect(language) }
-                            .padding(vertical = 12.dp, horizontal = 4.dp)
-                    ) {
-                        RadioButton(
-                            selected = language == current,
-                            onClick = { onSelect(language) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = language.displayName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = if (language == current) FontWeight.SemiBold else FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}

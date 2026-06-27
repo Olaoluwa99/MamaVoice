@@ -35,10 +35,10 @@ class DashboardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun queryAi(textQuery: String): Resource<AiQueryResponse> {
+    override suspend fun queryAi(textQuery: String, language: String): Resource<AiQueryResponse> {
         return try {
             val response = apiService.queryAi(
-                request = AiQueryRequest(textQuery = textQuery)
+                request = AiQueryRequest(textQuery = textQuery, language = language)
             )
             if (response.success) {
                 Resource.Success(response.data)

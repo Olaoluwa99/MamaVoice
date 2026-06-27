@@ -10,19 +10,41 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.presentation.language.LanguagePickerDialog
 import com.tech.mamavoice.ui.theme.MamaTheme
 
 @Composable
 fun WelcomeScreen(
     onLoginClick: () -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    viewModel: WelcomeViewModel = hiltViewModel()
 ) {
+    val language by viewModel.language.collectAsState()
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    if (showLanguageDialog) {
+        LanguagePickerDialog(
+            current = language,
+            onSelect = {
+                showLanguageDialog = false
+                viewModel.setLanguage(it)
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,6 +60,7 @@ fun WelcomeScreen(
             horizontalArrangement = Arrangement.End
         ) {
             Surface(
+                onClick = { showLanguageDialog = true },
                 shape = RoundedCornerShape(20.dp),
                 color = MaterialTheme.colorScheme.surface,
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -54,7 +77,7 @@ fun WelcomeScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        "English",
+                        language.displayName,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )

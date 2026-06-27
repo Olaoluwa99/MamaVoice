@@ -21,7 +21,9 @@ data class DashboardResponse(
 
 @Serializable
 data class AiQueryRequest(
-    val textQuery: String
+    val textQuery: String,
+    /** BCP-47 code of the language the AI should answer in (en, pcm, yo, ig, ha). */
+    val language: String = "en"
 )
 
 @Serializable

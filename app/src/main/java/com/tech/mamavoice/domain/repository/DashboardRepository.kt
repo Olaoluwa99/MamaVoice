@@ -6,5 +6,5 @@ import com.tech.mamavoice.domain.util.Resource
 
 interface DashboardRepository {
     suspend fun getDashboard(): Resource<DashboardResponse>
-    suspend fun queryAi(textQuery: String): Resource<AiQueryResponse>
+    suspend fun queryAi(textQuery: String, language: String): Resource<AiQueryResponse>
 }

@@ -5,6 +5,8 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.data.local.AppLanguage
+import com.tech.mamavoice.data.local.LanguageManager
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.repository.DashboardRepository
 import com.tech.mamavoice.domain.util.Resource
@@ -30,10 +32,14 @@ data class ChatMessage(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: DashboardRepository,
+    private val languageManager: LanguageManager,
     @ApplicationContext private val context: Context
 ) : ViewModel(), TextToSpeech.OnInitListener {
 
     private var textToSpeech: TextToSpeech? = null
+
+    /** Latest chosen language; drives both the AI request and the spoken (TTS) reply. */
+    private var currentLanguage: AppLanguage = AppLanguage.ENGLISH
 
     private val _dashboardData = MutableStateFlow<Resource<DashboardResponse>>(Resource.Loading())
     val dashboardData: StateFlow<Resource<DashboardResponse>> = _dashboardData.asStateFlow()
@@ -56,11 +62,17 @@ class DashboardViewModel @Inject constructor(
     init {
         textToSpeech = TextToSpeech(context, this)
         fetchDashboardData()
+        viewModelScope.launch {
+            languageManager.appLanguage.collect { language ->
+                currentLanguage = language
+                applyTtsLanguage(language)
+            }
+        }
     }
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            textToSpeech?.language = Locale.US
+            applyTtsLanguage(currentLanguage)
             textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(utteranceId: String?) {
                     _isPlayingTts.value = true
@@ -85,6 +97,9 @@ class DashboardViewModel @Inject constructor(
     fun setRecordingState(isRecording: Boolean) {
         _isRecording.value = isRecording
     }
+
+    /** BCP-47 tag the speech recognizer should listen for, based on the chosen language. */
+    fun currentLanguageTag(): String = currentLanguage.code
 
     fun updateDraftQuery(text: String) {
         _draftQuery.value = text
@@ -136,7 +151,7 @@ class DashboardViewModel @Inject constructor(
         _draftQuery.value = ""
 
         viewModelScope.launch {
-            val result = repository.queryAi(query)
+            val result = repository.queryAi(query, currentLanguage.code)
             
             _chatHistory.update { current ->
                 val listWithoutLoading = current.filterNot { it.isLoading }
@@ -149,6 +164,19 @@ class DashboardViewModel @Inject constructor(
                     listWithoutLoading + ChatMessage(text = "Error: ${result.message}", isUser = false, isError = true)
                 }
             }
+        }
+    }
+
+    /**
+     * Points the TTS engine at the chosen language, falling back to US English when the
+     * device has no voice for it (common for Pidgin/Yoruba/Igbo/Hausa today — Spitch TTS
+     * is the planned replacement for those).
+     */
+    private fun applyTtsLanguage(language: AppLanguage) {
+        val tts = textToSpeech ?: return
+        val result = tts.setLanguage(Locale.forLanguageTag(language.code))
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            tts.language = Locale.US
         }
     }
 

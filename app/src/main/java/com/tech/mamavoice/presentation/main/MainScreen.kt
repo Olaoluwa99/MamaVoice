@@ -188,6 +188,9 @@ internal fun startListening(speechRecognizer: SpeechRecognizer, viewModel: Dashb
     viewModel.setRecordingState(true)
     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        // Ask the recognizer for the user's chosen language. Built-in engine support for
+        // yo/ig/ha/pcm is device-dependent (Spitch is the planned proper STT); English works.
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, viewModel.currentLanguageTag())
         putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
     }
     speechRecognizer.startListening(intent)
