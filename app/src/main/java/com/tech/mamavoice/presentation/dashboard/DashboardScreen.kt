@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.tech.mamavoice.R
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.util.Resource
+import com.tech.mamavoice.presentation.components.MamaVoiceLogoMark
 import com.tech.mamavoice.ui.theme.MamaTheme
 
 /**
@@ -62,20 +63,10 @@ fun HomeScreen(
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Mic,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+            MamaVoiceLogoMark(
+                containerSize = 28.dp,
+                logoSize = 22.dp
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "MamaVoice",

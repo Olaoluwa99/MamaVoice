@@ -16,17 +16,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.filled.Mic
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.mamavoice.R
+import com.tech.mamavoice.presentation.components.MamaVoiceLogoMark
 
 @Composable
 fun LoginScreen(
@@ -63,15 +61,11 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(40.dp))
 
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Filled.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-        }
+        MamaVoiceLogoMark(
+            containerSize = 56.dp,
+            logoSize = 44.dp,
+            contentDescription = stringResource(R.string.app_name)
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 

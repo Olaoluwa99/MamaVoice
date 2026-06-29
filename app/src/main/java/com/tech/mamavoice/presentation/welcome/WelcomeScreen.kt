@@ -1,13 +1,10 @@
 package com.tech.mamavoice.presentation.welcome
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,15 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.mamavoice.R
+import com.tech.mamavoice.presentation.components.MamaVoiceLogoMark
 import com.tech.mamavoice.presentation.language.LanguagePickerDialog
-import com.tech.mamavoice.ui.theme.MamaTheme
 
 @Composable
 fun WelcomeScreen(
@@ -96,20 +92,11 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         // Brand mark
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .clip(CircleShape)
-                .background(MamaTheme.colors.successContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Mic,
-                contentDescription = "MamaVoice",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(44.dp)
-            )
-        }
+        MamaVoiceLogoMark(
+            containerSize = 96.dp,
+            logoSize = 76.dp,
+            contentDescription = stringResource(R.string.app_name)
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
