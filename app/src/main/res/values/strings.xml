@@ -34,6 +34,17 @@
     <string name="language_select_subtitle">Pick the language you\'d like to use. You can change this anytime in Settings.</string>
     <string name="language_dialog_title">Choose language</string>
 
+    <!-- Onboarding intro carousel (first run, after language, before Welcome) -->
+    <string name="onboard_skip">Skip</string>
+    <string name="action_next">Next</string>
+    <string name="onboard_get_started">Get Started</string>
+    <string name="onboard1_title">Just talk to it</string>
+    <string name="onboard1_body">No reading, no typing. Ask MamaVoice anything about your pregnancy out loud — in your own language.</string>
+    <string name="onboard2_title">Guided, week by week</string>
+    <string name="onboard2_body">Know what\'s happening with you and your baby, and which foods are safe — gently, at your own pace.</string>
+    <string name="onboard3_title">Never miss what matters</string>
+    <string name="onboard3_body">Simple reminders for vaccines and check-ups, plus an easy place to track how you feel.</string>
+
     <!-- Welcome -->
     <string name="welcome_title">Welcome to\nMamaVoice</string>
     <string name="welcome_subtitle">Ask anything about your pregnancy — out loud, in your own language. We\'ll guide you, week by week.</string>

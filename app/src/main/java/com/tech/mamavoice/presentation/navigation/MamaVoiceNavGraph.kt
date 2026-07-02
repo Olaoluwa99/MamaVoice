@@ -47,6 +47,16 @@ fun MamaVoiceNavGraph(
             )
         }
 
+        composable(Screen.Onboarding.route) {
+            com.tech.mamavoice.presentation.onboarding.OnboardingScreen(
+                onFinish = {
+                    navController.navigate(Screen.Welcome.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Welcome.route) {
             WelcomeScreen(
                 onLoginClick = {

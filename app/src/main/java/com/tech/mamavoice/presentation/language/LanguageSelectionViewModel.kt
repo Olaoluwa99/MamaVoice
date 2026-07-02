@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.data.local.AppLanguage
 import com.tech.mamavoice.data.local.LanguageManager
+import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.data.local.TokenManager
 import com.tech.mamavoice.presentation.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageSelectionViewModel @Inject constructor(
     private val languageManager: LanguageManager,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     private val _navigateTo = MutableStateFlow<String?>(null)
@@ -46,6 +48,7 @@ class LanguageSelectionViewModel @Inject constructor(
         val token = tokenManager.authToken.firstOrNull()
         val isExistingUser = tokenManager.isExistingUser.first()
         _navigateTo.value = when {
+            token.isNullOrEmpty() && !settingsManager.hasSeenOnboarding.first() -> Screen.Onboarding.route
             token.isNullOrEmpty() -> Screen.Welcome.route
             !isExistingUser -> Screen.ProfileSetup.route
             else -> Screen.Main.route

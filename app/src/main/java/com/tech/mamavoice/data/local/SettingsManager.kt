@@ -1,6 +1,7 @@
 package com.tech.mamavoice.data.local
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -23,6 +24,7 @@ class SettingsManager @Inject constructor(
     companion object {
         private val THEME_KEY = stringPreferencesKey("app_theme")
         private val LANGUAGE_KEY = stringPreferencesKey("app_language")
+        private val ONBOARDING_SEEN_KEY = booleanPreferencesKey("has_seen_onboarding")
     }
 
     val appTheme: Flow<AppTheme> = context.settingsDataStore.data.map { preferences ->
@@ -56,6 +58,17 @@ class SettingsManager @Inject constructor(
     suspend fun setAppLanguage(language: AppLanguage) {
         context.settingsDataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language.code
+        }
+    }
+
+    /** Whether the first-run intro carousel has been shown. Gates the onboarding step. */
+    val hasSeenOnboarding: Flow<Boolean> = context.settingsDataStore.data.map { preferences ->
+        preferences[ONBOARDING_SEEN_KEY] ?: false
+    }
+
+    suspend fun setOnboardingSeen() {
+        context.settingsDataStore.edit { preferences ->
+            preferences[ONBOARDING_SEEN_KEY] = true
         }
     }
 }

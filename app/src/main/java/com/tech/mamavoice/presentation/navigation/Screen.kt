@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     // Auth flow
     data object Splash : Screen("splash")
     data object LanguageSelection : Screen("language_selection")
+    data object Onboarding : Screen("onboarding")
     data object Welcome : Screen("welcome")
     data object Login : Screen("login")
     data object SignUp : Screen("sign_up")

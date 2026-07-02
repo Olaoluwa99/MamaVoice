@@ -41,12 +41,12 @@ class SplashViewModel @Inject constructor(
             val token = tokenManager.authToken.firstOrNull()
             val isExistingUser = tokenManager.isExistingUser.first()
 
-            _startDestination.value = if (token.isNullOrEmpty()) {
-                Screen.Welcome.route
-            } else if (!isExistingUser) {
-                Screen.ProfileSetup.route
-            } else {
-                Screen.Main.route
+            _startDestination.value = when {
+                // Not logged in and hasn't seen the intro carousel yet → show it first.
+                token.isNullOrEmpty() && !settingsManager.hasSeenOnboarding.first() -> Screen.Onboarding.route
+                token.isNullOrEmpty() -> Screen.Welcome.route
+                !isExistingUser -> Screen.ProfileSetup.route
+                else -> Screen.Main.route
             }
         }
     }
