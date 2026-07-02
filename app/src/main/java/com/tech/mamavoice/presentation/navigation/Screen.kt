@@ -22,6 +22,14 @@ sealed class Screen(val route: String) {
     data object Main : Screen("main")
     data object Profile : Screen("profile_screen")
 
+    /** Full-screen AI voice/text conversation. Optional [ARG_QUERY] pre-submits a text question. */
+    data object Conversation : Screen("conversation?query={query}") {
+        const val ARG_QUERY = "query"
+        fun createRoute(query: String? = null): String =
+            if (query.isNullOrBlank()) "conversation"
+            else "conversation?query=${android.net.Uri.encode(query)}"
+    }
+
     // Individual feature destinations (also reachable inside the Main host's tabs)
     data object FoodDirectory : Screen("food_directory_screen")
     data object ImmunizationTimeline : Screen("immunization_timeline")

@@ -135,7 +135,27 @@ fun MamaVoiceNavGraph(
         // --- Main App Flow (bottom-nav host: Home · Food · Speak · Vaccines · Health) ---
         composable(Screen.Main.route) {
             MainScreen(
-                onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
+                onOpenConversation = { query ->
+                    navController.navigate(Screen.Conversation.createRoute(query))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.Conversation.route,
+            arguments = listOf(
+                androidx.navigation.navArgument(Screen.Conversation.ARG_QUERY) {
+                    type = androidx.navigation.NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString(Screen.Conversation.ARG_QUERY)
+            com.tech.mamavoice.presentation.voice.ConversationScreen(
+                onClose = { navController.navigateUp() },
+                initialQuery = query
             )
         }
 

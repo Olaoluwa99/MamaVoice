@@ -19,17 +19,32 @@ data class DashboardResponse(
     val nextVaccineName: String
 )
 
+/** Body for `POST api/voice/text-query` — a typed health question. Language is profile-driven server-side. */
 @Serializable
-data class AiQueryRequest(
-    val textQuery: String,
-    /** BCP-47 code of the language the AI should answer in (en, pcm, yo, ig, ha). */
-    val language: String = "en"
+data class TextQueryRequest(
+    val textQuery: String
 )
 
+/**
+ * Response for both `POST api/voice/query` (audio) and `POST api/voice/text-query` (text).
+ *
+ * The STT-only fields ([transcript], [sttConfidence], [detectedLanguage], [profileLanguage]) are
+ * present only for the audio endpoint, so everything is nullable and safe for both.
+ */
 @Serializable
-data class AiQueryResponse(
-    val aiResponseText: String,
-    val isDangerSign: Boolean
+data class VoiceQueryResponse(
+    val spokenResponse: String? = null,         // AI answer in the user's native language
+    val spokenResponseEnglish: String? = null,  // same answer in English
+    val riskLevel: String? = null,              // e.g. LOW / MEDIUM / HIGH
+    val aiResponseText: String? = null,         // English answer (fallback text)
+    val isDangerSign: Boolean = false,
+    val language: String? = null,
+    val audioUrl: String? = null,               // native-language TTS clip (MP3)
+    val audioContentType: String? = null,
+    val profileLanguage: String? = null,        // audio endpoint only
+    val detectedLanguage: String? = null,       // audio endpoint only
+    val transcript: String? = null,             // audio endpoint only — what the user said
+    val sttConfidence: Double? = null           // audio endpoint only
 )
 
 @Serializable

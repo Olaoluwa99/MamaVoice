@@ -1,18 +1,21 @@
 package com.tech.mamavoice.data.remote.api
 
-import com.tech.mamavoice.data.remote.dto.AiQueryRequest
-import com.tech.mamavoice.data.remote.dto.AiQueryResponse
 import com.tech.mamavoice.data.remote.dto.ApiResponse
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.data.remote.dto.HealthLog
 import com.tech.mamavoice.data.remote.dto.HealthLogRequest
 import com.tech.mamavoice.data.remote.dto.StatusResponse
+import com.tech.mamavoice.data.remote.dto.TextQueryRequest
 import com.tech.mamavoice.data.remote.dto.VaccineItem
 import com.tech.mamavoice.data.remote.dto.VaccineLogRequest
+import com.tech.mamavoice.data.remote.dto.VoiceQueryResponse
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 import com.tech.mamavoice.data.remote.dto.AppEnumsWrapperResponse
@@ -26,10 +29,18 @@ interface MamaVoiceApiService {
     @GET("api/dashboard")
     suspend fun getDashboard(): ApiResponse<DashboardResponse>
 
-    @POST("api/ai/query")
-    suspend fun queryAi(
-        @Body request: AiQueryRequest
-    ): ApiResponse<AiQueryResponse>
+    /** Upload a voice recording; server does STT + AI + native-language TTS. */
+    @Multipart
+    @POST("api/voice/query")
+    suspend fun voiceQuery(
+        @Part audio: MultipartBody.Part
+    ): ApiResponse<VoiceQueryResponse>
+
+    /** Submit a typed health question; server does AI + native-language TTS. */
+    @POST("api/voice/text-query")
+    suspend fun textQuery(
+        @Body request: TextQueryRequest
+    ): ApiResponse<VoiceQueryResponse>
 
     @GET("api/foods")
     suspend fun getFoods(

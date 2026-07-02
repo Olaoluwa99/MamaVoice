@@ -2,8 +2,6 @@ package com.tech.mamavoice.data.repository
 
 import com.tech.mamavoice.data.local.TokenManager
 import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
-import com.tech.mamavoice.data.remote.dto.AiQueryRequest
-import com.tech.mamavoice.data.remote.dto.AiQueryResponse
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.repository.DashboardRepository
 import com.tech.mamavoice.domain.util.Resource
@@ -25,21 +23,6 @@ class DashboardRepositoryImpl @Inject constructor(
     override suspend fun getDashboard(): Resource<DashboardResponse> {
         return try {
             val response = apiService.getDashboard()
-            if (response.success) {
-                Resource.Success(response.data)
-            } else {
-                Resource.Error(response.message)
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
-        }
-    }
-
-    override suspend fun queryAi(textQuery: String, language: String): Resource<AiQueryResponse> {
-        return try {
-            val response = apiService.queryAi(
-                request = AiQueryRequest(textQuery = textQuery, language = language)
-            )
             if (response.success) {
                 Resource.Success(response.data)
             } else {

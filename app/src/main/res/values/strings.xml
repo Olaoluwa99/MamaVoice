@@ -110,12 +110,28 @@
     <string name="suggestion_ugu">\"Is ugu safe to eat?\"</string>
     <string name="suggestion_baby_size">\"How big is my baby?\"</string>
 
-    <!-- Voice assistant overlay -->
+    <!-- Voice assistant / conversation -->
     <string name="voice_status_listening">Listening…</string>
     <string name="voice_status_speaking">Speaking…</string>
+    <string name="voice_status_prompt">Tap the mic to talk</string>
     <string name="voice_input_placeholder">Type or tap mic…</string>
+    <string name="voice_type_placeholder">Type a question…</string>
+    <string name="voice_tap_to_stop">Tap to stop</string>
+    <string name="voice_replay">Replay</string>
+    <string name="voice_show_english">Show English</string>
+    <string name="voice_show_original">Show original</string>
+    <string name="voice_danger_label">Please seek care</string>
+    <string name="voice_empty_title">I\'m listening</string>
+    <string name="voice_empty_subtitle">Ask me anything about your pregnancy — out loud or by typing.</string>
+    <string name="voice_error_generic">Something went wrong. Please try again.</string>
     <string name="chat_thinking">Thinking…</string>
     <string name="chat_error_prefix">Error: %1$s</string>
+    <string name="cd_send">Send</string>
+    <string name="cd_stop">Stop</string>
+
+    <!-- Conversation suggestion chips — review with a translator for natural phrasing -->
+    <string name="suggestion_foods_help">\"What foods help?\"</string>
+    <string name="suggestion_signs_labour">\"Signs of labour\"</string>
 
     <!-- Food directory -->
     <string name="food_guide_title">Food guide</string>

@@ -1,21 +1,21 @@
 package com.tech.mamavoice.presentation.dashboard
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tech.mamavoice.R
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
@@ -35,8 +34,9 @@ import com.tech.mamavoice.ui.theme.MamaTheme
 
 /**
  * Home tab — voice-first landing screen.
- * Greeting card + pulsing mic + quick suggestion chips. Purely presentational;
- * all voice orchestration is hoisted to [com.tech.mamavoice.presentation.main.MainScreen].
+ * Greeting card + pulsing mic + quick suggestion chips. Purely presentational; the mic and chips
+ * open the full-screen conversation via callbacks hoisted to
+ * [com.tech.mamavoice.presentation.main.MainScreen].
  */
 @Composable
 fun HomeScreen(
@@ -301,179 +301,5 @@ private fun SuggestionChip(text: String, onClick: (String) -> Unit) {
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
         )
-    }
-}
-
-// =====================================================================================
-//  Voice assistant overlay (bottom sheet) — hosted by MainScreen.
-// =====================================================================================
-
-@Composable
-fun VoiceAssistantBottomSheetContent(
-    isRecording: Boolean,
-    isPlayingTts: Boolean,
-    chatHistory: List<ChatMessage>,
-    draftQuery: String,
-    onDraftQueryChange: (String) -> Unit,
-    onSubmitClicked: () -> Unit,
-    onMicClicked: () -> Unit,
-    onStopTtsClicked: () -> Unit,
-    onCloseClicked: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(bottom = 20.dp)
-    ) {
-        // Header row: close + status pill
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onCloseClicked) {
-                Icon(Icons.Filled.Stop, contentDescription = stringResource(R.string.cd_close), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Text(
-                    text = if (isRecording) stringResource(R.string.voice_status_listening) else if (isPlayingTts) stringResource(R.string.voice_status_speaking) else stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.width(48.dp))
-        }
-
-        LazyColumn(
-            modifier = Modifier.weight(1f).fillMaxWidth()
-        ) {
-            items(chatHistory) { message ->
-                ChatBubble(message = message)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = draftQuery,
-                onValueChange = onDraftQueryChange,
-                placeholder = { Text(if (isRecording) stringResource(R.string.voice_status_listening) else stringResource(R.string.voice_input_placeholder)) },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                ),
-                maxLines = 3
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-            val scale by infiniteTransition.animateFloat(
-                initialValue = 1f,
-                targetValue = if (isRecording || isPlayingTts) 1.2f else 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(800, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse
-                ),
-                label = "pulseAnimation"
-            )
-
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(56.dp)) {
-                if (isRecording || isPlayingTts) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .scale(scale)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        if (isPlayingTts) onStopTtsClicked()
-                        else if (draftQuery.isNotBlank()) onSubmitClicked()
-                        else onMicClicked()
-                    },
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
-                        imageVector = when {
-                            isPlayingTts -> Icons.Filled.Stop
-                            draftQuery.isNotBlank() -> Icons.Filled.Send
-                            else -> Icons.Filled.Mic
-                        },
-                        contentDescription = stringResource(R.string.cd_action),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ChatBubble(message: ChatMessage) {
-    val isUser = message.isUser
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
-    ) {
-        if (!isUser && message.isDangerSign) {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                ),
-                shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp),
-                modifier = Modifier.fillMaxWidth(0.85f)
-            ) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Filled.Warning, contentDescription = stringResource(R.string.cd_warning), tint = MaterialTheme.colorScheme.error)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = message.text, style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        } else {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                ),
-                shape = RoundedCornerShape(
-                    topStart = 20.dp,
-                    topEnd = 20.dp,
-                    bottomStart = if (isUser) 20.dp else 4.dp,
-                    bottomEnd = if (isUser) 4.dp else 20.dp
-                ),
-                modifier = Modifier.widthIn(max = 300.dp)
-            ) {
-                Text(
-                    text = message.text,
-                    modifier = Modifier.padding(14.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
     }
 }
