@@ -9,9 +9,15 @@ import java.io.File
  * native-language answer, an English answer, a risk level, and a TTS audio URL.
  */
 interface VoiceRepository {
-    /** Uploads a recorded audio file; server transcribes, answers, and speaks it back. */
-    suspend fun voiceQuery(audio: File): Resource<VoiceQueryResponse>
+    /**
+     * Uploads a recorded audio file; server transcribes, answers, and speaks it back.
+     * Pass [conversationId] to continue an existing chat, or null to start a new one.
+     */
+    suspend fun voiceQuery(audio: File, conversationId: String? = null): Resource<VoiceQueryResponse>
 
-    /** Submits a typed question; server answers and speaks it back. */
-    suspend fun textQuery(text: String): Resource<VoiceQueryResponse>
+    /**
+     * Submits a typed question; server answers and speaks it back.
+     * Pass [conversationId] to continue an existing chat, or null to start a new one.
+     */
+    suspend fun textQuery(text: String, conversationId: String? = null): Resource<VoiceQueryResponse>
 }

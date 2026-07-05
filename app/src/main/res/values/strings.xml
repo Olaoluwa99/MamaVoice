@@ -140,6 +140,14 @@
     <string name="cd_send">Send</string>
     <string name="cd_stop">Stop</string>
 
+    <!-- Conversation history drawer -->
+    <string name="history_title">Chats</string>
+    <string name="history_new_chat">New chat</string>
+    <string name="history_empty">No chats yet</string>
+    <string name="history_untitled">New conversation</string>
+    <string name="cd_history">Chat history</string>
+    <string name="cd_delete">Delete</string>
+
     <!-- Conversation suggestion chips — review with a translator for natural phrasing -->
     <string name="suggestion_foods_help">\"What foods help?\"</string>
     <string name="suggestion_signs_labour">\"Signs of labour\"</string>

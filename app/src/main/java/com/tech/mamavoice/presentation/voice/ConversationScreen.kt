@@ -13,7 +13,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
@@ -30,11 +33,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.text.format.DateUtils
 import com.tech.mamavoice.R
+import com.tech.mamavoice.data.remote.dto.ConversationSummaryDto
 import com.tech.mamavoice.ui.theme.MamaTheme
+import kotlinx.coroutines.launch
 
 /**
  * Full-screen AI health conversation. Voice-first: record → upload → play native-language reply,
@@ -52,6 +59,11 @@ fun ConversationScreen(
     val draft by viewModel.draft.collectAsState()
     val amplitudes by viewModel.amplitudes.collectAsState()
     val playingId by viewModel.playingMessageId.collectAsState()
+    val history by viewModel.history.collectAsState()
+    val activeId by viewModel.conversationId.collectAsState()
+
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -76,83 +88,259 @@ fun ConversationScreen(
         }
     }
 
+    // Load the first page of history the first time the drawer is opened.
+    LaunchedEffect(Unit) {
+        snapshotFlow { drawerState.isOpen }.collect { open ->
+            val h = viewModel.history.value
+            if (open && h.items.isEmpty() && !h.isLoading) {
+                viewModel.loadConversations(refresh = true)
+            }
+        }
+    }
+
     val listState = rememberLazyListState()
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(messages.size - 1)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
-            .imePadding()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            HistoryDrawer(
+                history = history,
+                activeId = activeId,
+                onNewChat = {
+                    scope.launch { drawerState.close() }
+                    viewModel.startNewConversation()
+                },
+                onOpen = { id ->
+                    scope.launch { drawerState.close() }
+                    viewModel.openConversation(id)
+                },
+                onDelete = viewModel::deleteConversation,
+                onLoadMore = { viewModel.loadConversations() }
+            )
+        }
     ) {
-        // Top bar: close + status pill
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarsPadding()
+                .imePadding()
+        ) {
+            // Top bar: history · status pill · close
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                    Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.cd_history), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                StatusPill(state)
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = {
+                        viewModel.cancelRecording()
+                        viewModel.stopAudio()
+                        onClose()
+                    }
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_close), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+
+            // Conversation
+            if (messages.isEmpty()) {
+                EmptyConversation(
+                    modifier = Modifier.weight(1f),
+                    onSuggestion = { viewModel.submitText(it) }
+                )
+            } else {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(messages, key = { it.id }) { message ->
+                        ChatBubble(
+                            message = message,
+                            isPlaying = playingId == message.id,
+                            onReplay = { viewModel.playMessage(message) },
+                            onStop = { viewModel.stopAudio() },
+                            onToggleEnglish = { viewModel.toggleEnglish(message.id) }
+                        )
+                    }
+                }
+            }
+
+            // Bottom controls
+            if (state == VoiceState.RECORDING) {
+                RecordingControls(
+                    amplitudes = amplitudes,
+                    onStop = { viewModel.stopRecordingAndSend() }
+                )
+            } else {
+                InputControls(
+                    draft = draft,
+                    isProcessing = state == VoiceState.PROCESSING,
+                    onDraftChange = viewModel::updateDraft,
+                    onSend = { viewModel.submitText(draft) },
+                    onMic = { recordWithPermission() }
+                )
+            }
+        }
+    }
+}
+
+/** History drawer: a "new chat" action plus the paginated list of past conversations. */
+@Composable
+private fun HistoryDrawer(
+    history: ConversationHistoryUiState,
+    activeId: String?,
+    onNewChat: () -> Unit,
+    onOpen: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onLoadMore: () -> Unit
+) {
+    ModalDrawerSheet {
+        val listState = rememberLazyListState()
+
+        // Load the next page when the user nears the end of the loaded rows.
+        LaunchedEffect(listState) {
+            snapshotFlow {
+                val info = listState.layoutInfo
+                (info.visibleItemsInfo.lastOrNull()?.index ?: -1) to info.totalItemsCount
+            }.collect { (lastVisible, total) ->
+                if (total > 0 && lastVisible >= total - 3) onLoadMore()
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(start = 24.dp, end = 12.dp, top = 20.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = {
-                    viewModel.cancelRecording()
-                    viewModel.stopAudio()
-                    onClose()
-                }
-            ) {
-                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_close), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = stringResource(R.string.history_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onNewChat) {
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.history_new_chat), tint = MaterialTheme.colorScheme.primary)
             }
-            Spacer(modifier = Modifier.weight(1f))
-            StatusPill(state)
-            Spacer(modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.width(48.dp))
         }
 
-        // Conversation
-        if (messages.isEmpty()) {
-            EmptyConversation(
-                modifier = Modifier.weight(1f),
-                onSuggestion = { viewModel.submitText(it) }
+        if (history.items.isEmpty() && !history.isLoading) {
+            Text(
+                text = stringResource(R.string.history_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp)
             )
         } else {
             LazyColumn(
                 state = listState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                items(messages, key = { it.id }) { message ->
-                    ChatBubble(
-                        message = message,
-                        isPlaying = playingId == message.id,
-                        onReplay = { viewModel.playMessage(message) },
-                        onStop = { viewModel.stopAudio() },
-                        onToggleEnglish = { viewModel.toggleEnglish(message.id) }
+                items(history.items, key = { it.id }) { item ->
+                    ConversationRow(
+                        item = item,
+                        selected = item.id == activeId,
+                        onClick = { onOpen(item.id) },
+                        onDelete = { onDelete(item.id) }
                     )
+                }
+                if (history.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
                 }
             }
         }
+    }
+}
 
-        // Bottom controls
-        if (state == VoiceState.RECORDING) {
-            RecordingControls(
-                amplitudes = amplitudes,
-                onStop = { viewModel.stopRecordingAndSend() }
+@Composable
+private fun ConversationRow(
+    item: ConversationSummaryDto,
+    selected: Boolean,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val background = if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 2.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(background)
+            .clickable(onClick = onClick)
+            .padding(start = 12.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.title?.takeIf { it.isNotBlank() } ?: stringResource(R.string.history_untitled),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-        } else {
-            InputControls(
-                draft = draft,
-                isProcessing = state == VoiceState.PROCESSING,
-                onDraftChange = viewModel::updateDraft,
-                onSend = { viewModel.submitText(draft) },
-                onMic = { recordWithPermission() }
-            )
+            val time = formatRelativeTime(item.lastMessageAt ?: item.updatedAt)
+            if (time.isNotBlank()) {
+                Text(
+                    text = time,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        IconButton(onClick = onDelete) {
+            Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         }
     }
+}
+
+/** Formats an ISO-8601 timestamp as a localized relative time (e.g. "2 days ago"); "" if unparseable. */
+private fun formatRelativeTime(iso: String?): String {
+    val millis = parseIsoMillis(iso) ?: return ""
+    return DateUtils.getRelativeTimeSpanString(
+        millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS
+    ).toString()
+}
+
+private fun parseIsoMillis(iso: String?): Long? {
+    if (iso.isNullOrBlank()) return null
+    // SimpleDateFormat rather than java.time — minSdk 24 has no core-library desugaring.
+    val patterns = arrayOf("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    for (pattern in patterns) {
+        try {
+            val format = java.text.SimpleDateFormat(pattern, java.util.Locale.US).apply {
+                timeZone = java.util.TimeZone.getTimeZone("UTC")
+            }
+            return format.parse(iso)?.time
+        } catch (_: Exception) { /* try the next pattern */ }
+    }
+    return null
 }
 
 @Composable

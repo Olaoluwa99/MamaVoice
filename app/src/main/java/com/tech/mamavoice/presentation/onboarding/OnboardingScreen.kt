@@ -106,6 +106,7 @@ fun OnboardingScreen(
 
         HorizontalPager(
             state = pagerState,
+            pageSpacing = 16.dp,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()

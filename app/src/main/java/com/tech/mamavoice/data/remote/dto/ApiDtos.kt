@@ -1,6 +1,8 @@
 package com.tech.mamavoice.data.remote.dto
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 data class ApiResponse<T>(
@@ -19,10 +21,14 @@ data class DashboardResponse(
     val nextVaccineName: String
 )
 
-/** Body for `POST api/voice/text-query` — a typed health question. Language is profile-driven server-side. */
+/**
+ * Body for `POST api/voice/text-query` — a typed health question. Language is profile-driven
+ * server-side. [conversationId] continues an existing chat; null starts a new one.
+ */
 @Serializable
 data class TextQueryRequest(
-    val textQuery: String
+    val textQuery: String,
+    val conversationId: String? = null
 )
 
 /**
@@ -44,7 +50,82 @@ data class VoiceQueryResponse(
     val profileLanguage: String? = null,        // audio endpoint only
     val detectedLanguage: String? = null,       // audio endpoint only
     val transcript: String? = null,             // audio endpoint only — what the user said
-    val sttConfidence: Double? = null           // audio endpoint only
+    val sttConfidence: Double? = null,          // audio endpoint only
+    val conversationId: String? = null          // id of the chat this turn belongs to
+)
+
+// --- Conversation history ----------------------------------------------------------------------
+
+/** Pagination envelope shared by the conversation list and detail endpoints. */
+@Serializable
+data class PaginationDto(
+    val page: Int = 1,
+    val limit: Int = 10,
+    val total: Int = 0,
+    val totalPages: Int = 0,
+    val hasMore: Boolean = false
+)
+
+/** One row in the conversation history list. */
+@Serializable
+data class ConversationSummaryDto(
+    val id: String,
+    val title: String? = null,
+    val lastMessageAt: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+)
+
+/** Response for `GET api/conversations`. */
+@Serializable
+data class ConversationListResponse(
+    val conversations: List<ConversationSummaryDto> = emptyList(),
+    val pagination: PaginationDto = PaginationDto()
+)
+
+/**
+ * A single stored message. Fields mirror [VoiceQueryResponse] where they overlap.
+ *
+ * [audioUrl] is kept as a raw [JsonElement] because the endpoint has been observed returning an
+ * empty object (`{}`) as well as a URL string; read it through [audioUrlOrNull] to stay safe.
+ */
+@Serializable
+data class ConversationMessageDto(
+    val id: String,
+    val role: String? = null,                   // "user" | "assistant"
+    val content: String? = null,
+    val spokenResponse: String? = null,
+    val spokenResponseEnglish: String? = null,
+    val language: String? = null,
+    val riskLevel: String? = null,
+    val isDangerSign: Boolean = false,
+    val inputType: String? = null,              // "text" | "audio"
+    val audioUrl: JsonElement? = null,
+    val audioContentType: String? = null,
+    val sttConfidence: Double? = null,
+    val createdAt: String? = null
+) {
+    /** The audio URL when the server sent a plain string; null for an empty object or absent value. */
+    val audioUrlOrNull: String?
+        get() = (audioUrl as? JsonPrimitive)?.takeIf { it.isString }?.content
+}
+
+/** Response for `GET api/conversations/{id}` — summary plus a page of messages. */
+@Serializable
+data class ConversationDetailResponse(
+    val id: String,
+    val title: String? = null,
+    val lastMessageAt: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+    val messages: List<ConversationMessageDto> = emptyList(),
+    val pagination: PaginationDto = PaginationDto()
+)
+
+/** Response for `DELETE api/conversations/{id}`. */
+@Serializable
+data class DeleteConversationResponse(
+    val success: Boolean = false
 )
 
 @Serializable

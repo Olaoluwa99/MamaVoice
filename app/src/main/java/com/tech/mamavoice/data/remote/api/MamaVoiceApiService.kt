@@ -10,15 +10,21 @@ import com.tech.mamavoice.data.remote.dto.VaccineItem
 import com.tech.mamavoice.data.remote.dto.VaccineLogRequest
 import com.tech.mamavoice.data.remote.dto.VoiceQueryResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 import com.tech.mamavoice.data.remote.dto.AppEnumsWrapperResponse
+import com.tech.mamavoice.data.remote.dto.ConversationDetailResponse
+import com.tech.mamavoice.data.remote.dto.ConversationListResponse
+import com.tech.mamavoice.data.remote.dto.DeleteConversationResponse
 import com.tech.mamavoice.data.remote.dto.FoodsResponseData
 
 interface MamaVoiceApiService {
@@ -29,11 +35,15 @@ interface MamaVoiceApiService {
     @GET("api/dashboard")
     suspend fun getDashboard(): ApiResponse<DashboardResponse>
 
-    /** Upload a voice recording; server does STT + AI + native-language TTS. */
+    /**
+     * Upload a voice recording; server does STT + AI + native-language TTS.
+     * [conversationId] continues an existing chat; omit it to start a new one.
+     */
     @Multipart
     @POST("api/voice/query")
     suspend fun voiceQuery(
-        @Part audio: MultipartBody.Part
+        @Part audio: MultipartBody.Part,
+        @Part("conversationId") conversationId: RequestBody? = null
     ): ApiResponse<VoiceQueryResponse>
 
     /** Submit a typed health question; server does AI + native-language TTS. */
@@ -41,6 +51,27 @@ interface MamaVoiceApiService {
     suspend fun textQuery(
         @Body request: TextQueryRequest
     ): ApiResponse<VoiceQueryResponse>
+
+    /** List the user's conversations, most-recent first, paginated. */
+    @GET("api/conversations")
+    suspend fun getConversations(
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+    ): ApiResponse<ConversationListResponse>
+
+    /** Fetch one conversation with a page of its message history. */
+    @GET("api/conversations/{id}")
+    suspend fun getConversation(
+        @Path("id") id: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+    ): ApiResponse<ConversationDetailResponse>
+
+    /** Delete a conversation and all of its messages. */
+    @DELETE("api/conversations/{id}")
+    suspend fun deleteConversation(
+        @Path("id") id: String
+    ): ApiResponse<DeleteConversationResponse>
 
     @GET("api/foods")
     suspend fun getFoods(

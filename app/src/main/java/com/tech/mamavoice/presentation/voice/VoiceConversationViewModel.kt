@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.data.audio.AudioPlayer
 import com.tech.mamavoice.data.audio.AudioRecorder
+import com.tech.mamavoice.data.remote.dto.ConversationSummaryDto
 import com.tech.mamavoice.data.remote.dto.VoiceQueryResponse
+import com.tech.mamavoice.domain.repository.ConversationRepository
 import com.tech.mamavoice.domain.repository.VoiceRepository
 import com.tech.mamavoice.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,9 +59,19 @@ data class ChatMessage(
 private const val AMPLITUDE_BUFFER = 40
 private const val AMPLITUDE_POLL_MS = 80L
 
+/** Drawer-side state: the paginated list of past conversations. */
+data class ConversationHistoryUiState(
+    val items: List<ConversationSummaryDto> = emptyList(),
+    val isLoading: Boolean = false,
+    val page: Int = 0,          // last page loaded; 0 = not loaded yet
+    val hasMore: Boolean = true,
+    val error: String? = null
+)
+
 @HiltViewModel
 class VoiceConversationViewModel @Inject constructor(
     private val repository: VoiceRepository,
+    private val conversationRepository: ConversationRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -82,6 +94,14 @@ class VoiceConversationViewModel @Inject constructor(
     /** Id of the assistant message whose audio is currently playing, if any. */
     private val _playingMessageId = MutableStateFlow<String?>(null)
     val playingMessageId: StateFlow<String?> = _playingMessageId.asStateFlow()
+
+    /** Id of the chat currently on screen; null means an unsaved new chat. */
+    private val _conversationId = MutableStateFlow<String?>(null)
+    val conversationId: StateFlow<String?> = _conversationId.asStateFlow()
+
+    /** The history drawer's list of past conversations. */
+    private val _history = MutableStateFlow(ConversationHistoryUiState())
+    val history: StateFlow<ConversationHistoryUiState> = _history.asStateFlow()
 
     private var recordingFile: File? = null
     private var amplitudeJob: Job? = null
@@ -126,7 +146,7 @@ class VoiceConversationViewModel @Inject constructor(
         _state.value = VoiceState.PROCESSING
         val loadingId = appendLoading()
         viewModelScope.launch {
-            val result = repository.voiceQuery(file)
+            val result = repository.voiceQuery(file, _conversationId.value)
             file.delete()
             recordingFile = null
             handleResult(result, loadingId, userSpokenText = null)
@@ -172,7 +192,7 @@ class VoiceConversationViewModel @Inject constructor(
         _state.value = VoiceState.PROCESSING
         val loadingId = appendLoading()
         viewModelScope.launch {
-            val result = repository.textQuery(query)
+            val result = repository.textQuery(query, _conversationId.value)
             handleResult(result, loadingId, userSpokenText = null)
         }
     }
@@ -188,6 +208,8 @@ class VoiceConversationViewModel @Inject constructor(
 
         if (result is Resource.Success && result.data != null) {
             val data = result.data
+            // Remember which chat this turn belongs to so follow-ups stay in the same conversation.
+            data.conversationId?.let { _conversationId.value = it }
             // For voice queries the transcript is what the user said — show it as their bubble.
             val transcript = data.transcript?.takeIf { it.isNotBlank() } ?: userSpokenText
             if (transcript != null) {
@@ -202,6 +224,9 @@ class VoiceConversationViewModel @Inject constructor(
                 audioUrl = data.audioUrl
             )
             _messages.update { it + assistant }
+
+            // Keep the drawer in sync (new title / new-conversation row / re-ordering) if it's open.
+            if (_history.value.page > 0) loadConversations(refresh = true)
 
             if (!assistant.audioUrl.isNullOrBlank()) {
                 playMessage(assistant)
@@ -223,6 +248,89 @@ class VoiceConversationViewModel @Inject constructor(
     private fun appendError(message: String? = null) {
         _messages.update { list ->
             list.filterNot { it.isLoading } + ChatMessage(isUser = false, isError = true, text = message)
+        }
+    }
+
+    // --- Conversation history ------------------------------------------------------------------
+
+    /**
+     * Loads a page of past conversations for the drawer. Call with [refresh] = true to reload from
+     * the first page (e.g. on drawer open or after a new turn); otherwise it appends the next page.
+     */
+    fun loadConversations(refresh: Boolean = false) {
+        val current = _history.value
+        if (current.isLoading) return
+        if (!refresh && current.page > 0 && !current.hasMore) return
+
+        val nextPage = if (refresh) 1 else current.page + 1
+        _history.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            when (val result = conversationRepository.getConversations(page = nextPage)) {
+                is Resource.Success -> {
+                    val data = result.data
+                    val incoming = data?.conversations.orEmpty()
+                    _history.update { state ->
+                        val merged = if (refresh) incoming else state.items + incoming
+                        state.copy(
+                            items = merged.distinctBy { it.id },
+                            isLoading = false,
+                            page = data?.pagination?.page ?: nextPage,
+                            hasMore = data?.pagination?.hasMore ?: false,
+                            error = null
+                        )
+                    }
+                }
+                is Resource.Error -> _history.update { it.copy(isLoading = false, error = result.message) }
+                is Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /** Loads the full (paginated) history of [id] into the chat and makes it the active conversation. */
+    fun openConversation(id: String) {
+        if (_conversationId.value == id && _messages.value.isNotEmpty()) return
+        stopAudio()
+        _conversationId.value = id
+        _messages.value = emptyList()
+        _state.value = VoiceState.PROCESSING
+        val loadingId = appendLoading()
+        viewModelScope.launch {
+            when (val result = conversationRepository.getConversation(id)) {
+                is Resource.Success -> {
+                    // Assumes the API returns messages in chronological (oldest→newest) display order.
+                    val loaded = result.data?.messages.orEmpty().map { it.toChatMessage() }
+                    _messages.value = loaded
+                    _state.value = VoiceState.IDLE
+                }
+                is Resource.Error -> {
+                    _messages.update { list -> list.filterNot { it.id == loadingId } }
+                    appendError(result.message)
+                    _state.value = VoiceState.IDLE
+                }
+                is Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /** Clears the screen to a fresh, unsaved conversation. */
+    fun startNewConversation() {
+        stopAudio()
+        _conversationId.value = null
+        _messages.value = emptyList()
+        _draft.value = ""
+        _state.value = VoiceState.IDLE
+    }
+
+    /** Deletes [id]; removes it from the drawer and resets the screen if it was the open one. */
+    fun deleteConversation(id: String) {
+        viewModelScope.launch {
+            when (conversationRepository.deleteConversation(id)) {
+                is Resource.Success -> {
+                    _history.update { state -> state.copy(items = state.items.filterNot { it.id == id }) }
+                    if (_conversationId.value == id) startNewConversation()
+                }
+                is Resource.Error, is Resource.Loading -> Unit
+            }
         }
     }
 
