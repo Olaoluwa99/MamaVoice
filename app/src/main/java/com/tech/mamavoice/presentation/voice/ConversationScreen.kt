@@ -127,7 +127,10 @@ fun ConversationScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .statusBarsPadding()
-                .imePadding()
+                // Pad the bottom once, by whichever is larger: the keyboard or the nav bar.
+                // The IME inset already spans the nav-bar region when the keyboard is open, so
+                // taking the union avoids stacking nav-bar padding on top of the keyboard height.
+                .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars))
         ) {
             // Top bar: history · status pill · close
             Row(
@@ -560,7 +563,6 @@ private fun RecordingControls(amplitudes: List<Float>, onStop: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -597,7 +599,6 @@ private fun InputControls(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
