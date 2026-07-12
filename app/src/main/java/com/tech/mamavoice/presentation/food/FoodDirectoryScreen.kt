@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.FoodItem
+import com.tech.mamavoice.ui.theme.LightExtraColors
 import com.tech.mamavoice.ui.theme.MamaExtraColors
 import com.tech.mamavoice.ui.theme.MamaTheme
 
@@ -178,6 +179,9 @@ private fun FilterChipPill(label: String, selected: Boolean, onClick: () -> Unit
 @Composable
 fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
     val (bg, fg) = categoryColors(food.category, MamaTheme.colors)
+    // The category tag sits on a fixed near-white pill, so it always needs a dark on-color —
+    // the theme's onCard* is near-white in dark mode and would be invisible here.
+    val tagFg = categoryColors(food.category, LightExtraColors).second
 
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -217,7 +221,7 @@ fun FoodItemCard(food: FoodItem, onClick: () -> Unit) {
                         text = categoryTag(food.category),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = fg,
+                        color = tagFg,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                 }

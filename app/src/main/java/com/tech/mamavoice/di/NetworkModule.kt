@@ -18,6 +18,7 @@ import javax.inject.Singleton
 
 import javax.inject.Named
 import com.tech.mamavoice.data.remote.interceptor.AuthInterceptor
+import com.tech.mamavoice.data.remote.interceptor.LanguageInterceptor
 import com.tech.mamavoice.data.remote.interceptor.TokenAuthenticator
 
 @Module
@@ -58,10 +59,12 @@ object NetworkModule {
     fun provideMainOkHttpClient(
         @Named("AuthClient") authClient: OkHttpClient,
         authInterceptor: AuthInterceptor,
+        languageInterceptor: LanguageInterceptor,
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         return authClient.newBuilder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(languageInterceptor)
             .authenticator(tokenAuthenticator)
             .build()
     }

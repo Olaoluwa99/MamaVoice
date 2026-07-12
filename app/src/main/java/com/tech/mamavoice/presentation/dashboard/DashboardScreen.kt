@@ -292,7 +292,8 @@ private fun SuggestionChip(text: String, onClick: (String) -> Unit) {
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.clickable { onClick(text) }
+        // The label carries display quotes (e.g. "Is ugu safe?"); send the query without them.
+        modifier = Modifier.clickable { onClick(text.trim('"')) }
     ) {
         Text(
             text = text,
