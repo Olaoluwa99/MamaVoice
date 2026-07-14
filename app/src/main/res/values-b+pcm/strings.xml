@@ -188,4 +188,45 @@
     <string name="field_select_date">Pick a date</string>
     <string name="field_state">State</string>
     <string name="field_lga">LGA</string>
+
+    <!-- Common actions (added) -->
+    <string name="action_next">Next</string>
+
+    <!-- Content descriptions (added) -->
+    <string name="cd_delete">Delete</string>
+    <string name="cd_history">Chat history</string>
+    <string name="cd_send">Send</string>
+    <string name="cd_stop">Stop</string>
+
+    <!-- Onboarding -->
+    <string name="onboard1_title">Just talk to am</string>
+    <string name="onboard1_body">No reading, no typing. Ask MamaVoice anytin about your belle by mouth — for your own language.</string>
+    <string name="onboard2_title">Guide, week by week</string>
+    <string name="onboard2_body">Know wetin dey happen to you and your baby, and which food safe — softly softly, for your own pace.</string>
+    <string name="onboard3_title">No miss wetin matter</string>
+    <string name="onboard3_body">Simple reminder for vaccines and check-up, plus easy place to track how you dey feel.</string>
+    <string name="onboard_get_started">Get Started</string>
+    <string name="onboard_skip">Skip</string>
+
+    <!-- Home suggestions (added) -->
+    <string name="suggestion_foods_help">"Which food dey help?"</string>
+    <string name="suggestion_signs_labour">"Signs of labour"</string>
+
+    <!-- Voice assistant (added) -->
+    <string name="voice_status_prompt">Tap the mic make you talk</string>
+    <string name="voice_type_placeholder">Type your question…</string>
+    <string name="voice_empty_title">I dey listen</string>
+    <string name="voice_empty_subtitle">Ask me anytin about your belle — by mouth or by typing.</string>
+    <string name="voice_replay">Play am again</string>
+    <string name="voice_show_english">Show English</string>
+    <string name="voice_show_original">Show original</string>
+    <string name="voice_danger_label">Abeg go find care</string>
+    <string name="voice_error_generic">Something no work. Abeg try again.</string>
+    <string name="voice_tap_to_stop">Tap to stop</string>
+
+    <!-- Chat history -->
+    <string name="history_title">Chats</string>
+    <string name="history_new_chat">New chat</string>
+    <string name="history_empty">No chat yet</string>
+    <string name="history_untitled">New conversation</string>
 </resources>

@@ -221,7 +221,7 @@ class VoiceConversationViewModel @Inject constructor(
                 englishText = data.spokenResponseEnglish ?: data.aiResponseText,
                 riskLevel = data.riskLevel,
                 isDangerSign = data.isDangerSign,
-                audioUrl = data.audioUrl
+                audioUrl = data.audioUrlOrNull
             )
             _messages.update { it + assistant }
 

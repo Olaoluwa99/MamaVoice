@@ -45,14 +45,20 @@ data class VoiceQueryResponse(
     val aiResponseText: String? = null,         // English answer (fallback text)
     val isDangerSign: Boolean = false,
     val language: String? = null,
-    val audioUrl: String? = null,               // native-language TTS clip (MP3)
+    // Native-language TTS clip. The endpoint returns either a URL string, an empty object `{}`,
+    // or null, so it is decoded as a raw element and read through [audioUrlOrNull].
+    val audioUrl: JsonElement? = null,
     val audioContentType: String? = null,
     val profileLanguage: String? = null,        // audio endpoint only
     val detectedLanguage: String? = null,       // audio endpoint only
     val transcript: String? = null,             // audio endpoint only — what the user said
     val sttConfidence: Double? = null,          // audio endpoint only
     val conversationId: String? = null          // id of the chat this turn belongs to
-)
+) {
+    /** The audio URL when the server sent a plain string; null for an empty object or absent value. */
+    val audioUrlOrNull: String?
+        get() = (audioUrl as? JsonPrimitive)?.takeIf { it.isString }?.content
+}
 
 // --- Conversation history ----------------------------------------------------------------------
 

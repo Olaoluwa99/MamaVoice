@@ -12,12 +12,12 @@ package com.tech.mamavoice.data.local
  * onboarding picker before any locale has been applied.
  *
  * [apiLang] is the value the backend's `lang` query param expects (its English name), or `null`
- * for languages the API doesn't localize content into (e.g. Pidgin), in which case the request
- * omits `lang` and the server falls back to the profile language, then English.
+ * for languages the API doesn't localize content into, in which case the request omits `lang`
+ * and the server falls back to the profile language, then English.
  */
 enum class AppLanguage(val code: String, val displayName: String, val apiLang: String?) {
     ENGLISH("en", "English", "English"),
-    PIDGIN("pcm", "Pidgin", null),
+    PIDGIN("pcm", "Pidgin", "Pidgin"),
     YORUBA("yo", "Yorùbá", "Yoruba"),
     IGBO("ig", "Igbo", "Igbo"),
     HAUSA("ha", "Hausa", "Hausa");

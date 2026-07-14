@@ -190,4 +190,45 @@
     <string name="field_select_date">Zaɓi rana</string>
     <string name="field_state">Jiha</string>
     <string name="field_lga">LGA</string>
+
+    <!-- Common actions (added) -->
+    <string name="action_next">Na gaba</string>
+
+    <!-- Content descriptions (added) -->
+    <string name="cd_delete">Share</string>
+    <string name="cd_history">Tarihin tattaunawa</string>
+    <string name="cd_send">Aika</string>
+    <string name="cd_stop">Tsaya</string>
+
+    <!-- Onboarding -->
+    <string name="onboard1_title">Kawai yi mata magana</string>
+    <string name="onboard1_body">Babu karatu, babu rubutu. Tambayi MamaVoice komai game da cikinki da murya — a harshenki.</string>
+    <string name="onboard2_title">Bishe, mako zuwa mako</string>
+    <string name="onboard2_body">Ki san abin da ke faruwa da ke da jaririnki, da kuma abincin da ke da aminci — a hankali, gwargwadon saurinki.</string>
+    <string name="onboard3_title">Kada ki rasa abin da ke da muhimmanci</string>
+    <string name="onboard3_body">Tunatarwa mai sauƙi don allurar rigakafi da dubawa, tare da wuri mai sauƙi don rikodin yadda kike ji.</string>
+    <string name="onboard_get_started">Fara</string>
+    <string name="onboard_skip">Tsallake</string>
+
+    <!-- Home suggestions (added) -->
+    <string name="suggestion_foods_help">"Wane abinci ne ke taimakawa?"</string>
+    <string name="suggestion_signs_labour">"Alamun naƙuda"</string>
+
+    <!-- Voice assistant (added) -->
+    <string name="voice_status_prompt">Danna makirufo don yin magana</string>
+    <string name="voice_type_placeholder">Rubuta tambaya…</string>
+    <string name="voice_empty_title">Ina saurara</string>
+    <string name="voice_empty_subtitle">Tambaye ni komai game da cikinki — da murya ko ta rubutu.</string>
+    <string name="voice_replay">Sake kunnawa</string>
+    <string name="voice_show_english">Nuna Turanci</string>
+    <string name="voice_show_original">Nuna na asali</string>
+    <string name="voice_danger_label">Da fatan za ki nemi kulawa</string>
+    <string name="voice_error_generic">Wani abu ya faskara. Da fatan za ki sake gwadawa.</string>
+    <string name="voice_tap_to_stop">Danna don tsayawa</string>
+
+    <!-- Chat history -->
+    <string name="history_title">Tattaunawa</string>
+    <string name="history_new_chat">Sabuwar tattaunawa</string>
+    <string name="history_empty">Babu tattaunawa tukuna</string>
+    <string name="history_untitled">Sabuwar tattaunawa</string>
 </resources>

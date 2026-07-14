@@ -189,4 +189,45 @@
     <string name="field_select_date">Họrọ ụbọchị</string>
     <string name="field_state">Steeti</string>
     <string name="field_lga">LGA</string>
+
+    <!-- Common actions (added) -->
+    <string name="action_next">Ọzọ</string>
+
+    <!-- Content descriptions (added) -->
+    <string name="cd_delete">Hichapụ</string>
+    <string name="cd_history">Akụkọ mkparịta ụka</string>
+    <string name="cd_send">Zipu</string>
+    <string name="cd_stop">Kwụsị</string>
+
+    <!-- Onboarding -->
+    <string name="onboard1_title">Naanị gwa ya okwu</string>
+    <string name="onboard1_body">Enweghị ịgụ, enweghị ịpịnye. Jụọ MamaVoice ihe ọ bụla gbasara ime gị n\'olu — n\'asụsụ nke gị.</string>
+    <string name="onboard2_title">Nduzi, izu na izu</string>
+    <string name="onboard2_body">Mara ihe na-eme gị na nwa gị, na nri ndị dị mma — nwayọ, na ọsọ nke gị.</string>
+    <string name="onboard3_title">Echefukwala ihe dị mkpa</string>
+    <string name="onboard3_body">Ncheta dị mfe maka ọgwụ mgbochi na nyocha, tinyere ebe dị mfe iji dekọọ ka ị na-enwe mmetụta.</string>
+    <string name="onboard_get_started">Malite</string>
+    <string name="onboard_skip">Mafee</string>
+
+    <!-- Home suggestions (added) -->
+    <string name="suggestion_foods_help">"Kedu nri na-enyere aka?"</string>
+    <string name="suggestion_signs_labour">"Ihe ịrịba ama ọmụmụ nwa"</string>
+
+    <!-- Voice assistant (added) -->
+    <string name="voice_status_prompt">Pịa igwe okwu ka ị kwuo okwu</string>
+    <string name="voice_type_placeholder">Pịnye ajụjụ…</string>
+    <string name="voice_empty_title">Ana m ege ntị</string>
+    <string name="voice_empty_subtitle">Jụọ m ihe ọ bụla gbasara ime gị — n\'olu ma ọ bụ site n\'ịpịnye.</string>
+    <string name="voice_replay">Kpọgharịa</string>
+    <string name="voice_show_english">Gosi Bekee</string>
+    <string name="voice_show_original">Gosi nke mbụ</string>
+    <string name="voice_danger_label">Biko chọọ nlekọta</string>
+    <string name="voice_error_generic">Ihe adịghị mma mere. Biko nwaa ọzọ.</string>
+    <string name="voice_tap_to_stop">Pịa iji kwụsị</string>
+
+    <!-- Chat history -->
+    <string name="history_title">Mkparịta ụka</string>
+    <string name="history_new_chat">Mkparịta ụka ọhụrụ</string>
+    <string name="history_empty">Enweghị mkparịta ụka</string>
+    <string name="history_untitled">Mkparịta ụka ọhụrụ</string>
 </resources>

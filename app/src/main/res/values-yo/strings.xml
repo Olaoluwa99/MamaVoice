@@ -189,4 +189,45 @@
     <string name="field_select_date">Yan ọjọ́ kan</string>
     <string name="field_state">Ìpínlẹ̀</string>
     <string name="field_lga">Ìjọba ìbílẹ̀ (LGA)</string>
+
+    <!-- Common actions (added) -->
+    <string name="action_next">Tókàn</string>
+
+    <!-- Content descriptions (added) -->
+    <string name="cd_delete">Paarẹ́</string>
+    <string name="cd_history">Ìtàn ìbánisọ̀rọ̀</string>
+    <string name="cd_send">Fi ránṣẹ́</string>
+    <string name="cd_stop">Dúró</string>
+
+    <!-- Onboarding -->
+    <string name="onboard1_title">Kàn sọ̀rọ̀ sí i</string>
+    <string name="onboard1_body">Kò sí kíkà, kò sí títẹ̀. Béèrè ohunkóhun nípa oyún rẹ lọ́wọ́ MamaVoice lóhùn — ní èdè tìrẹ.</string>
+    <string name="onboard2_title">Ìtọ́sọ́nà, ọ̀sẹ̀ dé ọ̀sẹ̀</string>
+    <string name="onboard2_body">Mọ ohun tó ń ṣẹlẹ̀ sí ìwọ àti ọmọ rẹ, àti oúnjẹ tó ní àìléwu — pẹ̀lẹ́pẹ̀lẹ́, ní ìyára tìrẹ.</string>
+    <string name="onboard3_title">Má pàdánù ohun tó ṣe pàtàkì</string>
+    <string name="onboard3_body">Ìránnilétí rírọrùn fún àjẹsára àti àyẹ̀wò, pẹ̀lú ibi tó rọrùn láti ṣàkọsílẹ̀ bí o ṣe nímọ̀lára.</string>
+    <string name="onboard_get_started">Bẹ̀rẹ̀</string>
+    <string name="onboard_skip">Fò ó</string>
+
+    <!-- Home suggestions (added) -->
+    <string name="suggestion_foods_help">"Àwọn oúnjẹ wo ló ń ṣàǹfààní?"</string>
+    <string name="suggestion_signs_labour">"Àwọn àmì ìrọbí"</string>
+
+    <!-- Voice assistant (added) -->
+    <string name="voice_status_prompt">Tẹ gbohùngbohùn láti sọ̀rọ̀</string>
+    <string name="voice_type_placeholder">Tẹ ìbéèrè kan…</string>
+    <string name="voice_empty_title">Mo ń gbọ́</string>
+    <string name="voice_empty_subtitle">Béèrè ohunkóhun nípa oyún rẹ lọ́wọ́ mi — lóhùn tàbí nípa títẹ̀.</string>
+    <string name="voice_replay">Tún gbọ́</string>
+    <string name="voice_show_english">Fi Gẹ̀ẹ́sì hàn</string>
+    <string name="voice_show_original">Fi èdè ìpilẹ̀ hàn</string>
+    <string name="voice_danger_label">Jọ̀wọ́ wá ìtọ́jú</string>
+    <string name="voice_error_generic">Ohun kan ṣàṣìṣe. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kansí.</string>
+    <string name="voice_tap_to_stop">Tẹ̀ láti dúró</string>
+
+    <!-- Chat history -->
+    <string name="history_title">Àwọn ìbánisọ̀rọ̀</string>
+    <string name="history_new_chat">Ìbánisọ̀rọ̀ tuntun</string>
+    <string name="history_empty">Kò sí ìbánisọ̀rọ̀ síbẹ̀</string>
+    <string name="history_untitled">Ìbánisọ̀rọ̀ tuntun</string>
 </resources>
