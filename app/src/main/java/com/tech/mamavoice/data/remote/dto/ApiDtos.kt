@@ -53,11 +53,34 @@ data class VoiceQueryResponse(
     val detectedLanguage: String? = null,       // audio endpoint only
     val transcript: String? = null,             // audio endpoint only — what the user said
     val sttConfidence: Double? = null,          // audio endpoint only
-    val conversationId: String? = null          // id of the chat this turn belongs to
+    val conversationId: String? = null,         // id of the chat this turn belongs to
+    // Id of the stored assistant message. TTS is generated asynchronously, so [audioUrl] is
+    // usually null here; poll `GET api/conversations/messages/{id}/audio` with this id.
+    val assistantMessageId: String? = null
 ) {
     /** The audio URL when the server sent a plain string; null for an empty object or absent value. */
     val audioUrlOrNull: String?
         get() = (audioUrl as? JsonPrimitive)?.takeIf { it.isString }?.content
+}
+
+/**
+ * Response for `GET api/conversations/messages/{messageId}/audio` — the async TTS status for one
+ * assistant message. [audioUrl] stays null while [status] is "pending"; a caller polls until it
+ * has a URL (ready) or [isFailed] turns true.
+ */
+@Serializable
+data class MessageAudioResponse(
+    val messageId: String? = null,
+    val status: String? = null,                 // "pending" | "ready" | "failed"
+    val audioUrl: JsonElement? = null,
+    val audioContentType: String? = null
+) {
+    /** The clip URL once generated; null while pending, on failure, or if sent as an empty object. */
+    val audioUrlOrNull: String?
+        get() = (audioUrl as? JsonPrimitive)?.takeIf { it.isString }?.content
+
+    /** Terminal failure — TTS will not arrive for this message, so stop polling. */
+    val isFailed: Boolean get() = status.equals("failed", ignoreCase = true)
 }
 
 // --- Conversation history ----------------------------------------------------------------------

@@ -29,6 +29,10 @@ enum class VoiceState { IDLE, RECORDING, PROCESSING, PLAYING }
 /**
  * One chat entry. A user entry uses [text]; an assistant entry uses [nativeText] / [englishText]
  * plus the optional [audioUrl] and risk metadata.
+ *
+ * The backend generates TTS asynchronously, so an assistant entry usually arrives with no
+ * [audioUrl]. It carries [serverMessageId] instead, which is polled until the clip is ready;
+ * [isAudioPending] drives the "preparing audio" hint on the bubble while that happens.
  */
 data class ChatMessage(
     val id: String = UUID.randomUUID().toString(),
@@ -39,6 +43,8 @@ data class ChatMessage(
     val riskLevel: String? = null,
     val isDangerSign: Boolean = false,
     val audioUrl: String? = null,
+    val serverMessageId: String? = null,
+    val isAudioPending: Boolean = false,
     val showEnglish: Boolean = false,
     val isLoading: Boolean = false,
     val isError: Boolean = false
@@ -58,6 +64,11 @@ data class ChatMessage(
 
 private const val AMPLITUDE_BUFFER = 40
 private const val AMPLITUDE_POLL_MS = 80L
+
+// Async TTS polling: start fast, back off, and give up rather than poll forever.
+private const val AUDIO_POLL_INITIAL_MS = 1_000L
+private const val AUDIO_POLL_MAX_INTERVAL_MS = 3_000L
+private const val AUDIO_POLL_TIMEOUT_MS = 60_000L
 
 /** Drawer-side state: the paginated list of past conversations. */
 data class ConversationHistoryUiState(
@@ -105,6 +116,9 @@ class VoiceConversationViewModel @Inject constructor(
 
     private var recordingFile: File? = null
     private var amplitudeJob: Job? = null
+
+    /** In-flight TTS polls, keyed by the [ChatMessage.id] they will populate. */
+    private val audioPollJobs = mutableMapOf<String, Job>()
 
     fun updateDraft(text: String) {
         _draft.value = text
@@ -215,28 +229,100 @@ class VoiceConversationViewModel @Inject constructor(
             if (transcript != null) {
                 _messages.update { it + ChatMessage(isUser = true, text = transcript) }
             }
+            val readyAudioUrl = data.audioUrlOrNull
+            val serverMessageId = data.assistantMessageId
             val assistant = ChatMessage(
                 isUser = false,
                 nativeText = data.spokenResponse ?: data.aiResponseText,
                 englishText = data.spokenResponseEnglish ?: data.aiResponseText,
                 riskLevel = data.riskLevel,
                 isDangerSign = data.isDangerSign,
-                audioUrl = data.audioUrlOrNull
+                audioUrl = readyAudioUrl,
+                serverMessageId = serverMessageId,
+                // TTS runs after the query returns, so the clip is usually not ready yet.
+                isAudioPending = readyAudioUrl.isNullOrBlank() && !serverMessageId.isNullOrBlank()
             )
             _messages.update { it + assistant }
 
             // Keep the drawer in sync (new title / new-conversation row / re-ordering) if it's open.
             if (_history.value.page > 0) loadConversations(refresh = true)
 
-            if (!assistant.audioUrl.isNullOrBlank()) {
+            if (!readyAudioUrl.isNullOrBlank()) {
                 playMessage(assistant)
             } else {
+                // Release the UI as soon as the text is on screen; the clip catches up separately.
                 _state.value = VoiceState.IDLE
+                if (assistant.isAudioPending && serverMessageId != null) {
+                    pollAudio(serverMessageId = serverMessageId, chatMessageId = assistant.id)
+                }
             }
         } else {
             appendError(result.message)
             _state.value = VoiceState.IDLE
         }
+    }
+
+    // --- Async TTS ------------------------------------------------------------------------------
+
+    /**
+     * Polls [serverMessageId] until its TTS clip is ready, then attaches the URL to the matching
+     * bubble and plays it. Backs off between attempts and gives up after [AUDIO_POLL_TIMEOUT_MS] so
+     * a clip that never arrives can't poll forever. Transient errors are retried; only an explicit
+     * "failed" status or the timeout stops it.
+     */
+    private fun pollAudio(serverMessageId: String, chatMessageId: String) {
+        audioPollJobs.remove(chatMessageId)?.cancel()
+        audioPollJobs[chatMessageId] = viewModelScope.launch {
+            var waited = 0L
+            var interval = AUDIO_POLL_INITIAL_MS
+            while (waited < AUDIO_POLL_TIMEOUT_MS) {
+                delay(interval)
+                waited += interval
+                interval = (interval * 2).coerceAtMost(AUDIO_POLL_MAX_INTERVAL_MS)
+
+                val result = conversationRepository.getMessageAudio(serverMessageId)
+                if (result is Resource.Success) {
+                    val url = result.data?.audioUrlOrNull
+                    if (!url.isNullOrBlank()) {
+                        onAudioReady(chatMessageId, url)
+                        return@launch
+                    }
+                    if (result.data?.isFailed == true) break
+                }
+                // Resource.Error: likely transient (or the clip isn't registered yet) — keep trying.
+            }
+            clearAudioPending(chatMessageId)
+        }
+    }
+
+    /** Attaches a finished clip to its bubble and plays it if the user is still on that message. */
+    private fun onAudioReady(chatMessageId: String, url: String) {
+        audioPollJobs.remove(chatMessageId)
+        _messages.update { list ->
+            list.map {
+                if (it.id == chatMessageId) it.copy(audioUrl = url, isAudioPending = false) else it
+            }
+        }
+
+        // Auto-play only when it is still the newest message and nothing else is happening —
+        // never talk over a recording, another clip, or a message the user has scrolled past.
+        val latest = _messages.value.lastOrNull()
+        if (latest?.id == chatMessageId && _state.value == VoiceState.IDLE) {
+            playMessage(latest)
+        }
+    }
+
+    /** Drops the "preparing audio" hint; the bubble simply ends up with no clip. */
+    private fun clearAudioPending(chatMessageId: String) {
+        audioPollJobs.remove(chatMessageId)
+        _messages.update { list ->
+            list.map { if (it.id == chatMessageId) it.copy(isAudioPending = false) else it }
+        }
+    }
+
+    private fun stopAudioPolling() {
+        audioPollJobs.values.forEach { it.cancel() }
+        audioPollJobs.clear()
     }
 
     private fun appendLoading(): String {
@@ -290,6 +376,7 @@ class VoiceConversationViewModel @Inject constructor(
     fun openConversation(id: String) {
         if (_conversationId.value == id && _messages.value.isNotEmpty()) return
         stopAudio()
+        stopAudioPolling()
         _conversationId.value = id
         _messages.value = emptyList()
         _state.value = VoiceState.PROCESSING
@@ -315,6 +402,7 @@ class VoiceConversationViewModel @Inject constructor(
     /** Clears the screen to a fresh, unsaved conversation. */
     fun startNewConversation() {
         stopAudio()
+        stopAudioPolling()
         _conversationId.value = null
         _messages.value = emptyList()
         _draft.value = ""
@@ -367,6 +455,7 @@ class VoiceConversationViewModel @Inject constructor(
 
     override fun onCleared() {
         stopAmplitudePolling()
+        stopAudioPolling()
         recorder.cancel()
         player.stop()
         recordingFile?.delete()

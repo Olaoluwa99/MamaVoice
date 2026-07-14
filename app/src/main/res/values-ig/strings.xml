@@ -219,6 +219,7 @@
     <string name="voice_empty_title">Ana m ege ntị</string>
     <string name="voice_empty_subtitle">Jụọ m ihe ọ bụla gbasara ime gị — n\'olu ma ọ bụ site n\'ịpịnye.</string>
     <string name="voice_replay">Kpọgharịa</string>
+    <string name="voice_audio_preparing">Na-akwadebe olu…</string>
     <string name="voice_show_english">Gosi Bekee</string>
     <string name="voice_show_original">Gosi nke mbụ</string>
     <string name="voice_danger_label">Biko chọọ nlekọta</string>

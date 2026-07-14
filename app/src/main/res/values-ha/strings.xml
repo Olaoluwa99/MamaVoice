@@ -220,6 +220,7 @@
     <string name="voice_empty_title">Ina saurara</string>
     <string name="voice_empty_subtitle">Tambaye ni komai game da cikinki — da murya ko ta rubutu.</string>
     <string name="voice_replay">Sake kunnawa</string>
+    <string name="voice_audio_preparing">Ana shirya murya…</string>
     <string name="voice_show_english">Nuna Turanci</string>
     <string name="voice_show_original">Nuna na asali</string>
     <string name="voice_danger_label">Da fatan za ki nemi kulawa</string>

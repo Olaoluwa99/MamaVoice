@@ -1,8 +1,10 @@
 package com.tech.mamavoice.data.repository
 
+import android.util.Log
 import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import com.tech.mamavoice.data.remote.dto.ConversationDetailResponse
 import com.tech.mamavoice.data.remote.dto.ConversationListResponse
+import com.tech.mamavoice.data.remote.dto.MessageAudioResponse
 import com.tech.mamavoice.domain.repository.ConversationRepository
 import com.tech.mamavoice.domain.util.Resource
 import javax.inject.Inject
@@ -37,6 +39,22 @@ class ConversationRepositoryImpl @Inject constructor(
             if (response.success) Resource.Success(true)
             else Resource.Error(response.message)
         } catch (e: Exception) {
+            Resource.Error(e.message ?: "An unknown error occurred")
+        }
+
+    override suspend fun getMessageAudio(messageId: String): Resource<MessageAudioResponse> =
+        try {
+            val response = apiService.getMessageAudio(messageId)
+            // Temporary diagnostics: watch the async TTS poll resolve (see VoiceRepositoryImpl).
+            Log.d(
+                "MamaVoiceAudio",
+                "[messages/$messageId/audio] status=${response.data?.status} " +
+                    "audioUrl=${response.data?.audioUrlOrNull}"
+            )
+            if (response.success) Resource.Success(response.data)
+            else Resource.Error(response.message)
+        } catch (e: Exception) {
+            Log.d("MamaVoiceAudio", "[messages/$messageId/audio] poll failed: ${e.message}")
             Resource.Error(e.message ?: "An unknown error occurred")
         }
 }

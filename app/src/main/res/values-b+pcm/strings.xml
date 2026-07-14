@@ -218,6 +218,7 @@
     <string name="voice_empty_title">I dey listen</string>
     <string name="voice_empty_subtitle">Ask me anytin about your belle — by mouth or by typing.</string>
     <string name="voice_replay">Play am again</string>
+    <string name="voice_audio_preparing">I dey prepare the voice…</string>
     <string name="voice_show_english">Show English</string>
     <string name="voice_show_original">Show original</string>
     <string name="voice_danger_label">Abeg go find care</string>

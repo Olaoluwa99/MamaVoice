@@ -26,6 +26,7 @@ import com.tech.mamavoice.data.remote.dto.ConversationDetailResponse
 import com.tech.mamavoice.data.remote.dto.ConversationListResponse
 import com.tech.mamavoice.data.remote.dto.DeleteConversationResponse
 import com.tech.mamavoice.data.remote.dto.FoodsResponseData
+import com.tech.mamavoice.data.remote.dto.MessageAudioResponse
 
 interface MamaVoiceApiService {
 
@@ -72,6 +73,15 @@ interface MamaVoiceApiService {
     suspend fun deleteConversation(
         @Path("id") id: String
     ): ApiResponse<DeleteConversationResponse>
+
+    /**
+     * Poll the async TTS status of an assistant message. Called after a voice/text query came back
+     * with a null `audioUrl`; keep polling until the status is "ready" (or "failed").
+     */
+    @GET("api/conversations/messages/{messageId}/audio")
+    suspend fun getMessageAudio(
+        @Path("messageId") messageId: String
+    ): ApiResponse<MessageAudioResponse>
 
     @GET("api/foods")
     suspend fun getFoods(

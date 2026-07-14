@@ -219,6 +219,7 @@
     <string name="voice_empty_title">Mo ń gbọ́</string>
     <string name="voice_empty_subtitle">Béèrè ohunkóhun nípa oyún rẹ lọ́wọ́ mi — lóhùn tàbí nípa títẹ̀.</string>
     <string name="voice_replay">Tún gbọ́</string>
+    <string name="voice_audio_preparing">Ń múra ohùn sílẹ̀…</string>
     <string name="voice_show_english">Fi Gẹ̀ẹ́sì hàn</string>
     <string name="voice_show_original">Fi èdè ìpilẹ̀ hàn</string>
     <string name="voice_danger_label">Jọ̀wọ́ wá ìtọ́jú</string>

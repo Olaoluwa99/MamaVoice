@@ -129,6 +129,7 @@
     <string name="voice_type_placeholder">Type a question…</string>
     <string name="voice_tap_to_stop">Tap to stop</string>
     <string name="voice_replay">Replay</string>
+    <string name="voice_audio_preparing">Preparing voice…</string>
     <string name="voice_show_english">Show English</string>
     <string name="voice_show_original">Show original</string>
     <string name="voice_danger_label">Please seek care</string>

@@ -2,6 +2,7 @@ package com.tech.mamavoice.domain.repository
 
 import com.tech.mamavoice.data.remote.dto.ConversationDetailResponse
 import com.tech.mamavoice.data.remote.dto.ConversationListResponse
+import com.tech.mamavoice.data.remote.dto.MessageAudioResponse
 import com.tech.mamavoice.domain.util.Resource
 
 /**
@@ -17,4 +18,10 @@ interface ConversationRepository {
 
     /** Deletes a conversation and its messages; returns true on success. */
     suspend fun deleteConversation(id: String): Resource<Boolean>
+
+    /**
+     * Fetches the async TTS status of one assistant message. The backend generates speech after
+     * the query returns, so this is polled until the status is "ready" (or "failed").
+     */
+    suspend fun getMessageAudio(messageId: String): Resource<MessageAudioResponse>
 }

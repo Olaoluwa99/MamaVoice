@@ -519,7 +519,24 @@ private fun AssistantBubble(
                     .padding(top = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!message.audioUrl.isNullOrBlank()) {
+                if (message.isAudioPending) {
+                    // TTS is generated after the answer arrives; tell the user the voice is coming
+                    // rather than leaving an empty space where the replay control will appear.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(14.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.voice_audio_preparing),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else if (!message.audioUrl.isNullOrBlank()) {
                     if (isPlaying) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

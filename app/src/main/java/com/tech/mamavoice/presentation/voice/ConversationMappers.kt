@@ -26,7 +26,8 @@ fun ConversationMessageDto.toChatMessage(): ChatMessage {
             englishText = spokenResponseEnglish ?: content,
             riskLevel = riskLevel,
             isDangerSign = isDangerSign,
-            audioUrl = audioUrlOrNull
+            audioUrl = audioUrlOrNull,
+            serverMessageId = id
         )
     }
 }
