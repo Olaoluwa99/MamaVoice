@@ -51,9 +51,9 @@ fun ProfileScreen(
     if (showLanguageDialog) {
         LanguagePickerDialog(
             current = state.currentLanguage,
-            onSelect = {
+            onSelect = { language ->
                 showLanguageDialog = false
-                viewModel.setLanguage(it)
+                viewModel.setLanguage(language)
             },
             onDismiss = { showLanguageDialog = false }
         )

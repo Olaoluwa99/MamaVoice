@@ -35,9 +35,9 @@ fun WelcomeScreen(
     if (showLanguageDialog) {
         LanguagePickerDialog(
             current = language,
-            onSelect = {
+            onSelect = { selected ->
                 showLanguageDialog = false
-                viewModel.setLanguage(it)
+                viewModel.setLanguage(selected)
             },
             onDismiss = { showLanguageDialog = false }
         )

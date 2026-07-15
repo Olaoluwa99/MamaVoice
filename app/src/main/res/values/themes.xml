@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MamaVoice" parent="Theme.AppCompat.DayNight.NoActionBar" />
+    <style name="Theme.MamaVoice" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Match the Compose app background so the brief window repaint during a locale-change
+             Activity recreation blends in, instead of flashing AppCompat's default white/grey. -->
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>

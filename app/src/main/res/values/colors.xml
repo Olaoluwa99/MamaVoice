@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Window background; mirrors Compose LightBackground (see Color.kt). The values-night
+         variant mirrors DarkBackground. Keep these in sync with the theme's `background`. -->
+    <color name="window_background">#FFF7F1EC</color>
 </resources>
