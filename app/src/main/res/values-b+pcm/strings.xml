@@ -57,6 +57,18 @@
     <string name="logout_dialog_title">You wan Comot?</string>
     <string name="logout_dialog_message">You sure say you wan comot from MamaVoice?</string>
 
+    <!-- Help / contact -->
+    <string name="help_title">Help &amp; support</string>
+    <string name="help_header">We dey here for you</string>
+    <string name="help_subtitle">You get question, feedback, or you need help? Reach us any time — we dey usually reply within 48 hours.</string>
+    <string name="help_section_contact">Contact us</string>
+    <string name="help_section_social">Follow us</string>
+    <string name="help_email_label">Email</string>
+    <string name="help_whatsapp_label">WhatsApp</string>
+    <string name="help_footer">We take care make am for mamas all over Naija.</string>
+    <string name="cd_help_open">Open</string>
+    <string name="cd_profile">Profile</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_food">Food</string>

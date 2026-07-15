@@ -58,6 +58,18 @@
     <string name="logout_dialog_title">Kwenye ịpụ</string>
     <string name="logout_dialog_message">Ị ji n\'aka na ị chọrọ ịpụ na MamaVoice?</string>
 
+    <!-- Help / contact -->
+    <string name="help_title">Enyemaka na nkwado</string>
+    <string name="help_header">Anyị nọ maka gị</string>
+    <string name="help_subtitle">Ị nwere ajụjụ, echiche, ma ọ bụ chọọ enyemaka? Kpọtụrụ anyị mgbe ọ bụla — anyị na-azaghachi n\'ime awa iri anọ na asatọ (48).</string>
+    <string name="help_section_contact">Kpọtụrụ anyị</string>
+    <string name="help_section_social">Soro anyị</string>
+    <string name="help_email_label">Ozi-e</string>
+    <string name="help_whatsapp_label">WhatsApp</string>
+    <string name="help_footer">E ji nlekọta mepụta ya maka ndị nne na Naịjịrịa niile.</string>
+    <string name="cd_help_open">Mepee</string>
+    <string name="cd_profile">Profaịlụ</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Ụlọ</string>
     <string name="nav_food">Nri</string>

@@ -41,6 +41,7 @@ import com.tech.mamavoice.ui.theme.MamaTheme
 fun ProfileScreen(
     onBackClick: () -> Unit,
     onLogout: () -> Unit,
+    onHelpClick: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -209,6 +210,7 @@ fun ProfileScreen(
                     PreferenceRow(
                         icon = Icons.Filled.HelpOutline,
                         title = stringResource(R.string.pref_help),
+                        onClick = onHelpClick,
                         trailing = {
                             Icon(
                                 Icons.Filled.ChevronRight,

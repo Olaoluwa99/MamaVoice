@@ -172,11 +172,18 @@ fun MamaVoiceNavGraph(
         composable(Screen.Profile.route) {
             com.tech.mamavoice.presentation.profile.ProfileScreen(
                 onBackClick = { navController.navigateUp() },
+                onHelpClick = { navController.navigate(Screen.Help.route) },
                 onLogout = {
                     navController.navigate(Screen.Welcome.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Screen.Help.route) {
+            com.tech.mamavoice.presentation.help.HelpScreen(
+                onBackClick = { navController.navigateUp() }
             )
         }
     }

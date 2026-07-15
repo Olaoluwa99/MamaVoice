@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -12,9 +13,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tech.mamavoice.R
+import com.tech.mamavoice.domain.util.Resource
 import com.tech.mamavoice.presentation.components.MamaBottomBar
+import com.tech.mamavoice.presentation.components.ProfileAvatarButton
 import com.tech.mamavoice.presentation.dashboard.DashboardViewModel
 import com.tech.mamavoice.presentation.dashboard.HomeScreen
 import com.tech.mamavoice.presentation.food.FoodDirectoryScreen
@@ -62,7 +69,6 @@ fun MainScreen(
             when (selectedTab) {
                 MainTab.HOME -> HomeScreen(
                     dashboardData = dashboardData,
-                    onProfileClick = onNavigateToProfile,
                     onMicClick = { onOpenConversation(null) },
                     onSuggestionClick = { onOpenConversation(it) }
                 )
@@ -70,6 +76,20 @@ fun MainScreen(
                 MainTab.VACCINES -> ImmunizationTimelineScreen()
                 MainTab.HEALTH -> HealthTrackerScreen(onSpeak = { onOpenConversation(null) })
             }
+
+            // Static profile avatar — pinned to the same top-end spot on every tab so it always
+            // sits in place regardless of which tab's content is showing.
+            val firstName = (dashboardData as? Resource.Success)?.data?.firstName
+                ?: stringResource(R.string.home_default_name)
+            ProfileAvatarButton(
+                initial = firstName.firstOrNull()?.uppercase() ?: "M",
+                onClick = onNavigateToProfile,
+                contentDescription = stringResource(R.string.cd_profile),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .statusBarsPadding()
+                    .padding(top = 12.dp, end = 20.dp)
+            )
         }
     }
 }

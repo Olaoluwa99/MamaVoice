@@ -41,14 +41,9 @@ import com.tech.mamavoice.ui.theme.MamaTheme
 @Composable
 fun HomeScreen(
     dashboardData: Resource<DashboardResponse>,
-    onProfileClick: () -> Unit,
     onMicClick: () -> Unit,
     onSuggestionClick: (String) -> Unit
 ) {
-    val data = (dashboardData as? Resource.Success)?.data
-    val firstName = data?.firstName ?: stringResource(R.string.home_default_name)
-    val initial = firstName.firstOrNull()?.uppercase() ?: "M"
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,21 +70,9 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.weight(1f))
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .clickable(onClick = onProfileClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initial,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+            // Profile avatar lives in MainScreen as a static top-end overlay shared by every tab;
+            // leaving the trailing space keeps the brand aligned left, clear of that avatar.
+            Spacer(modifier = Modifier.size(40.dp))
         }
 
         // Greeting card

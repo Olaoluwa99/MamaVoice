@@ -23,6 +23,9 @@ sealed class Screen(val route: String) {
     data object Main : Screen("main")
     data object Profile : Screen("profile_screen")
 
+    /** Static "how to reach us" page (email + socials), opened from Profile → Help. */
+    data object Help : Screen("help")
+
     /** Full-screen AI voice/text conversation. Optional [ARG_QUERY] pre-submits a text question. */
     data object Conversation : Screen("conversation?query={query}") {
         const val ARG_QUERY = "query"
