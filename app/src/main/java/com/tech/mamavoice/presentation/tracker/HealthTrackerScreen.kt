@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.HealthLog
+import com.tech.mamavoice.presentation.components.ErrorState
 import com.tech.mamavoice.ui.theme.MamaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +60,7 @@ fun HealthTrackerScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
                 state.error != null && state.logs.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    Text(state.error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                    ErrorState(error = state.error, onRetry = { viewModel.retry() })
                 }
                 else -> {
                     val today = state.logs.firstOrNull()

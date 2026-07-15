@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.FoodItem
+import com.tech.mamavoice.presentation.components.ErrorState
 import com.tech.mamavoice.ui.theme.LightExtraColors
 import com.tech.mamavoice.ui.theme.MamaExtraColors
 import com.tech.mamavoice.ui.theme.MamaTheme
@@ -130,10 +131,10 @@ fun FoodDirectoryScreen(
                     modifier = Modifier.align(Alignment.Center),
                     color = MaterialTheme.colorScheme.primary
                 )
-                state.error != null -> Text(
-                    text = state.error!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                state.error != null -> ErrorState(
+                    error = state.error,
+                    onRetry = { viewModel.retry() },
+                    modifier = Modifier.align(Alignment.Center)
                 )
                 filtered.isEmpty() -> Text(
                     text = stringResource(R.string.food_empty),

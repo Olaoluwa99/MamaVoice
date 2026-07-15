@@ -5,7 +5,9 @@ import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import com.tech.mamavoice.data.remote.dto.ConversationDetailResponse
 import com.tech.mamavoice.data.remote.dto.ConversationListResponse
 import com.tech.mamavoice.data.remote.dto.MessageAudioResponse
+import com.tech.mamavoice.data.remote.toAppError
 import com.tech.mamavoice.domain.repository.ConversationRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,27 +21,27 @@ class ConversationRepositoryImpl @Inject constructor(
         try {
             val response = apiService.getConversations(page, limit)
             if (response.success) Resource.Success(response.data)
-            else Resource.Error(response.message)
+            else Resource.Error(response.message, AppError.Message(response.message))
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
 
     override suspend fun getConversation(id: String, page: Int, limit: Int): Resource<ConversationDetailResponse> =
         try {
             val response = apiService.getConversation(id, page, limit)
             if (response.success) Resource.Success(response.data)
-            else Resource.Error(response.message)
+            else Resource.Error(response.message, AppError.Message(response.message))
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
 
     override suspend fun deleteConversation(id: String): Resource<Boolean> =
         try {
             val response = apiService.deleteConversation(id)
             if (response.success) Resource.Success(true)
-            else Resource.Error(response.message)
+            else Resource.Error(response.message, AppError.Message(response.message))
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
 
     override suspend fun getMessageAudio(messageId: String): Resource<MessageAudioResponse> =
@@ -52,9 +54,9 @@ class ConversationRepositoryImpl @Inject constructor(
                     "audioUrl=${response.data?.audioUrlOrNull}"
             )
             if (response.success) Resource.Success(response.data)
-            else Resource.Error(response.message)
+            else Resource.Error(response.message, AppError.Message(response.message))
         } catch (e: Exception) {
             Log.d("MamaVoiceAudio", "[messages/$messageId/audio] poll failed: ${e.message}")
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.domain.model.FoodItem
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ import javax.inject.Inject
 data class FoodUiState(
     val isLoading: Boolean = false,
     val items: List<FoodItem> = emptyList(),
-    val error: String? = null,
+    val error: AppError? = null,
     val selectedFood: FoodItem? = null
 )
 
@@ -54,15 +55,20 @@ class FoodViewModel @Inject constructor(
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
-                        error = result.message ?: "An unexpected error occurred",
+                        error = result.error ?: AppError.Unknown,
                         isLoading = false
                     )
                 }
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true, error = null)
                 }
             }
         }
+    }
+
+    /** Re-fetches after a failure (wired to the error state's "Try again"). */
+    fun retry() {
+        viewModelScope.launch { getFoodItems() }
     }
 
     fun selectFood(food: FoodItem?) {

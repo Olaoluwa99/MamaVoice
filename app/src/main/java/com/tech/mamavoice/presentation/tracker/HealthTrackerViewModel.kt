@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.domain.model.HealthLog
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +18,9 @@ import javax.inject.Inject
 data class HealthTrackerUiState(
     val isLoading: Boolean = false,
     val logs: List<HealthLog> = emptyList(),
-    val error: String? = null,
+    val error: AppError? = null,
     val isSubmitting: Boolean = false,
-    val submitError: String? = null
+    val submitError: AppError? = null
 )
 
 @HiltViewModel
@@ -46,15 +47,18 @@ class HealthTrackerViewModel @Inject constructor(
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
-                        error = result.message ?: "An unexpected error occurred"
+                        error = result.error ?: AppError.Unknown
                     )
                 }
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true, error = null)
                 }
             }
         }.launchIn(viewModelScope)
     }
+
+    /** Re-fetches after a failure (wired to the error state's "Try again"). */
+    fun retry() = getHealthLogs()
 
     fun submitLog(weight: Double?, bp: String?, nutrition: String?, symptoms: String?) {
         viewModelScope.launch {
@@ -68,7 +72,7 @@ class HealthTrackerViewModel @Inject constructor(
             } else if (result is Resource.Error) {
                 _state.value = _state.value.copy(
                     isSubmitting = false,
-                    submitError = result.message ?: "Failed to submit log"
+                    submitError = result.error ?: AppError.Unknown
                 )
             }
         }

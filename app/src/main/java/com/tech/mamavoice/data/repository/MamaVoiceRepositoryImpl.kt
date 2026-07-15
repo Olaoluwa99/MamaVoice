@@ -2,7 +2,9 @@ package com.tech.mamavoice.data.repository
 
 import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import com.tech.mamavoice.data.remote.dto.AppEnumsResponse
+import com.tech.mamavoice.data.remote.toAppError
 import com.tech.mamavoice.domain.repository.MamaVoiceRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import retrofit2.HttpException
 import java.io.IOException
@@ -17,12 +19,12 @@ class MamaVoiceRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(response.data)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: HttpException) {
-            Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         } catch (e: IOException) {
-            Resource.Error("Couldn't reach server. Check your internet connection.")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 }

@@ -39,4 +39,12 @@ class DashboardViewModel @Inject constructor(
             }
         }
     }
+
+    /** Re-fetches the dashboard after a failure (wired to the greeting card's "Try again"). */
+    fun retry() {
+        viewModelScope.launch {
+            _dashboardData.value = Resource.Loading()
+            _dashboardData.value = repository.getDashboard()
+        }
+    }
 }

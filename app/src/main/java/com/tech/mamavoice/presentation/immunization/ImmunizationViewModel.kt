@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.domain.model.VaccineItem
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ import javax.inject.Inject
 data class ImmunizationUiState(
     val isLoading: Boolean = false,
     val vaccines: List<VaccineItem> = emptyList(),
-    val error: String? = null
+    val error: AppError? = null
 )
 
 @HiltViewModel
@@ -51,7 +52,7 @@ class ImmunizationViewModel @Inject constructor(
                 }
                 is Resource.Error -> {
                     _state.value = ImmunizationUiState(
-                        error = result.message ?: "An unexpected error occurred"
+                        error = result.error ?: AppError.Unknown
                     )
                 }
                 is Resource.Loading -> {
@@ -59,6 +60,11 @@ class ImmunizationViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /** Re-fetches after a failure (wired to the error state's "Try again"). */
+    fun retry() {
+        viewModelScope.launch { getImmunizationTimeline() }
     }
 
     fun logVaccine(
@@ -89,7 +95,7 @@ class ImmunizationViewModel @Inject constructor(
                 }
                 _state.value = _state.value.copy(vaccines = updatedVaccines)
             } else if (result is Resource.Error) {
-                _state.value = _state.value.copy(error = result.message)
+                _state.value = _state.value.copy(error = result.error ?: AppError.Unknown)
             }
         }
     }

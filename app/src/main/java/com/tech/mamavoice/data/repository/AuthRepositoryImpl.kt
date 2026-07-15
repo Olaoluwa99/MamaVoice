@@ -40,7 +40,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (e.code() == 409) {
                 Resource.Error("Email already registered. Please log in.")
             } else {
-                Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+                Resource.Error("Something went wrong. Please try again.")
             }
         } catch (e: IOException) {
             Resource.Error("Couldn't reach server. Check your internet connection.")
@@ -75,7 +75,7 @@ class AuthRepositoryImpl @Inject constructor(
                     Resource.Error("Invalid email or password.")
                 }
             } else {
-                Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+                Resource.Error("Something went wrong. Please try again.")
             }
         } catch (e: IOException) {
             Resource.Error("Couldn't reach server. Check your internet connection.")
@@ -95,7 +95,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (e.code() == 400) {
                 Resource.Error("Invalid or expired OTP.")
             } else {
-                Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+                Resource.Error("Something went wrong. Please try again.")
             }
         } catch (e: IOException) {
             Resource.Error("Couldn't reach server. Check your internet connection.")
@@ -110,7 +110,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (e.code() == 400) {
                 Resource.Error("Email already verified or account not found.")
             } else {
-                Resource.Error(e.localizedMessage ?: "An unexpected error occurred")
+                Resource.Error("Something went wrong. Please try again.")
             }
         } catch (e: IOException) {
             Resource.Error("Couldn't reach server. Check your internet connection.")

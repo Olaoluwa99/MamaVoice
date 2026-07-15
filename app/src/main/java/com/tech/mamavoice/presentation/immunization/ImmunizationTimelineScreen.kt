@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tech.mamavoice.R
 import com.tech.mamavoice.domain.model.VaccineItem
+import com.tech.mamavoice.presentation.components.ErrorState
 import com.tech.mamavoice.ui.theme.MamaTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -87,10 +88,10 @@ fun ImmunizationTimelineScreen(
                     modifier = Modifier.align(Alignment.Center),
                     color = MaterialTheme.colorScheme.primary
                 )
-                state.error != null -> Text(
-                    text = state.error!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                state.error != null -> ErrorState(
+                    error = state.error,
+                    onRetry = { viewModel.retry() },
+                    modifier = Modifier.align(Alignment.Center)
                 )
                 state.vaccines.isEmpty() -> Text(
                     text = stringResource(R.string.immun_empty),

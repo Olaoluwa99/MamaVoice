@@ -30,6 +30,7 @@ import com.tech.mamavoice.R
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.util.Resource
 import com.tech.mamavoice.presentation.components.MamaVoiceLogoMark
+import com.tech.mamavoice.presentation.components.appErrorMessage
 import com.tech.mamavoice.ui.theme.MamaTheme
 
 /**
@@ -42,7 +43,8 @@ import com.tech.mamavoice.ui.theme.MamaTheme
 fun HomeScreen(
     dashboardData: Resource<DashboardResponse>,
     onMicClick: () -> Unit,
-    onSuggestionClick: (String) -> Unit
+    onSuggestionClick: (String) -> Unit,
+    onRetry: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -76,7 +78,7 @@ fun HomeScreen(
         }
 
         // Greeting card
-        GreetingCard(dashboardData)
+        GreetingCard(dashboardData, onRetry = onRetry)
 
         // Center mic
         Box(
@@ -110,7 +112,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
+private fun GreetingCard(dashboardData: Resource<DashboardResponse>, onRetry: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -135,11 +137,27 @@ private fun GreetingCard(dashboardData: Resource<DashboardResponse>) {
                 }
             }
             is Resource.Error -> {
-                Text(
-                    text = dashboardData.message ?: stringResource(R.string.dashboard_load_error),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = androidx.compose.ui.graphics.Color.White
-                )
+                Column {
+                    Text(
+                        text = appErrorMessage(dashboardData.error, dashboardData.message),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = androidx.compose.ui.graphics.Color.White
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        onClick = onRetry,
+                        shape = RoundedCornerShape(20.dp),
+                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.18f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.action_try_again),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = androidx.compose.ui.graphics.Color.White,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
             }
             is Resource.Success -> {
                 val data = dashboardData.data

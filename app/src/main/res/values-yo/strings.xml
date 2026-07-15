@@ -70,6 +70,17 @@
     <string name="cd_help_open">Ṣí</string>
     <string name="cd_profile">Profáìlì</string>
 
+    <!-- Errors -->
+    <string name="error_network">Kò sí ìntánẹ́ẹ̀tì. Jọ̀wọ́ ṣàyẹ̀wò nẹ́tíwọ́ọ̀kì rẹ kí o sì tún gbìyànjú.</string>
+    <string name="error_timeout">Èyí ń pẹ́ ju bó ṣe yẹ lọ. Jọ̀wọ́ tún gbìyànjú.</string>
+    <string name="error_session_expired">Àkókò ìwọlé rẹ ti parí. Jọ̀wọ́ wọlé padà.</string>
+    <string name="error_forbidden">O kò ní àṣẹ láti ṣe èyí.</string>
+    <string name="error_not_found">A kò rí ohun tí o ń wá.</string>
+    <string name="error_server">Àwọn sáfà wa ní ìṣòro díẹ̀. Jọ̀wọ́ tún gbìyànjú láìpẹ́.</string>
+    <string name="error_validation">Jọ̀wọ́ ṣàyẹ̀wò àwọn àlàyé rẹ kí o sì tún gbìyànjú.</string>
+    <string name="error_unknown">Ohun kan ṣàṣìṣe. Jọ̀wọ́ tún gbìyànjú.</string>
+    <string name="action_try_again">Tún gbìyànjú</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Ilé</string>
     <string name="nav_food">Oúnjẹ</string>

@@ -70,7 +70,8 @@ fun MainScreen(
                 MainTab.HOME -> HomeScreen(
                     dashboardData = dashboardData,
                     onMicClick = { onOpenConversation(null) },
-                    onSuggestionClick = { onOpenConversation(it) }
+                    onSuggestionClick = { onOpenConversation(it) },
+                    onRetry = { viewModel.retry() }
                 )
                 MainTab.FOOD -> FoodDirectoryScreen()
                 MainTab.VACCINES -> ImmunizationTimelineScreen()

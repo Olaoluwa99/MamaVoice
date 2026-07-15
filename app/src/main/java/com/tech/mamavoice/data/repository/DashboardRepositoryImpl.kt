@@ -3,7 +3,9 @@ package com.tech.mamavoice.data.repository
 import com.tech.mamavoice.data.local.TokenManager
 import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
+import com.tech.mamavoice.data.remote.toAppError
 import com.tech.mamavoice.domain.repository.DashboardRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
@@ -26,10 +28,10 @@ class DashboardRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(response.data)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 }

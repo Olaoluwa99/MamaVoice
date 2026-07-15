@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import android.text.format.DateUtils
 import com.tech.mamavoice.R
 import com.tech.mamavoice.data.remote.dto.ConversationSummaryDto
+import com.tech.mamavoice.presentation.components.appErrorMessage
 import com.tech.mamavoice.ui.theme.MamaTheme
 import kotlinx.coroutines.launch
 
@@ -440,7 +441,9 @@ private fun ChatBubble(
         when {
             message.isUser -> UserBubble(message.text.orEmpty())
             message.isLoading -> LoadingBubble()
-            message.isError -> ErrorBubble(message.text ?: stringResource(R.string.voice_error_generic))
+            message.isError -> ErrorBubble(
+                appErrorMessage(message.error, message.text ?: stringResource(R.string.voice_error_generic))
+            )
             else -> AssistantBubble(message, isPlaying, onReplay, onStop, onToggleEnglish)
         }
     }

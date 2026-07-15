@@ -1,11 +1,17 @@
 package com.tech.mamavoice.presentation.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.tech.mamavoice.R
 import com.tech.mamavoice.presentation.auth.LoginScreen
+import com.tech.mamavoice.presentation.session.SessionViewModel
 import com.tech.mamavoice.presentation.auth.SignUpScreen
 import com.tech.mamavoice.presentation.language.LanguageSelectionScreen
 import com.tech.mamavoice.presentation.main.MainScreen
@@ -22,6 +28,24 @@ fun MamaVoiceNavGraph(
     startDestination: String,
     modifier: Modifier = Modifier
 ) {
+    // When a session expires (token cleared by a failed refresh, not a deliberate logout), bounce
+    // the user to Welcome with a friendly message instead of letting requests silently 401.
+    val context = LocalContext.current
+    val sessionViewModel: SessionViewModel = hiltViewModel()
+    LaunchedEffect(Unit) {
+        sessionViewModel.sessionExpired.collect {
+            Toast.makeText(
+                context,
+                context.getString(R.string.error_session_expired),
+                Toast.LENGTH_LONG
+            ).show()
+            navController.navigate(Screen.Welcome.route) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination,

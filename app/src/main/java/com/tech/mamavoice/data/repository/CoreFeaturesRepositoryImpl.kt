@@ -7,7 +7,9 @@ import com.tech.mamavoice.data.remote.dto.VaccineLogRequest
 import com.tech.mamavoice.domain.model.FoodItem
 import com.tech.mamavoice.domain.model.HealthLog
 import com.tech.mamavoice.domain.model.VaccineItem
+import com.tech.mamavoice.data.remote.toAppError
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -79,7 +81,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
             }
             emit(Resource.Success(domainModels))
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Failed to fetch foods"))
+            emit(Resource.Error(e.message ?: "", e.toAppError()))
         }
     }
 
@@ -101,7 +103,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
             }
             emit(Resource.Success(domainModels))
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Failed to fetch vaccines"))
+            emit(Resource.Error(e.message ?: "", e.toAppError()))
         }
     }
 
@@ -124,10 +126,10 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(Unit)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to log vaccine")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 
@@ -148,7 +150,7 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
             }
             emit(Resource.Success(domainModels))
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Failed to fetch tracker history"))
+            emit(Resource.Error(e.message ?: "", e.toAppError()))
         }
     }
 
@@ -171,10 +173,10 @@ class CoreFeaturesRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(Unit)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to log health data")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 }

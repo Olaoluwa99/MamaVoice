@@ -38,6 +38,25 @@ class TokenManager @Inject constructor(
         preferences[IS_EXISTING_USER] ?: false
     }
 
+    /**
+     * Set just before a deliberate sign-out so the session watcher can tell an intentional logout
+     * apart from a token that expired underneath the user. In-memory on purpose: it only needs to
+     * survive the single [clearSession] that immediately follows.
+     */
+    @Volatile
+    private var userInitiatedLogout = false
+
+    fun markUserInitiatedLogout() {
+        userInitiatedLogout = true
+    }
+
+    /** Reads and resets the deliberate-logout flag. */
+    fun consumeUserInitiatedLogout(): Boolean {
+        val wasUserInitiated = userInitiatedLogout
+        userInitiatedLogout = false
+        return wasUserInitiated
+    }
+
     suspend fun saveAuthData(accessToken: String, refreshTokenStr: String, isExistingUser: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = accessToken

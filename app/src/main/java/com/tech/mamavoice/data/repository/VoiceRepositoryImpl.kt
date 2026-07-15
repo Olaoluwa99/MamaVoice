@@ -4,7 +4,9 @@ import android.util.Log
 import com.tech.mamavoice.data.remote.api.MamaVoiceApiService
 import com.tech.mamavoice.data.remote.dto.TextQueryRequest
 import com.tech.mamavoice.data.remote.dto.VoiceQueryResponse
+import com.tech.mamavoice.data.remote.toAppError
 import com.tech.mamavoice.domain.repository.VoiceRepository
+import com.tech.mamavoice.domain.util.AppError
 import com.tech.mamavoice.domain.util.Resource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -30,10 +32,10 @@ class VoiceRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(response.data)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 
@@ -44,10 +46,10 @@ class VoiceRepositoryImpl @Inject constructor(
             if (response.success) {
                 Resource.Success(response.data)
             } else {
-                Resource.Error(response.message)
+                Resource.Error(response.message, AppError.Message(response.message))
             }
         } catch (e: Exception) {
-            Resource.Error(e.message ?: "An unknown error occurred")
+            Resource.Error(e.message ?: "", e.toAppError())
         }
     }
 

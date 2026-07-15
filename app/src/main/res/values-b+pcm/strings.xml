@@ -69,6 +69,17 @@
     <string name="cd_help_open">Open</string>
     <string name="cd_profile">Profile</string>
 
+    <!-- Errors -->
+    <string name="error_network">No internet connection. Abeg check your network and try again.</string>
+    <string name="error_timeout">This one dey take longer pass how e dey normally be. Abeg try again.</string>
+    <string name="error_session_expired">Your session don expire. Abeg sign in again.</string>
+    <string name="error_forbidden">You no get permission to do that one.</string>
+    <string name="error_not_found">We no fit find wetin you dey look for.</string>
+    <string name="error_server">Our servers dey get small wahala. Abeg try again soon.</string>
+    <string name="error_validation">Abeg check your details and try again.</string>
+    <string name="error_unknown">Something no work. Abeg try again.</string>
+    <string name="action_try_again">Try again</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_food">Food</string>

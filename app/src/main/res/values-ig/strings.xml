@@ -70,6 +70,17 @@
     <string name="cd_help_open">Mepee</string>
     <string name="cd_profile">Profaịlụ</string>
 
+    <!-- Errors -->
+    <string name="error_network">Ọ dịghị njikọ ịntanetị. Biko lelee netwọk gị ma nwaa ọzọ.</string>
+    <string name="error_timeout">Nke a na-ewe ogologo oge karịa ka ọ na-emebu. Biko nwaa ọzọ.</string>
+    <string name="error_session_expired">Oge nnọkọ gị agwụla. Biko banye ọzọ.</string>
+    <string name="error_forbidden">I nweghị ikike ime nke a.</string>
+    <string name="error_not_found">Anyị achọtaghị ihe ị na-achọ.</string>
+    <string name="error_server">Sava anyị nwere nsogbu ntakịrị. Biko nwaa ọzọ n\'oge na-adịghị anya.</string>
+    <string name="error_validation">Biko lelee nkọwa gị ma nwaa ọzọ.</string>
+    <string name="error_unknown">Ihe adịghị mma mere. Biko nwaa ọzọ.</string>
+    <string name="action_try_again">Nwaa ọzọ</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Ụlọ</string>
     <string name="nav_food">Nri</string>

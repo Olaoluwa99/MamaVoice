@@ -47,7 +47,9 @@ data class ChatMessage(
     val isAudioPending: Boolean = false,
     val showEnglish: Boolean = false,
     val isLoading: Boolean = false,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    /** Typed failure for an error bubble; the screen localizes it. Null falls back to generic copy. */
+    val error: com.tech.mamavoice.domain.util.AppError? = null
 ) {
     /** Text currently shown in an assistant bubble, honouring the English toggle. */
     val displayText: String
@@ -257,7 +259,7 @@ class VoiceConversationViewModel @Inject constructor(
                 }
             }
         } else {
-            appendError(result.message)
+            appendError((result as? Resource.Error)?.error)
             _state.value = VoiceState.IDLE
         }
     }
@@ -331,9 +333,9 @@ class VoiceConversationViewModel @Inject constructor(
         return loading.id
     }
 
-    private fun appendError(message: String? = null) {
+    private fun appendError(error: com.tech.mamavoice.domain.util.AppError? = null) {
         _messages.update { list ->
-            list.filterNot { it.isLoading } + ChatMessage(isUser = false, isError = true, text = message)
+            list.filterNot { it.isLoading } + ChatMessage(isUser = false, isError = true, error = error)
         }
     }
 
@@ -391,7 +393,7 @@ class VoiceConversationViewModel @Inject constructor(
                 }
                 is Resource.Error -> {
                     _messages.update { list -> list.filterNot { it.id == loadingId } }
-                    appendError(result.message)
+                    appendError(result.error)
                     _state.value = VoiceState.IDLE
                 }
                 is Resource.Loading -> Unit

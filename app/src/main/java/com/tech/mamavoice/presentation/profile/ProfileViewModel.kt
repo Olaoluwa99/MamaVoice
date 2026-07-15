@@ -58,6 +58,8 @@ class ProfileViewModel @Inject constructor(
 
     fun logout(onLoggedOut: () -> Unit) {
         viewModelScope.launch {
+            // Flag first so the session watcher treats this as a deliberate logout, not an expiry.
+            tokenManager.markUserInitiatedLogout()
             tokenManager.clearSession()
             onLoggedOut()
         }

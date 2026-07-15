@@ -71,6 +71,17 @@
     <string name="cd_help_open">Bude</string>
     <string name="cd_profile">Bayanin martaba</string>
 
+    <!-- Errors -->
+    <string name="error_network">Babu haɗin intanet. Da fatan za ki duba hanyar sadarwarki ki sake gwadawa.</string>
+    <string name="error_timeout">Wannan yana ɗaukar lokaci fiye da yadda aka saba. Da fatan za ki sake gwadawa.</string>
+    <string name="error_session_expired">Zamanki ya ƙare. Da fatan za ki sake shiga.</string>
+    <string name="error_forbidden">Ba ki da izinin yin wannan.</string>
+    <string name="error_not_found">Ba mu sami abin da kike nema ba.</string>
+    <string name="error_server">Sabobinmu na fama da matsala kaɗan. Da fatan za ki sake gwadawa nan ba da jimawa ba.</string>
+    <string name="error_validation">Da fatan za ki duba bayananki ki sake gwadawa.</string>
+    <string name="error_unknown">Wani abu ya faskara. Da fatan za ki sake gwadawa.</string>
+    <string name="action_try_again">Sake gwadawa</string>
+
     <!-- Bottom navigation -->
     <string name="nav_home">Gida</string>
     <string name="nav_food">Abinci</string>
