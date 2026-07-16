@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.tracker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.data.connectivity.ConnectivityObserver
 import com.tech.mamavoice.domain.model.HealthLog
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
 import com.tech.mamavoice.domain.util.AppError
@@ -10,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -25,7 +27,8 @@ data class HealthTrackerUiState(
 
 @HiltViewModel
 class HealthTrackerViewModel @Inject constructor(
-    private val repository: CoreFeaturesRepository
+    private val repository: CoreFeaturesRepository,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HealthTrackerUiState())
@@ -33,6 +36,16 @@ class HealthTrackerViewModel @Inject constructor(
 
     init {
         getHealthLogs()
+
+        // Auto-recover when the network comes back: if the last load failed, refetch as soon as
+        // connectivity is restored — even while the user is sitting on this screen.
+        viewModelScope.launch {
+            var previous: Boolean? = null
+            connectivityObserver.isOnline.collect { online ->
+                if (previous == false && online && _state.value.error != null) retry()
+                previous = online
+            }
+        }
     }
 
     private fun getHealthLogs() {

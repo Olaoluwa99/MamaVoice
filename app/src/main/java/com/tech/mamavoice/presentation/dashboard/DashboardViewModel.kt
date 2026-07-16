@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.data.connectivity.ConnectivityObserver
 import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.data.remote.dto.DashboardResponse
 import com.tech.mamavoice.domain.repository.DashboardRepository
@@ -10,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: DashboardRepository,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
     private val _dashboardData = MutableStateFlow<Resource<DashboardResponse>>(Resource.Loading())
@@ -36,6 +39,16 @@ class DashboardViewModel @Inject constructor(
             settingsManager.appLanguage.distinctUntilChanged().collectLatest {
                 _dashboardData.value = Resource.Loading()
                 _dashboardData.value = repository.getDashboard()
+            }
+        }
+
+        // Auto-recover when the network comes back: if the last load failed, refetch as soon as
+        // connectivity is restored — even while the user is sitting on this screen.
+        viewModelScope.launch {
+            var previous: Boolean? = null
+            connectivityObserver.isOnline.collect { online ->
+                if (previous == false && online && _dashboardData.value is Resource.Error) retry()
+                previous = online
             }
         }
     }

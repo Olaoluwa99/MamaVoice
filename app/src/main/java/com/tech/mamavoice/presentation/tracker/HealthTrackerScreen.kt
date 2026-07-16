@@ -39,6 +39,13 @@ fun HealthTrackerScreen(
     onSpeak: (() -> Unit)? = null
 ) {
     val state by viewModel.state.collectAsState()
+
+    // The ViewModel survives tab switches, so a failed load (e.g. while offline) would otherwise
+    // stay stuck on the error state. Re-fetch on re-entry only when the last load failed.
+    LaunchedEffect(Unit) {
+        if (state.error != null) viewModel.retry()
+    }
+
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 

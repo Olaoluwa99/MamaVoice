@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,12 @@ fun FoodDirectoryScreen(
     viewModel: FoodViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    // The ViewModel survives tab switches, so a failed load (e.g. while offline) would otherwise
+    // stay stuck on the error state. Re-fetch on re-entry only when the last load failed.
+    LaunchedEffect(Unit) {
+        if (state.error != null) viewModel.retry()
+    }
 
     if (state.selectedFood != null) {
         BackHandler { viewModel.selectFood(null) }

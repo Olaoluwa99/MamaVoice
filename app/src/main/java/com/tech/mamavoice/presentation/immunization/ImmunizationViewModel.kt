@@ -2,6 +2,7 @@ package com.tech.mamavoice.presentation.immunization
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tech.mamavoice.data.connectivity.ConnectivityObserver
 import com.tech.mamavoice.data.local.SettingsManager
 import com.tech.mamavoice.domain.model.VaccineItem
 import com.tech.mamavoice.domain.repository.CoreFeaturesRepository
@@ -26,7 +27,8 @@ data class ImmunizationUiState(
 @HiltViewModel
 class ImmunizationViewModel @Inject constructor(
     private val repository: CoreFeaturesRepository,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ImmunizationUiState())
@@ -38,6 +40,16 @@ class ImmunizationViewModel @Inject constructor(
         viewModelScope.launch {
             settingsManager.appLanguage.distinctUntilChanged().collectLatest {
                 getImmunizationTimeline()
+            }
+        }
+
+        // Auto-recover when the network comes back: if the last load failed, refetch as soon as
+        // connectivity is restored — even while the user is sitting on this screen.
+        viewModelScope.launch {
+            var previous: Boolean? = null
+            connectivityObserver.isOnline.collect { online ->
+                if (previous == false && online && _state.value.error != null) retry()
+                previous = online
             }
         }
     }

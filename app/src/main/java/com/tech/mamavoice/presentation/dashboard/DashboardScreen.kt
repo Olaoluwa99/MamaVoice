@@ -46,6 +46,12 @@ fun HomeScreen(
     onSuggestionClick: (String) -> Unit,
     onRetry: () -> Unit
 ) {
+    // The dashboard ViewModel survives tab switches, so a failed load (e.g. while offline) would
+    // otherwise stay stuck. Re-fetch on re-entry only when the last load failed.
+    LaunchedEffect(Unit) {
+        if (dashboardData is Resource.Error) onRetry()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
